@@ -1,5 +1,16 @@
 import type { Config } from 'tailwindcss';
 
+/**
+ * Design tokens, sampled from the Jeebhar logo.
+ *
+ * Components reference semantic names (`brand-cyan`, `accent`) rather than raw
+ * hex, so a brand refresh is a change to this file alone.
+ *
+ *   #00415E  deep teal   — surfaces and text on light
+ *   #6BCDDA  cyan        — primary interactive colour
+ *   #76CEBB  mint        — success and secondary accent
+ *   #F7732F  orange      — the call-to-action colour from the map pin
+ */
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {

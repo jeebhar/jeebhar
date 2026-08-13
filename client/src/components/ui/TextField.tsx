@@ -1,5 +1,13 @@
 import { useId } from 'react';
 
+/**
+ * VIEW — a labelled text input or textarea with accessible error wiring.
+ *
+ * The label is always present (never a placeholder standing in for one) and the
+ * error is linked through `aria-describedby`, so screen readers announce why a
+ * field was rejected.
+ */
+
 interface TextFieldProps {
   label: string;
   value: string;

@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 
 import { ContentService } from '../src/services/content.service.js';
 
-const seed = { brandName: 'Jeebhar', heroHeading: 'Seeded' };
+const seed = { brandName: 'Jeebhar', heroHeading: 'Seeded', heroSubheading: 'Sub' };
 
 describe('ContentService', () => {
   it('seeds default content the first time it is read', async () => {
@@ -25,8 +25,10 @@ describe('ContentService', () => {
 
     const content = await new ContentService(repository, seed).getContent();
 
-    assert.deepEqual(content, seed);
     assert.deepEqual(calls, ['find', 'create']);
+    assert.equal(content.heroHeading, 'Seeded');
+    // Read responses are normalised, so the shape is a guarantee.
+    assert.deepEqual(content.travelReels, []);
   });
 
   it('returns existing content without re-seeding', async () => {
@@ -45,8 +47,8 @@ describe('ContentService', () => {
 
     const content = await new ContentService(repository, seed).getContent();
 
-    assert.deepEqual(content, stored);
     assert.deepEqual(calls, ['find']);
+    assert.equal(content.heroHeading, 'Live copy');
   });
 
   it('delegates writes straight to the repository', async () => {
@@ -55,8 +57,8 @@ describe('ContentService', () => {
       async findSingleton() {
         return null;
       },
-      async create(p) {
-        return p;
+      async create(payload) {
+        return payload;
       },
       async replaceSingleton(payload) {
         received.push(payload);
@@ -67,7 +69,10 @@ describe('ContentService', () => {
     const payload = { brandName: 'Jeebhar', heroHeading: 'Updated' };
     const result = await new ContentService(repository, seed).replaceContent(payload);
 
-    assert.deepEqual(result, payload);
+    // The service passes the caller's payload through untouched...
     assert.deepEqual(received, [payload]);
+    // ...and normalises only what it hands back.
+    assert.equal(result.heroHeading, 'Updated');
+    assert.deepEqual(result.reels, []);
   });
 });

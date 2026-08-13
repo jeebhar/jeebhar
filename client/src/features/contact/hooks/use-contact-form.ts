@@ -6,6 +6,14 @@ import { emptyContactPayload } from '../../../models/contact.model';
 import type { ContactErrors, ContactField, ContactPayload } from '../../../models/contact.model';
 import { toErrorMessage, toFieldErrors } from '../../../utils/error';
 
+/**
+ * CONTROLLER (hook) — everything the contact form does.
+ *
+ * Holds the values, per-field errors, submit state and the outcome banner. The
+ * form component below it is a pure view: inputs bound to `values`, one call to
+ * `submit`.
+ */
+
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
 interface UseContactFormResult {

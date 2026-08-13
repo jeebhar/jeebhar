@@ -37,6 +37,8 @@ models/           schema, types and invariants. No behaviour beyond validation.
 
 **Configuration.** `config/env.js` is the only module that reads `process.env`, and it validates at boot via `assertEnv()`. A missing `ADMIN_TOKEN` crashes on startup with a clear message rather than 500-ing on the first write six hours later.
 
+**Response shape is a guarantee, not a reflection of the database.** Mongoose applies schema defaults when a document is _created_, not when an existing one is read, so a document written before a field existed comes back without it. `ContentService.complete()` fills those in on every read and write, which means adding a content field never needs a database migration — and a missing collection can never reach the frontend as `undefined`. This is the fix for a real failure: adding `travelReels` blanked the entire site for anyone whose database already held a document.
+
 **Errors.** Services and controllers throw; `middleware/error.middleware.js` is the only code that turns an error into a response. It maps Mongoose `ValidationError`, `CastError`, duplicate keys, oversized payloads and malformed JSON onto the same envelope, and redacts unexpected 5xx detail in production.
 
 ### Worked example: `POST /api/contact`
@@ -122,6 +124,9 @@ Now:
 - **Two editor tables → one `<EditableRowList>`.** Fields are described as data, so adding a field is one array entry.
 - **Repeated input markup → `<TextField>`.** Label association, `aria-invalid`, `aria-describedby` and error styling are implemented once and therefore correct everywhere.
 - **Nav declared three times → `config/navigation.ts`.** Desktop nav, mobile nav and scroll targets all read one list.
+- **Two reel sections → one `<ReelsSection>`.** "Our Reels" and "Travel Reels" differ only in id, copy, badge and which collection they read, so they are two usages of one parameterised component rather than two files that drift apart.
+- **Three editor tables → one `<EditableRowList>` + one `useEditableList`.** Work, food reels and travel reels each arrive as an `EditableList` handle. A fourth collection is one line in `useContentEditor` and one `<EditableRowList>`, not another four callbacks on the hook's public interface.
+- **Every cover → `<MediaCover>`.** Work photos and reel covers share one component, so the lazy-load, fade-in and fallback behaviour is implemented and tested once.
 
 ### Things that must stay in exactly one place
 
@@ -146,7 +151,8 @@ These are structural choices, not a polish pass, and `eslint-plugin-jsx-a11y` fa
 - **Skip link.** First focusable element on the page jumps to `#main`.
 - **Motion is opt-out.** `scrollToSection` checks `prefers-reduced-motion`, and the stylesheet neutralises animation for the same users.
 - **Carousel arrows are labelled** and reachable by keyboard.
-- **Layout does not shift.** `Logo` sets explicit width and height from the artwork's intrinsic ratio.
+- **Layout does not shift.** `Logo` sets explicit width and height from the artwork's intrinsic ratio, and `MediaCover` reserves its aspect ratio.
+- **One broken section cannot blank the page.** Each section on the homepage sits in an `ErrorBoundary`. React unmounts the whole tree when a render throws, so without this a single unexpected value produced a white screen with nothing but a console error.
 
 ---
 

@@ -1,5 +1,12 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
+/**
+ * VIEW — the single button primitive.
+ *
+ * Variants are data, not duplicated class strings, so a restyle happens here
+ * once instead of across every screen (Open–Closed).
+ */
+
 type Variant = 'primary' | 'accent' | 'outline' | 'ghost';
 type Size = 'sm' | 'md' | 'lg';
 

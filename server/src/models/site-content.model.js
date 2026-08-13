@@ -1,5 +1,12 @@
 import mongoose from 'mongoose';
 
+/**
+ * MODEL — the single editable site-content document.
+ *
+ * Schemas describe shape and invariants only. No request handling, no business
+ * rules: those belong to validators and services respectively.
+ */
+
 const { Schema } = mongoose;
 
 const trimmedRequired = (label) => ({
@@ -29,7 +36,9 @@ const workSchema = new Schema(
 const reelSchema = new Schema(
   {
     title: trimmedRequired('Reel title'),
-    thumbnailUrl: trimmedRequired('Reel thumbnail URL'),
+    // Optional: Instagram does not expose cover images to third parties, so a
+    // reel with no cover renders a branded tile instead of a broken image.
+    thumbnailUrl: { type: String, default: '', trim: true },
     instagramUrl: trimmedRequired('Reel Instagram URL'),
   },
   { _id: true }
@@ -62,10 +71,13 @@ const siteContentSchema = new Schema(
     heroEyebrow: { type: String, default: '', trim: true },
     heroHeading: trimmedRequired('Hero heading'),
     heroSubheading: trimmedRequired('Hero subheading'),
-    mediaKitUrl: { type: String, default: '/brand/jeebhar-kit.pdf', trim: true },
+    mediaKitUrl: { type: String, default: '/brand/media-kit.pdf', trim: true },
     services: { type: [serviceSchema], default: [] },
     work: { type: [workSchema], default: [] },
+    /** Food vlogs and restaurant ad creatives. */
     reels: { type: [reelSchema], default: [] },
+    /** Travel reels — same shape, shown in its own section. */
+    travelReels: { type: [reelSchema], default: [] },
     mediaKitMetrics: { type: [metricSchema], default: [] },
     contact: { type: contactSchema, required: true },
   },

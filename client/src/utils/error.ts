@@ -1,5 +1,11 @@
 import { ApiError } from '../services/http-client';
 
+/**
+ * Turns an unknown thrown value into a message safe to show a visitor.
+ *
+ * Every catch block routes through here so error copy is consistent and a raw
+ * stack or object never lands on screen.
+ */
 export const toErrorMessage = (error: unknown, fallback: string): string => {
   if (error instanceof ApiError) {
     return error.message;
@@ -10,6 +16,7 @@ export const toErrorMessage = (error: unknown, fallback: string): string => {
   return fallback;
 };
 
+/** Extracts field-level messages from a validation failure, if any. */
 export const toFieldErrors = (error: unknown): Record<string, string> => {
   if (!(error instanceof ApiError) || !error.details) {
     return {};

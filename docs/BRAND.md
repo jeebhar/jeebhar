@@ -73,4 +73,4 @@ The script trims transparent padding with an alpha threshold (the source PNGs ca
 
 ## Media kit
 
-The "Media Kit" nav item and hero button open `mediaKitUrl` from the content document, defaulting to `/brand/jeebhar-kit.pdf`. Drop your PDF at `client/public/brand/jeebhar-kit.pdf`, or point `mediaKitUrl` at a hosted file from `/#/admin`.
+The "Media Kit" nav item and hero button open `mediaKitUrl` from the content document, defaulting to `/brand/media-kit.pdf`. Drop your PDF at `client/public/brand/media-kit.pdf`, or point `mediaKitUrl` at a hosted file from `/#/admin`.

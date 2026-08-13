@@ -3,6 +3,14 @@ import { timingSafeEqual } from 'node:crypto';
 import { env } from '../config/env.js';
 import { HttpError } from '../utils/http-error.js';
 
+/**
+ * MIDDLEWARE — shared-secret guard for write endpoints.
+ *
+ * Accepts the token as `Authorization: Bearer <token>` or `x-admin-token`.
+ * Compared in constant time so the endpoint does not leak the token's prefix
+ * through response timing.
+ */
+
 const extractToken = (req) => {
   const header = req.get('authorization') ?? '';
   if (header.toLowerCase().startsWith('bearer ')) {

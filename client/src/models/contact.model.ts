@@ -1,3 +1,5 @@
+/** MODEL — the contact enquiry the public form submits. */
+
 export interface ContactPayload {
   name: string;
   email: string;

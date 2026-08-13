@@ -3,8 +3,20 @@ import type { ReactNode } from 'react';
 
 import { Button } from './Button';
 
+/**
+ * VIEW — a horizontally scrollable rail with keyboard-reachable arrows.
+ *
+ * Generic over its items, so Work and Reels share one implementation instead of
+ * two near-identical blocks (the duplication this replaces).
+ */
+
 interface CarouselProps<T> {
-  items: readonly T[];
+  /**
+   * Tolerates null/undefined on purpose: a content document written before a
+   * collection existed arrives without that field, and a missing rail must
+   * render as empty rather than throw and blank the whole page.
+   */
+  items: readonly T[] | null | undefined;
   /** Stable identity for React's reconciler. */
   keyOf: (item: T, index: number) => string;
   renderItem: (item: T) => ReactNode;
@@ -28,7 +40,9 @@ export const Carousel = <T,>({
     railRef.current?.scrollBy({ left: direction * SCROLL_STEP, behavior: 'smooth' });
   }, []);
 
-  if (items.length === 0) {
+  const safeItems = Array.isArray(items) ? items : [];
+
+  if (safeItems.length === 0) {
     return <p className="text-brand-200">{emptyMessage}</p>;
   }
 
@@ -39,7 +53,7 @@ export const Carousel = <T,>({
         aria-label={label}
         className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-4"
       >
-        {items.map((item, index) => (
+        {safeItems.map((item, index) => (
           <li
             key={keyOf(item, index)}
             className="w-[280px] shrink-0 snap-start sm:w-[320px] lg:w-[360px]"

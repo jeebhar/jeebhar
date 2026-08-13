@@ -4,6 +4,13 @@ import { fetchSiteContent } from '../api/content.api';
 import type { SiteContent } from '../../../models/site-content.model';
 import { toErrorMessage } from '../../../utils/error';
 
+/**
+ * CONTROLLER (hook) — loads site content and exposes its state.
+ *
+ * All the async/loading/error orchestration lives here so views stay
+ * declarative: they receive `content`, `status` and `error` and just render.
+ */
+
 export type LoadStatus = 'loading' | 'ready' | 'error';
 
 interface UseSiteContentResult {

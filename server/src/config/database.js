@@ -3,6 +3,11 @@ import mongoose from 'mongoose';
 import { env } from './env.js';
 import { logger } from '../utils/logger.js';
 
+/**
+ * Mongo connection lifecycle. Nothing else in the app calls `mongoose.connect`,
+ * so the transport can be swapped or stubbed in one place.
+ */
+
 mongoose.set('strictQuery', true);
 
 export const connectDatabase = async (uri = env.mongoUri) => {

@@ -1,5 +1,13 @@
 import type { ContactErrors, ContactPayload } from '../../models/contact.model';
 
+/**
+ * Client-side mirror of the server's contact rules.
+ *
+ * Pure functions with no React and no DOM, so they are trivially unit-testable.
+ * The server validates independently — this exists to give instant feedback,
+ * never as the security boundary.
+ */
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_PATTERN = /^[\d\s()+-]{7,40}$/;
 

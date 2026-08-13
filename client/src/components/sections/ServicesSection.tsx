@@ -3,6 +3,14 @@ import { useState } from 'react';
 import { Section } from '../ui';
 import type { ServiceItem } from '../../models/site-content.model';
 
+/**
+ * VIEW — services as an accessible accordion.
+ *
+ * Built from real `button` elements with `aria-expanded`/`aria-controls`, so it
+ * is keyboard operable and announced correctly — the previous version nested
+ * interactive content inside clickable cards.
+ */
+
 interface ServicesSectionProps {
   services: ServiceItem[];
 }

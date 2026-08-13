@@ -24,6 +24,8 @@
 
     "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  // Config files are checked by tsconfig.node.json, which `npm run typecheck`
+  // runs as a second pass. Deliberately not a project reference: `tsc --noEmit`
+  // does not check referenced projects, so errors there would go unseen in CI.
+  "include": ["src"]
 }

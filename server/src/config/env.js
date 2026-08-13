@@ -2,8 +2,27 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/**
+ * Single source of truth for configuration.
+ *
+ * Every other module reads configuration from here instead of touching
+ * `process.env` directly. That keeps the rest of the codebase independent of
+ * the environment (Dependency Inversion) and means a missing variable fails
+ * loudly at boot rather than silently at request time.
+ */
+
+/**
+ * Reads a string variable, trimmed.
+ *
+ * `.env` files pick up trailing spaces very easily (a copied credential, an
+ * editor that does not strip them). An untrimmed SMTP password or host fails
+ * authentication with an error that looks nothing like "there is a stray space",
+ * so every string is trimmed at the boundary.
+ */
+const str = (value, fallback = '') => (value ?? fallback).trim();
+
 const toInt = (value, fallback) => {
-  const parsed = Number.parseInt(value ?? '', 10);
+  const parsed = Number.parseInt((value ?? '').trim(), 10);
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
@@ -15,26 +34,26 @@ const toList = (value, fallback) =>
     .concat(value ? [] : fallback);
 
 export const env = Object.freeze({
-  nodeEnv: process.env.NODE_ENV ?? 'development',
+  nodeEnv: str(process.env.NODE_ENV, 'development'),
   isProduction: process.env.NODE_ENV === 'production',
   isTest: process.env.NODE_ENV === 'test',
 
   port: toInt(process.env.PORT, 5000),
-  logLevel: process.env.LOG_LEVEL ?? 'info',
+  logLevel: str(process.env.LOG_LEVEL, 'info'),
 
   corsOrigins: toList(process.env.CLIENT_ORIGIN, ['http://localhost:5173']),
 
-  mongoUri: process.env.MONGODB_URI ?? '',
+  mongoUri: str(process.env.MONGODB_URI),
 
-  adminToken: process.env.ADMIN_TOKEN ?? '',
+  adminToken: str(process.env.ADMIN_TOKEN),
 
   mail: Object.freeze({
-    host: process.env.SMTP_HOST ?? '',
+    host: str(process.env.SMTP_HOST),
     port: toInt(process.env.SMTP_PORT, 587),
-    user: process.env.SMTP_USER ?? '',
-    pass: process.env.SMTP_PASS ?? '',
-    to: process.env.MAIL_TO ?? '',
-    from: process.env.MAIL_FROM ?? '',
+    user: str(process.env.SMTP_USER),
+    pass: str(process.env.SMTP_PASS),
+    to: str(process.env.MAIL_TO),
+    from: str(process.env.MAIL_FROM),
   }),
 
   rateLimit: Object.freeze({
@@ -69,6 +88,15 @@ export const assertEnv = () => {
   }
 };
 
-/** True when SMTP is fully configured; mail delivery is optional. */
+/**
+ * Hosts that ship in example files. A placeholder is worse than a blank value:
+ * it looks configured, so delivery fails silently instead of being skipped.
+ */
+const PLACEHOLDER_HOSTS = ['smtp.example.com', 'smtp.yourhost.com', 'localhost.example'];
+
+export const isPlaceholderMailHost = () => PLACEHOLDER_HOSTS.includes(env.mail.host.toLowerCase());
+
+/** True when SMTP is fully configured with a real host. */
 export const isMailConfigured = () =>
-  Boolean(env.mail.host && env.mail.user && env.mail.pass && env.mail.to && env.mail.from);
+  Boolean(env.mail.host && env.mail.user && env.mail.pass && env.mail.to && env.mail.from) &&
+  !isPlaceholderMailHost();

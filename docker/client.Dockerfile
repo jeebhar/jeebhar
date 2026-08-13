@@ -1,5 +1,12 @@
 # syntax=docker/dockerfile:1.7
 
+# ---------------------------------------------------------------------------
+# Jeebhar frontend — build with Node, serve with nginx.
+#
+# Vite inlines VITE_* variables at build time, so the API base URL is a build
+# argument, not a runtime environment variable.
+# ---------------------------------------------------------------------------
+
 FROM node:20-alpine AS build
 WORKDIR /app
 

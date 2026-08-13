@@ -1,6 +1,13 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
+/**
+ * Vite configuration.
+ *
+ * The dev proxy forwards `/api` to the Express server so the browser sees a
+ * single origin in development — no CORS surprises, and the production build
+ * only needs VITE_API_BASE_URL.
+ */
 export default defineConfig({
   plugins: [react()],
 

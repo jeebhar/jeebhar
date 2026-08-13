@@ -4,6 +4,7 @@ import { env } from '../config/env.js';
 
 const DB_STATES = ['disconnected', 'connected', 'connecting', 'disconnecting'];
 
+/** CONTROLLER — liveness/readiness probe used by Docker and CI. */
 export const getHealth = (_req, res) => {
   const dbState = DB_STATES[mongoose.connection.readyState] ?? 'unknown';
   const healthy = dbState === 'connected';

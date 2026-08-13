@@ -1,5 +1,12 @@
 import { env } from '../config/env.js';
 
+/**
+ * Minimal levelled logger.
+ *
+ * Kept behind this module so call sites never touch `console` directly — the
+ * implementation can be replaced with pino/winston without touching callers.
+ */
+
 const LEVELS = { error: 0, warn: 1, info: 2, debug: 3 };
 
 const threshold = LEVELS[env.logLevel] ?? LEVELS.info;

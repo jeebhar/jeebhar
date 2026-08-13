@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * Global baseline only.
+ *
+ * Component styling belongs in components via Tailwind utilities; this file sets
+ * the page canvas, typography defaults and motion preferences.
+ */
+
 @layer base {
   :root {
     color-scheme: dark;
@@ -12,6 +19,7 @@
     scroll-behavior: smooth;
   }
 
+  /* Honour the OS "reduce motion" setting for every animation on the page. */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -36,6 +44,7 @@
     background-attachment: fixed;
   }
 
+  /* Keyboard focus must always be visible, in every component. */
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-brand-cyan;
   }

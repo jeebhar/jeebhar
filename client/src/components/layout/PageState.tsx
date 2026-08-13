@@ -1,5 +1,11 @@
 import { Button, Logo, Spinner } from '../ui';
 
+/**
+ * VIEW — full-page loading and error states.
+ *
+ * Branded rather than blank, so a slow API still looks like the Jeebhar site.
+ */
+
 export const PageLoading = () => (
   <main className="grid min-h-screen place-items-center px-4">
     <div className="grid justify-items-center gap-5">

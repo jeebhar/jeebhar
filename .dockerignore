@@ -1,3 +1,5 @@
+# Keep the build context small and never ship secrets or host artefacts.
+
 **/node_modules
 **/dist
 **/build

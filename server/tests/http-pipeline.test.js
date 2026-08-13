@@ -3,6 +3,14 @@ import { describe, it } from 'node:test';
 
 import request from 'supertest';
 
+/**
+ * Pipeline tests that need no database.
+ *
+ * Auth, validation, 404 handling and the error envelope all run before any
+ * controller touches Mongo, so these assertions hold with no database at all —
+ * which keeps them fast and makes them run everywhere.
+ */
+
 const ADMIN_TOKEN = 'test-token-that-is-long-enough-1234567890';
 
 process.env.NODE_ENV = 'test';

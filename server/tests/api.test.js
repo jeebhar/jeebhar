@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 
+/**
+ * End-to-end HTTP tests over the real Express pipeline against an in-memory
+ * MongoDB, so routing, auth, validation and error formatting are all exercised.
+ *
+ * Skipped automatically when mongodb-memory-server cannot start (e.g. an
+ * offline CI runner without the binary cached) rather than failing the suite.
+ */
+
 const ADMIN_TOKEN = 'test-token-that-is-long-enough-1234567890';
 
 process.env.NODE_ENV = 'test';
@@ -70,7 +78,7 @@ describe('PUT /api/content', () => {
     heroEyebrow: 'For restaurants',
     heroHeading: 'Updated heading',
     heroSubheading: 'Updated subheading',
-    mediaKitUrl: '/brand/jeebhar-kit.pdf',
+    mediaKitUrl: '/brand/media-kit.pdf',
     services: [],
     work: [
       {
@@ -79,7 +87,21 @@ describe('PUT /api/content', () => {
         description: 'Case study',
       },
     ],
-    reels: [],
+    reels: [
+      {
+        title: 'Food reel 01',
+        // Covers are optional; a blank one must survive the round trip.
+        thumbnailUrl: '',
+        instagramUrl: 'https://www.instagram.com/reel/DQWG611DCCr/',
+      },
+    ],
+    travelReels: [
+      {
+        title: 'Travel reel 01',
+        thumbnailUrl: '/reels/DaiErQFgKyc.jpg',
+        instagramUrl: 'https://www.instagram.com/reel/DaiErQFgKyc/',
+      },
+    ],
     mediaKitMetrics: [{ label: 'Partners', value: '40+' }],
     contact: {
       address: 'Somewhere',
@@ -134,6 +156,24 @@ describe('PUT /api/content', () => {
     const response = await request(app).get('/api/content').expect(200);
     assert.equal(response.body.data.heroHeading, 'Updated heading');
     assert.equal(response.body.data.work[0].title, 'New work');
+    assert.equal(response.body.data.reels[0].thumbnailUrl, '');
+    assert.equal(response.body.data.travelReels.length, 1);
+    assert.equal(response.body.data.travelReels[0].title, 'Travel reel 01');
+  });
+
+  it('replaces rather than merges: a collection sent empty comes back empty', async (t) => {
+    if (!available) return t.skip('in-memory MongoDB unavailable');
+
+    // findOneAndReplace, not findOneAndUpdate — an update would $set and leave
+    // the previous travelReels in place.
+    await request(app)
+      .put('/api/content')
+      .set('x-admin-token', ADMIN_TOKEN)
+      .send({ ...payload(), travelReels: [] })
+      .expect(200);
+
+    const response = await request(app).get('/api/content').expect(200);
+    assert.deepEqual(response.body.data.travelReels, []);
   });
 });
 

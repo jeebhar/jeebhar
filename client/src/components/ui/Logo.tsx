@@ -1,5 +1,18 @@
 import { appConfig } from '../../config/app.config';
 
+/**
+ * VIEW — the Jeebhar logo.
+ *
+ * Two axes, both driven by the surface it sits on:
+ *
+ *   variant  'full' = wordmark lockup, 'mark' = circular icon alone
+ *   tone     'light' = reversed artwork for dark surfaces (the site default),
+ *            'dark'  = original artwork, for light surfaces and print
+ *
+ * Every use of the logo goes through here, so swapping the artwork or adding a
+ * tone is a change to this file alone.
+ */
+
 interface LogoProps {
   variant?: 'full' | 'mark';
   tone?: 'light' | 'dark';

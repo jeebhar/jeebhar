@@ -3,6 +3,15 @@ import nodemailer from 'nodemailer';
 import { env, isMailConfigured } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 
+/**
+ * Mail transport, expressed as two interchangeable implementations of the same
+ * shape: `send({ subject, text })`.
+ *
+ * Consumers depend on the shape, not on nodemailer (Dependency Inversion), and
+ * a missing SMTP config degrades to a no-op instead of failing a user's
+ * enquiry (Liskov-substitutable fallback).
+ */
+
 /** @typedef {{ send: (message: { subject: string, text: string }) => Promise<boolean> }} Mailer */
 
 /** @implements {Mailer} */

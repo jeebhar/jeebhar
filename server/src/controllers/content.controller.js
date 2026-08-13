@@ -1,6 +1,13 @@
 import { contentService } from '../services/content.service.js';
 import { asyncHandler } from '../utils/async-handler.js';
 
+/**
+ * CONTROLLER — HTTP adapter for site content.
+ *
+ * Its whole job is translation: read the request, call one service method, shape
+ * the response. No validation (middleware), no business rules (service), no
+ * database access (repository).
+ */
 export class ContentController {
   constructor(service = contentService) {
     this.service = service;

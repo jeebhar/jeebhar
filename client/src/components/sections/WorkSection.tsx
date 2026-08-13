@@ -1,5 +1,7 @@
-import { Card, Carousel, Section } from '../ui';
+import { Card, Carousel, MediaCover, Section } from '../ui';
 import type { WorkItem } from '../../models/site-content.model';
+
+/** VIEW — the cuisines we produce content for, as a scrollable rail of cards. */
 
 interface WorkSectionProps {
   work: WorkItem[];
@@ -9,7 +11,7 @@ export const WorkSection = ({ work }: WorkSectionProps) => (
   <Section
     id="work"
     title="Our Work"
-    description="Campaigns, content and brand refreshes we have shipped."
+    description="The cuisines we shoot, style and campaign for — from dosa counters to beer halls."
   >
     <Carousel
       items={work}
@@ -17,13 +19,12 @@ export const WorkSection = ({ work }: WorkSectionProps) => (
       emptyMessage="Case studies are on their way."
       keyOf={(item, index) => item._id ?? `${item.title}-${index}`}
       renderItem={(item) => (
-        <Card as="div" className="h-full">
-          <img
+        <Card as="div" className="flex h-full flex-col">
+          <MediaCover
             src={item.imageUrl}
-            alt={item.title}
-            loading="lazy"
-            decoding="async"
-            className="aspect-[4/3] w-full bg-brand-800 object-cover"
+            title={item.title}
+            aspect="landscape"
+            showPlayIcon={false}
           />
           <div className="p-5">
             <h3 className="text-lg font-semibold text-white">{item.title}</h3>

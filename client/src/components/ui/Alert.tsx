@@ -1,3 +1,10 @@
+/**
+ * VIEW — inline feedback banner.
+ *
+ * `role="alert"` on errors so assistive tech announces a failure immediately;
+ * `role="status"` for non-urgent confirmations.
+ */
+
 type Tone = 'success' | 'error' | 'info';
 
 interface AlertProps {

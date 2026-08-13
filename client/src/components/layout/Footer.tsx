@@ -1,6 +1,13 @@
 import { Logo } from '../ui';
 import type { ContactDetails } from '../../models/site-content.model';
 
+/**
+ * VIEW — site footer: logo, contact details, social links.
+ *
+ * Social entries are filtered to those actually configured, so an unset URL
+ * disappears instead of rendering a dead link.
+ */
+
 interface FooterProps {
   brandName: string;
   tagline: string;

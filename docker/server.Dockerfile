@@ -1,5 +1,13 @@
 # syntax=docker/dockerfile:1.7
 
+# ---------------------------------------------------------------------------
+# Jeebhar API — multi-stage build.
+#
+# Dependencies install in their own layer so a source-only change does not
+# reinstall node_modules. The runtime stage carries production dependencies
+# only and runs as a non-root user.
+# ---------------------------------------------------------------------------
+
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY server/package.json server/package-lock.json ./

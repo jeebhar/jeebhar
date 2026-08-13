@@ -1,5 +1,15 @@
 import { appConfig } from '../config/app.config';
 
+/**
+ * The one place the client speaks HTTP.
+ *
+ * Owns the base URL, JSON encoding, timeouts, the API's `{ ok, data, message }`
+ * envelope and error normalisation. Feature APIs call `httpClient.get/put/post`
+ * and never see `fetch`, so retries, auth headers or tracing can be added here
+ * alone.
+ */
+
+/** Error carrying what the API said, so views can show a real message. */
 export class ApiError extends Error {
   readonly status: number;
   readonly details?: Array<{ field: string; message: string }>;
@@ -34,6 +44,7 @@ const timeoutSignal = (ms: number): AbortSignal => AbortSignal.timeout(ms);
 
 const mergeSignals = (signals: Array<AbortSignal | undefined>): AbortSignal => {
   const present = signals.filter((signal): signal is AbortSignal => Boolean(signal));
+  // AbortSignal.any is widely supported; fall back to the first signal.
   return typeof AbortSignal.any === 'function' ? AbortSignal.any(present) : present[0];
 };
 
@@ -62,6 +73,7 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
     throw new ApiError('Cannot reach the server. Check your connection and try again.', 0);
   }
 
+  // 204 and other empty bodies must not blow up JSON parsing.
   const raw = await response.text();
   let envelope: ApiEnvelope<T> = {} as ApiEnvelope<T>;
   if (raw) {

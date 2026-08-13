@@ -3,6 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useContactForm } from './use-contact-form';
 
+/** The hook's only collaborator is the API module, so that is what we stub. */
 const submitMock = vi.fn();
 
 vi.mock('../api/contact.api', () => ({

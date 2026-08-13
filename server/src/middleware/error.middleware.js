@@ -2,10 +2,19 @@ import { env } from '../config/env.js';
 import { HttpError } from '../utils/http-error.js';
 import { logger } from '../utils/logger.js';
 
+/**
+ * MIDDLEWARE — the single place errors become HTTP responses.
+ *
+ * Controllers and services throw; this module decides status codes, redacts
+ * unexpected internals in production, and logs. Nothing else formats an error.
+ */
+
+/** 404 for unmatched routes — runs after all route definitions. */
 export const notFoundHandler = (req, _res, next) => {
   next(HttpError.notFound(`Route not found: ${req.method} ${req.originalUrl}`));
 };
 
+/** Maps framework/driver errors onto our own error type. */
 const normalise = (error) => {
   if (error instanceof HttpError) {
     return error;

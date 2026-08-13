@@ -1,5 +1,12 @@
 import type { ReactNode } from 'react';
 
+/**
+ * VIEW — the shared section shell: id anchor, heading, optional actions.
+ *
+ * Every page section uses it, which is what keeps vertical rhythm and heading
+ * hierarchy identical without repeating layout classes.
+ */
+
 interface SectionProps {
   id?: string;
   title?: string;

@@ -97,7 +97,8 @@ Full detail in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 jeebhar/
 ├── client/                       React + TypeScript + Tailwind
 │   ├── public/                   favicons, PWA icons, brand artwork, manifest
-│   │   └── brand/                logo lockups (light + dark tones), OG image
+│   │   ├── brand/                logo lockups (light + dark tones), OG image
+│   │   └── reels/                self-hosted reel covers (see its README)
 │   └── src/
 │       ├── app/                  App shell
 │       ├── components/
@@ -222,8 +223,74 @@ Deployment is opt-in: without `DEPLOY_HOST` the pipeline still publishes images 
 ## Editing content
 
 1. **Before go-live** — edit `server/src/seed/default-content.js`, then `npm run seed -- --force`.
-2. **After go-live** — open `/#/admin`, paste your `ADMIN_TOKEN`, edit Work and Reels, save.
-3. **Media kit** — drop your PDF at `client/public/brand/jeebhar-kit.pdf`, or point `mediaKitUrl` at a hosted file.
+2. **After go-live** — open `/#/admin`, paste your `ADMIN_TOKEN`, edit Work, Reels and Travel Reels, save.
+3. **Media kit** — drop your PDF at `client/public/brand/media-kit.pdf`, or point `mediaKitUrl` at a hosted file.
+
+### If the site shows old content, or a link does nothing when clicked
+
+The usual cause is a **stale dev server**. Node's `--watch` does not reliably
+notice files changed by another process (an editor on a different machine, a sync
+tool, a VM mount), so the API can keep serving old responses while the code on
+disk is correct. Stop it with Ctrl+C and run `npm run dev` again.
+
+`npm run doctor` detects this directly — it calls the running API and compares the
+response against what the current code produces.
+
+### If the contact form succeeds but no email arrives
+
+By design, an enquiry is **stored first and emailed second**: a mail outage must
+never lose a visitor's message. The trade-off is that a broken SMTP config looks
+like success in the browser. Check delivery directly:
+
+```bash
+npm run mail:test
+```
+
+The most common cause is `SMTP_HOST` still set to the example placeholder
+`smtp.example.com`, which does not exist. For Gmail use `smtp.gmail.com` with a
+16-character [app password](https://myaccount.google.com/apppasswords) as
+`SMTP_PASS` — a normal account password is rejected.
+
+### If the site loads blank or shows old content
+
+```bash
+npm run doctor
+```
+
+It checks `server/.env`, connects to MongoDB and inspects the stored content
+document, then prints exactly what to do. The usual answer after an upgrade is:
+
+```bash
+npm run seed:force          # replace stored content with the current defaults
+```
+
+A plain `npm run seed` leaves an existing document alone, so it will **not** pick
+up new sections — it prints what differs and points you at `seed:force`.
+
+> Use `seed:force`, not `npm run seed -- --force`. From the repo root the latter
+> expands to `npm --prefix server run seed --force`, where the outer npm consumes
+> `--force` as one of its own flags and the seeder never receives it — so it skips
+> while looking like it ran.
+
+### Page sections
+
+| Section      | Content field | Notes                                                                                             |
+| ------------ | ------------- | ------------------------------------------------------------------------------------------------- |
+| Our Work     | `work`        | One card per cuisine. Photos are currently free-licence stock — swap for real client photography. |
+| Our Reels    | `reels`       | Food vlogs and ad creatives.                                                                      |
+| Travel Reels | `travelReels` | Same shape as `reels`, rendered by the same component.                                            |
+
+### Reel cover images
+
+Instagram does not expose reel covers to third parties, so covers are self-hosted.
+Each reel's `thumbnailUrl` points at `/reels/<instagram-shortcode>.jpg`; until that
+file exists the card shows a branded tile instead of a broken image. Drop the file
+in and the real cover appears on the next load — no code change.
+Full instructions in [`client/public/reels/README.md`](client/public/reels/README.md).
+
+An `imageUrl` or `thumbnailUrl` may be an absolute `https://` URL **or** a
+root-relative path such as `/reels/DQWG611DCCr.jpg`, so images can be self-hosted
+from `client/public` without a rebuild of the content.
 
 ---
 

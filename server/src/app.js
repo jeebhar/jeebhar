@@ -7,6 +7,15 @@ import { env } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
 import { apiLimiter } from './middleware/rate-limit.middleware.js';
 
+/**
+ * Composition root for the HTTP layer.
+ *
+ * Builds the middleware pipeline and mounts routes. Deliberately does not open
+ * a port or connect to a database — that is `server.js`'s job — so tests can
+ * import the app and drive it in-process.
+ *
+ * @returns {import('express').Express}
+ */
 export const createApp = () => {
   const app = express();
 

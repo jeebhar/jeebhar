@@ -15,10 +15,15 @@ const content = (overrides: Partial<SiteContent> = {}): SiteContent => ({
   heroEyebrow: '',
   heroHeading: 'Heading',
   heroSubheading: 'Subheading',
-  mediaKitUrl: '/brand/jeebhar.pdf',
+  mediaKitUrl: '/brand/media-kit.pdf',
   services: [],
-  work: [{ _id: 'w1', title: 'Existing', imageUrl: 'https://x/a.jpg', description: '' }],
-  reels: [],
+  work: [{ _id: 'w1', title: 'South Indian', imageUrl: 'https://x/a.jpg', description: '' }],
+  reels: [
+    { _id: 'r1', title: 'Food reel 01', thumbnailUrl: '/reels/a.jpg', instagramUrl: 'https://i/1' },
+  ],
+  travelReels: [
+    { _id: 't1', title: 'Travel reel 01', thumbnailUrl: '', instagramUrl: 'https://i/9' },
+  ],
   mediaKitMetrics: [],
   contact: {
     address: 'a',
@@ -38,27 +43,40 @@ beforeEach(() => saveMock.mockReset());
 afterEach(() => vi.clearAllMocks());
 
 describe('useContentEditor', () => {
-  it('seeds its draft rows from the content it is given', () => {
+  it('seeds every collection from the content it is given', () => {
     const { result } = renderHook(() => useContentEditor(content()));
 
-    expect(result.current.work).toHaveLength(1);
-    expect(result.current.work[0].value.title).toBe('Existing');
+    expect(result.current.work.rows).toHaveLength(1);
+    expect(result.current.reels.rows).toHaveLength(1);
+    expect(result.current.travelReels.rows).toHaveLength(1);
+    expect(result.current.work.rows[0].value.title).toBe('South Indian');
+    expect(result.current.travelReels.rows[0].value.title).toBe('Travel reel 01');
     expect(result.current.dirty).toBe(false);
+  });
+
+  it('keeps the three collections independent', () => {
+    const { result } = renderHook(() => useContentEditor(content()));
+
+    act(() => result.current.travelReels.add());
+
+    expect(result.current.travelReels.rows).toHaveLength(2);
+    expect(result.current.reels.rows).toHaveLength(1);
+    expect(result.current.work.rows).toHaveLength(1);
   });
 
   it('marks itself dirty on edit and addresses rows by stable key, not index', () => {
     const { result } = renderHook(() => useContentEditor(content()));
 
-    act(() => result.current.addWork());
-    const addedKey = result.current.work[1].key;
+    act(() => result.current.work.add());
+    const addedKey = result.current.work.rows[1].key;
 
-    act(() => result.current.updateWork(addedKey, { title: 'Second' }));
-    act(() => result.current.removeWork(result.current.work[0].key));
+    act(() => result.current.work.update(addedKey, { title: 'Second' }));
+    act(() => result.current.work.remove(result.current.work.rows[0].key));
 
     expect(result.current.dirty).toBe(true);
-    expect(result.current.work).toHaveLength(1);
+    expect(result.current.work.rows).toHaveLength(1);
     // The surviving row is the one that was edited, not whatever slid into index 0.
-    expect(result.current.work[0].value.title).toBe('Second');
+    expect(result.current.work.rows[0].value.title).toBe('Second');
   });
 
   it('refuses to save without a token and does not call the API', async () => {
@@ -73,11 +91,13 @@ describe('useContentEditor', () => {
     expect(result.current.feedback).toMatch(/admin token/i);
   });
 
-  it('drops incomplete rows rather than sending them to be rejected', async () => {
+  it('drops half-filled rows rather than sending them to be rejected', async () => {
     saveMock.mockImplementation((payload: SiteContent) => Promise.resolve(payload));
     const { result } = renderHook(() => useContentEditor(content()));
 
-    act(() => result.current.addWork()); // left entirely blank
+    act(() => result.current.work.add()); // blank
+    act(() => result.current.reels.add()); // blank
+    act(() => result.current.travelReels.add()); // blank
 
     await act(async () => {
       await result.current.save(TOKEN);
@@ -85,7 +105,30 @@ describe('useContentEditor', () => {
 
     const [sent] = saveMock.mock.calls[0] as [SiteContent];
     expect(sent.work).toHaveLength(1);
-    expect(sent.work[0].title).toBe('Existing');
+    expect(sent.reels).toHaveLength(1);
+    expect(sent.travelReels).toHaveLength(1);
+  });
+
+  it('keeps a reel that has no cover image, since covers are optional', async () => {
+    saveMock.mockImplementation((payload: SiteContent) => Promise.resolve(payload));
+    const { result } = renderHook(() => useContentEditor(content()));
+
+    act(() => result.current.reels.add());
+    const key = result.current.reels.rows[1].key;
+    act(() =>
+      result.current.reels.update(key, {
+        title: 'No cover yet',
+        instagramUrl: 'https://www.instagram.com/reel/ABC/',
+      })
+    );
+
+    await act(async () => {
+      await result.current.save(TOKEN);
+    });
+
+    const [sent] = saveMock.mock.calls[0] as [SiteContent];
+    expect(sent.reels).toHaveLength(2);
+    expect(sent.reels[1]).toMatchObject({ title: 'No cover yet', thumbnailUrl: '' });
   });
 
   it('keeps the success confirmation when the saved content is passed back in', async () => {
@@ -99,7 +142,7 @@ describe('useContentEditor', () => {
       initialProps: { value: content() },
     });
 
-    act(() => result.current.updateWork(result.current.work[0].key, { title: 'Edited' }));
+    act(() => result.current.work.update(result.current.work.rows[0].key, { title: 'Edited' }));
 
     await act(async () => {
       await result.current.save(TOKEN);
@@ -124,32 +167,59 @@ describe('useContentEditor', () => {
       return useContentEditor(content());
     });
 
-    expect(result.current.work[0].value.title).toBe('Existing');
+    expect(result.current.work.rows[0].value.title).toBe('South Indian');
     expect(renders).toBeLessThan(10);
   });
 
-  it('re-syncs the draft when different content arrives from outside', () => {
+  it('re-syncs every collection when different content arrives from outside', () => {
     const { result, rerender } = renderHook(({ value }) => useContentEditor(value), {
       initialProps: { value: content() },
     });
 
-    act(() => result.current.updateWork(result.current.work[0].key, { title: 'Edited' }));
+    act(() => result.current.work.update(result.current.work.rows[0].key, { title: 'Edited' }));
     expect(result.current.dirty).toBe(true);
 
     const external = content({
       work: [{ _id: 'w9', title: 'Reloaded', imageUrl: 'https://x/b.jpg', description: '' }],
+      travelReels: [
+        { _id: 't9', title: 'Travel reloaded', thumbnailUrl: '', instagramUrl: 'https://i/8' },
+      ],
     });
     rerender({ value: external });
 
     expect(result.current.dirty).toBe(false);
-    expect(result.current.work[0].value.title).toBe('Reloaded');
+    expect(result.current.work.rows[0].value.title).toBe('Reloaded');
+    expect(result.current.travelReels.rows[0].value.title).toBe('Travel reloaded');
+  });
+
+  it('re-syncs when only the travel reels changed', () => {
+    // The content signature must cover travelReels too, or an external change to
+    // just that collection would be missed.
+    const { result, rerender } = renderHook(({ value }) => useContentEditor(value), {
+      initialProps: { value: content() },
+    });
+
+    rerender({
+      value: content({
+        travelReels: [
+          {
+            _id: 't5',
+            title: 'Only travel changed',
+            thumbnailUrl: '',
+            instagramUrl: 'https://i/7',
+          },
+        ],
+      }),
+    });
+
+    expect(result.current.travelReels.rows[0].value.title).toBe('Only travel changed');
   });
 
   it('reports a failed save and leaves the draft intact for a retry', async () => {
     saveMock.mockRejectedValue(new Error('Invalid admin token.'));
     const { result } = renderHook(() => useContentEditor(content()));
 
-    act(() => result.current.updateWork(result.current.work[0].key, { title: 'Edited' }));
+    act(() => result.current.work.update(result.current.work.rows[0].key, { title: 'Edited' }));
 
     await act(async () => {
       await result.current.save(TOKEN);
@@ -158,16 +228,18 @@ describe('useContentEditor', () => {
     expect(result.current.state).toBe('error');
     expect(result.current.feedback).toBe('Invalid admin token.');
     expect(result.current.dirty).toBe(true);
-    expect(result.current.work[0].value.title).toBe('Edited');
+    expect(result.current.work.rows[0].value.title).toBe('Edited');
   });
 
   it('discards changes back to the supplied content', () => {
     const { result } = renderHook(() => useContentEditor(content()));
 
-    act(() => result.current.updateWork(result.current.work[0].key, { title: 'Edited' }));
+    act(() => result.current.work.update(result.current.work.rows[0].key, { title: 'Edited' }));
+    act(() => result.current.travelReels.add());
     act(() => result.current.reset());
 
     expect(result.current.dirty).toBe(false);
-    expect(result.current.work[0].value.title).toBe('Existing');
+    expect(result.current.work.rows[0].value.title).toBe('South Indian');
+    expect(result.current.travelReels.rows).toHaveLength(1);
   });
 });

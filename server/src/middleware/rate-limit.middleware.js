@@ -2,6 +2,13 @@ import rateLimit from 'express-rate-limit';
 
 import { env } from '../config/env.js';
 
+/**
+ * MIDDLEWARE — request throttling.
+ *
+ * `apiLimiter` protects the API broadly; `contactLimiter` is much tighter
+ * because POST /api/contact writes to the database and sends mail.
+ */
+
 const shared = {
   standardHeaders: true,
   legacyHeaders: false,

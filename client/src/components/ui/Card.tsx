@@ -1,5 +1,12 @@
 import type { ReactNode } from 'react';
 
+/**
+ * VIEW — the shared surface for tiles, metrics and media cards.
+ *
+ * Renders as whichever element the context needs (`article`, `a`, `div`) while
+ * keeping one visual treatment.
+ */
+
 interface CardProps {
   as?: 'article' | 'div' | 'a' | 'li';
   href?: string;

@@ -1,6 +1,8 @@
 import { Button } from '../ui';
 import { scrollToSection } from '../../utils/scroll';
 
+/** VIEW — above-the-fold pitch and primary call to action. */
+
 interface HeroSectionProps {
   eyebrow: string;
   heading: string;
@@ -14,6 +16,7 @@ export const HeroSection = ({ eyebrow, heading, subheading, mediaKitUrl }: HeroS
     aria-labelledby="home-heading"
     className="relative scroll-mt-24 py-16 md:py-28"
   >
+    {/* Decorative brand glow — hidden from assistive tech. */}
     <div
       aria-hidden="true"
       className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-brand-cyan/10 blur-3xl"

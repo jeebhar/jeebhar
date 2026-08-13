@@ -70,7 +70,7 @@ Public. Returns the single site-content document, seeding it from `server/src/se
     "heroEyebrow": "For restaurants and food brands",
     "heroHeading": "Reimagine your restaurant's digital story…",
     "heroSubheading": "Jeebhar helps restaurants and food brands…",
-    "mediaKitUrl": "/brand/jeebhar-kit.pdf",
+    "mediaKitUrl": "/brand/media-kit.pdf",
     "services": [{ "_id": "…", "title": "…", "shortDescription": "…", "longDescription": "…" }],
     "work": [{ "_id": "…", "title": "…", "imageUrl": "https://…", "description": "…" }],
     "reels": [
@@ -113,12 +113,21 @@ The comparison is constant-time, so response timing does not leak the token's pr
 | `heroEyebrow`       | ≤160 chars, defaults to `""`                                                  |
 | `heroHeading`       | 1–300 chars, required                                                         |
 | `heroSubheading`    | 1–600 chars, required                                                         |
-| `mediaKitUrl`       | ≤500 chars, defaults to `/brand/jeebhar-kit.pdf`                                |
+| `mediaKitUrl`       | ≤500 chars, defaults to `/brand/media-kit.pdf`                                |
 | `services[]`        | ≤24; `title` ≤120, `shortDescription` ≤300, `longDescription` ≤2000           |
-| `work[]`            | ≤60; `imageUrl` must be a valid URL; `description` ≤600                       |
-| `reels[]`           | ≤60; `thumbnailUrl` and `instagramUrl` must be valid URLs                     |
+| `work[]`            | ≤60; `imageUrl` is an image reference (below); `description` ≤600             |
+| `reels[]`           | ≤60; `instagramUrl` must be a valid URL; `thumbnailUrl` optional              |
+| `travelReels[]`     | ≤60; identical rules to `reels[]`                                             |
 | `mediaKitMetrics[]` | ≤12; `label` ≤120, `value` ≤40                                                |
 | `contact`           | `address`, `email`, `phone` required; social URLs must be a valid URL or `""` |
+
+**Image references.** `work[].imageUrl` and `reels[].thumbnailUrl` accept either an
+absolute `http(s)://` URL or a root-relative path beginning with `/`, so images can
+be self-hosted from `client/public`. Anything else (e.g. `work/photo.jpg`) is rejected.
+
+`thumbnailUrl` is optional and defaults to `""`. Instagram does not expose reel
+covers to third parties, so a blank cover is a normal state — the frontend renders a
+branded tile for it.
 
 Unknown keys are stripped rather than rejected, so a client cannot smuggle extra fields into the model.
 

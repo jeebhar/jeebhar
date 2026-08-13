@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+/** MODEL — one enquiry captured from the public contact form. */
+
 const contactSubmissionSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 120 },

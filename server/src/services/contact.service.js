@@ -2,6 +2,13 @@ import { contactSubmissionRepository } from '../repositories/contact-submission.
 import { createMailer } from './mailer.service.js';
 import { logger } from '../utils/logger.js';
 
+/**
+ * SERVICE — business rules for contact enquiries.
+ *
+ * Owns the order of operations (persist first, notify second) and the rule that
+ * a failed notification must not fail the user's submission. Knows nothing
+ * about HTTP or Mongoose.
+ */
 export class ContactService {
   constructor(repository = contactSubmissionRepository, mailer = createMailer()) {
     this.repository = repository;

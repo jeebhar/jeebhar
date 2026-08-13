@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react';
 
+/**
+ * Reports which section is currently in view, for nav highlighting.
+ *
+ * Uses IntersectionObserver rather than a scroll listener so the work happens
+ * off the main scroll path.
+ *
+ * @param sectionIds Ids to watch, in document order.
+ * @returns the id of the section nearest the top of the viewport.
+ */
 export const useActiveSection = (sectionIds: readonly string[]): string => {
   const [active, setActive] = useState(sectionIds[0] ?? '');
 

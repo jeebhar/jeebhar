@@ -1,3 +1,9 @@
+/**
+ * Domain error carrying the HTTP status the API should answer with.
+ *
+ * Services throw these; the error middleware is the only place that turns them
+ * into a response. Controllers never format errors themselves.
+ */
 export class HttpError extends Error {
   /**
    * @param {number} status HTTP status code.

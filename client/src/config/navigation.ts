@@ -1,3 +1,11 @@
+/**
+ * The site's section order, declared once.
+ *
+ * The header, the mobile menu and the scroll targets all read this list, so a
+ * new section is one entry here rather than three edits (Single Source of Truth
+ * / Open–Closed).
+ */
+
 export interface NavSection {
   id: string;
   label: string;
@@ -9,6 +17,7 @@ export const NAV_SECTIONS: readonly NavSection[] = [
   { id: 'experience', label: 'Our Experience' },
   { id: 'work', label: 'Our Work' },
   { id: 'reels', label: 'Our Reels' },
+  { id: 'travel', label: 'Travel Reels' },
   { id: 'contact', label: 'Contact Us' },
 ] as const;
 

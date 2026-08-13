@@ -1,6 +1,8 @@
 import { Card, Section } from '../ui';
 import type { MediaMetric } from '../../models/site-content.model';
 
+/** VIEW — media-kit headline numbers. */
+
 interface ExperienceSectionProps {
   metrics: MediaMetric[];
 }

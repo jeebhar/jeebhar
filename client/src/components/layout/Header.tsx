@@ -5,6 +5,13 @@ import { NAV_SECTIONS, NAV_SECTION_IDS } from '../../config/navigation';
 import { useActiveSection } from '../../hooks/use-active-section';
 import { scrollToSection } from '../../utils/scroll';
 
+/**
+ * VIEW — sticky site header: logo, section nav, media-kit link.
+ *
+ * The logo sits top-left as the home affordance; the active section is
+ * highlighted from scroll position and exposed via `aria-current`.
+ */
+
 interface HeaderProps {
   mediaKitUrl: string;
   brandName: string;
@@ -14,6 +21,7 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const activeSection = useActiveSection(NAV_SECTION_IDS);
 
+  // Close the mobile menu when the viewport grows to the desktop layout.
   useEffect(() => {
     const query = window.matchMedia('(min-width: 1024px)');
     const close = () => setMenuOpen(false);

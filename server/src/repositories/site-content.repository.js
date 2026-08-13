@@ -1,5 +1,12 @@
 import { SiteContent } from '../models/site-content.model.js';
 
+/**
+ * REPOSITORY — the only place that talks to the SiteContent collection.
+ *
+ * Services depend on this narrow interface rather than on Mongoose, so the
+ * persistence layer can be replaced (Postgres, a CMS, an in-memory fake for
+ * tests) without touching business logic. Dependency Inversion in practice.
+ */
 export class SiteContentRepository {
   /** @param {import('mongoose').Model} model */
   constructor(model = SiteContent) {

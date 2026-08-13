@@ -1,3 +1,5 @@
+/** VIEW — indeterminate progress indicator. */
+
 interface SpinnerProps {
   label?: string;
   className?: string;

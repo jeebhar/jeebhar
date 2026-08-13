@@ -4,6 +4,13 @@ import { Alert, Button, Section, Spinner, TextField } from '../ui';
 import { useContactForm } from '../../features/contact/hooks/use-contact-form';
 import type { ContactDetails } from '../../models/site-content.model';
 
+/**
+ * VIEW — the enquiry form.
+ *
+ * All state lives in `useContactForm`; this component only binds inputs and
+ * renders feedback, which is what keeps it readable at a glance.
+ */
+
 interface ContactSectionProps {
   contact: ContactDetails;
 }

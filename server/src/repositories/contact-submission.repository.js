@@ -1,5 +1,6 @@
 import { ContactSubmission } from '../models/contact-submission.model.js';
 
+/** REPOSITORY — data access for contact submissions. */
 export class ContactSubmissionRepository {
   /** @param {import('mongoose').Model} model */
   constructor(model = ContactSubmission) {

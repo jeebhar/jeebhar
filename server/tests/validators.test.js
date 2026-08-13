@@ -66,8 +66,59 @@ describe('siteContentSchema', () => {
     assert.equal(result.success, true);
     assert.deepEqual(result.data.work, []);
     assert.deepEqual(result.data.reels, []);
+    assert.deepEqual(result.data.travelReels, []);
     assert.equal(result.data.contact.facebookUrl, '');
-    assert.equal(result.data.mediaKitUrl, '/brand/jeebhar-kit.pdf');
+    assert.equal(result.data.mediaKitUrl, '/brand/media-kit.pdf');
+  });
+
+  it('accepts a root-relative image path as well as an absolute URL', () => {
+    // Covers and photos can be self-hosted from client/public, so a bare
+    // url() check would wrongly reject them.
+    const result = siteContentSchema.safeParse({
+      ...validContent,
+      work: [{ title: 'South Indian', imageUrl: '/work/south-indian.jpg', description: '' }],
+      reels: [
+        {
+          title: 'Food reel 01',
+          thumbnailUrl: '/reels/DQWG611DCCr.jpg',
+          instagramUrl: 'https://www.instagram.com/reel/DQWG611DCCr/',
+        },
+      ],
+    });
+
+    assert.equal(result.success, true);
+    assert.equal(result.data.work[0].imageUrl, '/work/south-indian.jpg');
+  });
+
+  it('treats a reel cover as optional but still requires the Instagram link', () => {
+    const withoutCover = siteContentSchema.safeParse({
+      ...validContent,
+      travelReels: [
+        {
+          title: 'Travel reel 01',
+          instagramUrl: 'https://www.instagram.com/reel/DaiErQFgKyc/',
+        },
+      ],
+    });
+
+    assert.equal(withoutCover.success, true);
+    assert.equal(withoutCover.data.travelReels[0].thumbnailUrl, '');
+
+    const withoutLink = siteContentSchema.safeParse({
+      ...validContent,
+      travelReels: [{ title: 'Travel reel 01', thumbnailUrl: '/reels/x.jpg' }],
+    });
+
+    assert.equal(withoutLink.success, false);
+  });
+
+  it('rejects an image reference that is neither a URL nor a rooted path', () => {
+    const result = siteContentSchema.safeParse({
+      ...validContent,
+      work: [{ title: 'South Indian', imageUrl: 'work/south-indian.jpg', description: '' }],
+    });
+
+    assert.equal(result.success, false);
   });
 
   it('rejects a work item whose image URL is not a URL', () => {

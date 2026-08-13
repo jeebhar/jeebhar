@@ -1,17 +1,25 @@
 {
+  // Config files run in Node, not the browser, so they get their own project:
+  // Node globals (`process`) instead of DOM ones.
+  //
+  // Not a composite project reference. A reference is only checked by `tsc -b`,
+  // and `tsc --noEmit` skips it silently — which is exactly how a missing
+  // @types/node here went unnoticed while the editor reported it. The
+  // `typecheck` script now runs this project explicitly instead.
   "compilerOptions": {
-    "composite": true,
     "target": "ES2022",
     "lib": ["ES2023"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "emitDeclarationOnly": true,
-    "declaration": true,
-    "outDir": "./node_modules/.tmp/tsconfig-node",
+    "noEmit": true,
+    // postcss.config.js is plain JS; allow it in the project without checking it.
+    "allowJs": true,
+    "checkJs": false,
     "types": ["node"]
   },
   "include": ["vite.config.ts", "tailwind.config.ts", "postcss.config.js"]

@@ -2,6 +2,12 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { ContactService } from '../src/services/contact.service.js';
+
+/**
+ * The service is constructed with its collaborators, so these tests need no
+ * database and no SMTP server — that is the point of the injection.
+ */
+
 const fakeRepository = (overrides = {}) => ({
   created: [],
   notifiedIds: [],

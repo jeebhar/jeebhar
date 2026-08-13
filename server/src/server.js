@@ -3,6 +3,11 @@ import { assertEnv, env } from './config/env.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
 import { logger } from './utils/logger.js';
 
+/**
+ * Process entry point: validate config, connect the database, listen, and shut
+ * down cleanly. Nothing here knows about routes or business rules.
+ */
+
 const start = async () => {
   assertEnv();
   await connectDatabase();
