@@ -3,16 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jeebhar</title>
+    <meta name="theme-color" content="#03131B" />
+
+    <title>Jeebhar — Influencer</title>
+    <meta
+      name="description"
+      content="Jeebhar helps restaurants and food brands build an unforgettable social presence through strategy, content and performance campaigns."
+    />
+
+    <!-- Favicons and app icons. Generated from the Jeebhar mark into /public. -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Link previews. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Jeebhar" />
+    <meta
+      property="og:title"
+      content="Jeebhar — Influencer"
+    />
+    <meta
+      property="og:description"
+      content="Strategy, content and performance campaigns that turn every scroll into footfall."
+    />
+    <meta property="og:image" content="/brand/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/brand/og-image.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    <!-- The logo is above the fold; fetch it with the document. -->
+    <link rel="preload" as="image" href="/brand/jeebhar-logo-light.png" />
   </head>
-  <body class="bg-slate-950">
+  <body>
     <div id="root"></div>
+    <noscript>
+      Jeebhar needs JavaScript enabled. Please email
+      <a href="mailto:hello@jeebhar.com">hello@jeebhar.com</a> and we will be glad to help.
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

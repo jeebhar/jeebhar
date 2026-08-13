@@ -1,20 +1,23 @@
-import { ContactSubmission } from "../models/contact-submission.model.js";
-import { sendContactNotification } from "../services/mail.service.js";
+import { contactService } from '../services/contact.service.js';
+import { asyncHandler } from '../utils/async-handler.js';
 
-export const submitContact = async (req, res, next) => {
-  try {
-    const { name, email, phone, subject, body } = req.body;
-    const submission = await ContactSubmission.create({
-      name,
-      email,
-      phone,
-      subject,
-      body
-    });
+export class ContactController {
+  constructor(service = contactService) {
+    this.service = service;
 
-    await sendContactNotification(submission);
-    res.status(201).json({ message: "Contact request sent successfully." });
-  } catch (error) {
-    next(error);
+    this.submit = asyncHandler(this.submit.bind(this));
   }
-};
+
+  /** POST /api/contact */
+  async submit(req, res) {
+    const result = await this.service.submit(req.validated, { sourceIp: req.ip });
+
+    res.status(201).json({
+      ok: true,
+      message: 'Thanks — your enquiry has been received. We will be in touch shortly.',
+      data: { id: result.id, notified: result.notified },
+    });
+  }
+}
+
+export const contactController = new ContactController();

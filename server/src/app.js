@@ -1,32 +1,34 @@
-import dotenv from "dotenv";
-import cors from "cors";
-import express from "express";
-import contactRoutes from "./routes/contact.routes.js";
-import contentRoutes from "./routes/content.routes.js";
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
 
-dotenv.config();
+import apiRoutes from './routes/index.js';
+import { env } from './config/env.js';
+import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
+import { apiLimiter } from './middleware/rate-limit.middleware.js';
 
-const app = express();
+export const createApp = () => {
+  const app = express();
 
-app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173"
-  })
-);
-app.use(express.json({ limit: "1mb" }));
+  app.disable('x-powered-by');
+  app.set('trust proxy', 1); // correct client IPs behind nginx / a platform proxy
 
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
+  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+  app.use(
+    cors({
+      origin: env.corsOrigins,
+      methods: ['GET', 'PUT', 'POST', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-token'],
+      maxAge: 86_400,
+    })
+  );
+  app.use(express.json({ limit: '256kb' }));
 
-app.use("/api/content", contentRoutes);
-app.use("/api/contact", contactRoutes);
+  app.use('/api', apiLimiter, apiRoutes);
 
-app.use((err, _req, res, _next) => {
-  const status = err.name === "ValidationError" ? 400 : 500;
-  res.status(status).json({
-    message: err.message || "Unexpected server error"
-  });
-});
+  // Order matters: unmatched route -> 404, then the single error formatter.
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
-export default app;
+  return app;
+};

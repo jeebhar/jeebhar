@@ -1,60 +1,79 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const serviceSchema = new mongoose.Schema(
+const { Schema } = mongoose;
+
+const trimmedRequired = (label) => ({
+  type: String,
+  required: [true, `${label} is required`],
+  trim: true,
+});
+
+const serviceSchema = new Schema(
   {
-    title: { type: String, required: true },
-    shortDescription: { type: String, required: true },
-    longDescription: { type: String, required: true }
+    title: trimmedRequired('Service title'),
+    shortDescription: trimmedRequired('Service short description'),
+    longDescription: trimmedRequired('Service long description'),
   },
   { _id: true }
 );
 
-const workSchema = new mongoose.Schema(
+const workSchema = new Schema(
   {
-    title: { type: String, required: true },
-    imageUrl: { type: String, required: true },
-    description: { type: String, required: true }
+    title: trimmedRequired('Work title'),
+    imageUrl: trimmedRequired('Work image URL'),
+    description: { type: String, default: '', trim: true },
   },
   { _id: true }
 );
 
-const reelSchema = new mongoose.Schema(
+const reelSchema = new Schema(
   {
-    title: { type: String, required: true },
-    thumbnailUrl: { type: String, required: true },
-    instagramUrl: { type: String, required: true }
+    title: trimmedRequired('Reel title'),
+    thumbnailUrl: trimmedRequired('Reel thumbnail URL'),
+    instagramUrl: trimmedRequired('Reel Instagram URL'),
   },
   { _id: true }
 );
 
-const metricSchema = new mongoose.Schema(
+const metricSchema = new Schema(
   {
-    label: { type: String, required: true },
-    value: { type: String, required: true }
+    label: trimmedRequired('Metric label'),
+    value: trimmedRequired('Metric value'),
   },
   { _id: true }
 );
 
-const siteContentSchema = new mongoose.Schema(
+const contactSchema = new Schema(
   {
-    brandName: { type: String, required: true, default: "Jeebhar" },
-    heroHeading: { type: String, required: true },
-    heroSubheading: { type: String, required: true },
+    address: trimmedRequired('Contact address'),
+    email: trimmedRequired('Contact email'),
+    phone: trimmedRequired('Contact phone'),
+    facebookUrl: { type: String, default: '', trim: true },
+    youtubeUrl: { type: String, default: '', trim: true },
+    instagramUrl: { type: String, default: '', trim: true },
+    tiktokUrl: { type: String, default: '', trim: true },
+  },
+  { _id: false }
+);
+
+const siteContentSchema = new Schema(
+  {
+    brandName: { type: String, required: true, trim: true, default: 'Jeebhar' },
+    heroEyebrow: { type: String, default: '', trim: true },
+    heroHeading: trimmedRequired('Hero heading'),
+    heroSubheading: trimmedRequired('Hero subheading'),
+    mediaKitUrl: { type: String, default: '/brand/jeebhar-kit.pdf', trim: true },
     services: { type: [serviceSchema], default: [] },
     work: { type: [workSchema], default: [] },
     reels: { type: [reelSchema], default: [] },
     mediaKitMetrics: { type: [metricSchema], default: [] },
-    contact: {
-      address: { type: String, required: true },
-      email: { type: String, required: true },
-      phone: { type: String, required: true },
-      facebookUrl: { type: String, required: true },
-      youtubeUrl: { type: String, required: true },
-      instagramUrl: { type: String, required: true },
-      tiktokUrl: { type: String, required: true }
-    }
+    contact: { type: contactSchema, required: true },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    versionKey: false,
+    toJSON: { virtuals: true },
+  }
 );
 
-export const SiteContent = mongoose.model("SiteContent", siteContentSchema);
+export const SiteContent = mongoose.model('SiteContent', siteContentSchema);

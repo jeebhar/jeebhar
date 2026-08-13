@@ -1,19 +1,36 @@
-import dotenv from "dotenv";
-import app from "./app.js";
-import { connectDb } from "./config/db.js";
-
-dotenv.config();
-
-const port = Number(process.env.PORT || 5000);
+import { createApp } from './app.js';
+import { assertEnv, env } from './config/env.js';
+import { connectDatabase, disconnectDatabase } from './config/database.js';
+import { logger } from './utils/logger.js';
 
 const start = async () => {
-  await connectDb();
-  app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+  assertEnv();
+  await connectDatabase();
+
+  const server = createApp().listen(env.port, () => {
+    logger.info(`API listening on http://localhost:${env.port} [${env.nodeEnv}]`);
+  });
+
+  const shutdown = async (signal) => {
+    logger.info(`${signal} received — shutting down`);
+    server.close(async () => {
+      await disconnectDatabase();
+      process.exit(0);
+    });
+    // Do not hang forever on in-flight connections.
+    setTimeout(() => process.exit(1), 10_000).unref();
+  };
+
+  ['SIGINT', 'SIGTERM'].forEach((signal) => {
+    process.on(signal, () => void shutdown(signal));
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    logger.error('Unhandled promise rejection', reason);
   });
 };
 
 start().catch((error) => {
-  console.error(error);
+  logger.error('Failed to start server', error);
   process.exit(1);
 });

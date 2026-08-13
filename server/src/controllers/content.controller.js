@@ -1,31 +1,25 @@
-import { defaultContent } from "../default-content.js";
-import { SiteContent } from "../models/site-content.model.js";
+import { contentService } from '../services/content.service.js';
+import { asyncHandler } from '../utils/async-handler.js';
 
-export const getContent = async (_req, res, next) => {
-  try {
-    let content = await SiteContent.findOne().lean();
-    if (!content) {
-      const created = await SiteContent.create(defaultContent);
-      content = created.toObject();
-    }
+export class ContentController {
+  constructor(service = contentService) {
+    this.service = service;
 
-    res.json(content);
-  } catch (error) {
-    next(error);
+    this.getContent = asyncHandler(this.getContent.bind(this));
+    this.updateContent = asyncHandler(this.updateContent.bind(this));
   }
-};
 
-export const updateContent = async (req, res, next) => {
-  try {
-    const updated = await SiteContent.findOneAndUpdate({}, req.body, {
-      new: true,
-      upsert: true,
-      runValidators: true,
-      setDefaultsOnInsert: true
-    }).lean();
-
-    res.json(updated);
-  } catch (error) {
-    next(error);
+  /** GET /api/content */
+  async getContent(_req, res) {
+    const content = await this.service.getContent();
+    res.json({ ok: true, data: content });
   }
-};
+
+  /** PUT /api/content — admin only. */
+  async updateContent(req, res) {
+    const content = await this.service.replaceContent(req.validated);
+    res.json({ ok: true, data: content });
+  }
+}
+
+export const contentController = new ContentController();

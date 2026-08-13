@@ -1,9 +1,32 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+build/
+
+# Tooling caches
+.vite/
 .angular/
-.env
+*.tsbuildinfo
+.eslintcache
+
+# Test output
 coverage/
+
+# Secrets — never commit these. Only *.example files are tracked.
+.env
+.env.*
+!.env.example
+!.env.docker.example
+
+# Logs
 *.log
-server/node_modules/
-client/node_modules/
-client/dist/
+npm-debug.log*
+yarn-error.log*
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

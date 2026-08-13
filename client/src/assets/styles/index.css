@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply min-h-screen bg-brand-950 font-sans text-brand-100 antialiased;
+
+    background-image:
+      radial-gradient(circle at 15% -10%, rgb(107 205 218 / 14%) 0%, transparent 45%),
+      radial-gradient(circle at 85% 5%, rgb(118 206 187 / 10%) 0%, transparent 40%),
+      linear-gradient(180deg, #062330 0%, #041a24 55%, #03131b 100%);
+    background-attachment: fixed;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-cyan;
+  }
+
+  img {
+    @apply max-w-full;
+  }
+}
+
+@layer utilities {
+  /* Hide the scrollbar on horizontal rails without disabling scrolling. */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
