@@ -19,6 +19,18 @@ afterEach(() => {
 });
 
 describe('httpClient', () => {
+  it('sends FormData untouched so the browser sets the multipart boundary', async () => {
+    vi.mocked(fetch).mockResolvedValue(jsonResponse({ ok: true, data: { url: '/uploads/a.jpg' } }));
+    const form = new FormData();
+    form.append('file', new Blob(['x']), 'a.jpg');
+
+    await expect(httpClient.post('/upload', form)).resolves.toEqual({ url: '/uploads/a.jpg' });
+
+    const [, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
+    expect(init.body).toBe(form);
+    expect(init.headers).not.toHaveProperty('Content-Type');
+  });
+
   it('unwraps the data property of a successful envelope', async () => {
     vi.mocked(fetch).mockResolvedValue(jsonResponse({ ok: true, data: { brandName: 'Jeebhar' } }));
 

@@ -21,6 +21,16 @@ export const adminHeaders = (adminToken: string): Record<string, string> => ({
   'X-Admin-Token': adminToken,
 });
 
+/** Uploads an image or document and returns its public URL, e.g. /uploads/photo-1a2b.jpg. */
+export const uploadFile = async (file: File, adminToken: string): Promise<string> => {
+  const form = new FormData();
+  form.append('file', file);
+  const { url } = await httpClient.post<{ url: string }>('/upload', form, {
+    headers: adminHeaders(adminToken),
+  });
+  return url;
+};
+
 export const saveSiteContent = (
   content: SiteContentDocument,
   adminToken: string

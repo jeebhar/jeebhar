@@ -1,5 +1,7 @@
 import { Button, TextField } from '../ui';
 import { LocalizedTextField } from './LocalizedTextField';
+import { UploadField } from './UploadField';
+import type { Uploader } from './UploadField';
 import type { EditableList } from '../../features/content/hooks/use-content-editor';
 import type { LocalizedText } from '../../models/site-content.model';
 
@@ -13,12 +15,13 @@ import type { LocalizedText } from '../../models/site-content.model';
  * Field kinds:
  *   text        one plain input (same in both languages: a URL, a number…)
  *   localized   an English + Deutsch pair
+ *   image       a URL with an "Upload…" button and a thumbnail
  */
 
 export interface FieldDescriptor<T> {
   key: keyof T & string;
   label: string;
-  kind?: 'text' | 'localized';
+  kind?: 'text' | 'localized' | 'image';
   placeholder?: string;
   /** Renders a textarea with this many rows. */
   rows?: number;
@@ -33,6 +36,8 @@ interface EditableRowListProps<T> {
   fields: ReadonlyArray<FieldDescriptor<T>>;
   addLabel: string;
   emptyMessage: string;
+  /** Used by `image` fields. */
+  upload: Uploader;
 }
 
 export const EditableRowList = <T extends object>({
@@ -42,6 +47,7 @@ export const EditableRowList = <T extends object>({
   fields,
   addLabel,
   emptyMessage,
+  upload,
 }: EditableRowListProps<T>) => (
   <fieldset className="rounded-2xl border border-white/10 bg-brand-800/30 p-5">
     <legend className="px-2 text-lg font-semibold text-white">{legend}</legend>
@@ -85,6 +91,15 @@ export const EditableRowList = <T extends object>({
                         placeholder={field.placeholder}
                         value={row.value[field.key] as LocalizedText}
                         onChange={set}
+                      />
+                    ) : field.kind === 'image' ? (
+                      <UploadField
+                        accept="image"
+                        label={field.label}
+                        placeholder={field.placeholder}
+                        value={String(row.value[field.key] ?? '')}
+                        onChange={set}
+                        upload={upload}
                       />
                     ) : (
                       <TextField

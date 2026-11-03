@@ -4,6 +4,8 @@ import { Alert, Button, Logo, Section, Spinner, TextField } from '../components/
 import { EditableRowList } from '../components/admin/EditableRowList';
 import type { FieldDescriptor } from '../components/admin/EditableRowList';
 import { LocalizedTextField } from '../components/admin/LocalizedTextField';
+import { UploadField } from '../components/admin/UploadField';
+import { uploadFile } from '../features/content/api/content.api';
 import { useContentEditor } from '../features/content/hooks/use-content-editor';
 import type {
   ContactDetails,
@@ -30,7 +32,7 @@ interface AdminPageProps {
   onExit: () => void;
 }
 
-const IMAGE_HINT = 'An https:// link, or a path such as /uploads/photo.jpg.';
+const IMAGE_HINT = 'Upload a photo (JPG, PNG, WebP), or paste an https:// link.';
 
 const SERVICE_FIELDS: ReadonlyArray<FieldDescriptor<ServiceDoc>> = [
   { key: 'title', label: 'Title', kind: 'localized', placeholder: 'Brand Management' },
@@ -45,7 +47,13 @@ const METRIC_FIELDS: ReadonlyArray<FieldDescriptor<MetricDoc>> = [
 
 const WORK_FIELDS: ReadonlyArray<FieldDescriptor<WorkDoc>> = [
   { key: 'title', label: 'Cuisine or client', kind: 'localized', placeholder: 'South Indian' },
-  { key: 'imageUrl', label: 'Image', placeholder: '/uploads/south-indian.jpg', hint: IMAGE_HINT },
+  {
+    key: 'imageUrl',
+    label: 'Image',
+    kind: 'image',
+    placeholder: '/uploads/south-indian.jpg',
+    hint: IMAGE_HINT,
+  },
   { key: 'description', label: 'Description', kind: 'localized', rows: 2 },
 ];
 
@@ -60,6 +68,7 @@ const REEL_FIELDS: ReadonlyArray<FieldDescriptor<ReelDoc>> = [
   {
     key: 'thumbnailUrl',
     label: 'Cover photo (optional)',
+    kind: 'image',
     placeholder: '/uploads/reel-cover.jpg',
     hint: 'Leave blank to show a branded tile.',
   },
@@ -79,6 +88,12 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
   const [token, setToken] = useState('');
   const editor = useContentEditor(content);
   const { singles, updateSingles } = editor;
+
+  // Uploads need the same token as saving; ask for it first rather than fail on the server.
+  const upload = (file: File): Promise<string> =>
+    token.trim()
+      ? uploadFile(file, token.trim())
+      : Promise.reject(new Error('Enter your admin token at the top first.'));
 
   const onSave = async () => {
     const saved = await editor.save(token);
@@ -152,6 +167,7 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
             fields={SERVICE_FIELDS}
             addLabel="Add service"
             emptyMessage="No services yet."
+            upload={upload}
           />
 
           <EditableRowList
@@ -161,6 +177,7 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
             fields={METRIC_FIELDS}
             addLabel="Add number"
             emptyMessage="No numbers yet."
+            upload={upload}
           />
 
           <EditableRowList
@@ -170,6 +187,7 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
             fields={WORK_FIELDS}
             addLabel="Add work item"
             emptyMessage="No work items yet."
+            upload={upload}
           />
 
           <EditableRowList
@@ -179,6 +197,7 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
             fields={REEL_FIELDS}
             addLabel="Add food reel"
             emptyMessage="No food reels yet."
+            upload={upload}
           />
 
           <EditableRowList
@@ -188,19 +207,20 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
             fields={REEL_FIELDS}
             addLabel="Add travel reel"
             emptyMessage="No travel reels yet."
+            upload={upload}
           />
 
           <fieldset className="grid gap-4 rounded-2xl border border-white/10 bg-brand-800/30 p-5">
             <legend className="px-2 text-lg font-semibold text-white">Media kit</legend>
-            <TextField
-              label="Media kit file"
+            <UploadField
+              accept="document"
+              label="Media kit file (PDF or Word)"
               value={singles.mediaKitUrl}
               placeholder="/brand/media-kit.pdf"
               onChange={(mediaKitUrl) => updateSingles({ mediaKitUrl })}
+              upload={upload}
+              hint="Opened by the “Media Kit” button. A PDF opens in the browser; a Word file downloads. Upload, then Save changes."
             />
-            <p className="text-xs text-brand-200">
-              Opened by the “Media Kit” button. A PDF opens in the browser; a Word file downloads.
-            </p>
           </fieldset>
 
           <fieldset className="grid gap-4 rounded-2xl border border-white/10 bg-brand-800/30 p-5 md:grid-cols-2">

@@ -50,6 +50,7 @@ const mergeSignals = (signals: Array<AbortSignal | undefined>): AbortSignal => {
 
 const request = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
   const { method = 'GET', body, headers = {}, signal } = options;
+  const isForm = typeof FormData !== 'undefined' && body instanceof FormData;
 
   let response: Response;
   try {
@@ -57,10 +58,11 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
       method,
       headers: {
         Accept: 'application/json',
-        ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+        // FormData (file uploads) sets its own multipart Content-Type + boundary.
+        ...(body === undefined || isForm ? {} : { 'Content-Type': 'application/json' }),
         ...headers,
       },
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
       signal: mergeSignals([signal, timeoutSignal(appConfig.requestTimeoutMs)]),
     });
   } catch (error) {
