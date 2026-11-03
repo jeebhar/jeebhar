@@ -1,5 +1,9 @@
 # Reel cover images
 
+> **Easiest:** open `/#/admin`, find the reel and click **Upload…** next to "Cover photo".
+> The file goes to `/uploads/` and the reel uses it after **Save changes**. The manual
+> method below (files in this folder, which are part of the build) still works.
+
 Instagram does not expose reel cover images to third parties, so covers are
 self-hosted here.
 

@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        workspace: [client, server]
+        workspace: [client]
 
     steps:
       - uses: actions/checkout@v4

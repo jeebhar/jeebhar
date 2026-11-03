@@ -1,6 +1,8 @@
 # API reference
 
-Base URL: `http://localhost:5000/api` in development, `/api` behind nginx in production.
+Base URL: `/api` on the same domain as the site (`https://jeebhar.com/api`). In development, Vite proxies `/api` to `npm run dev:api` on `http://localhost:5000`.
+
+Implementation: `api/index.php` (routes) and `api/src/*.php` (one class per concern). PHP 8.1+, no dependencies.
 
 ## Response envelope
 
@@ -24,68 +26,54 @@ Every response — success or failure — uses the same shape, so clients need o
 
 `details` is present only for validation failures. Unexpected 5xx errors return a generic message in production; the real cause is logged server-side.
 
-| Status | Meaning                              |
-| ------ | ------------------------------------ |
-| 200    | OK                                   |
-| 201    | Created                              |
-| 400    | Validation failed or malformed JSON  |
-| 401    | Admin token missing                  |
-| 403    | Admin token invalid                  |
-| 404    | No such route                        |
-| 413    | Payload over 256 kB                  |
-| 429    | Rate limit exceeded                  |
-| 503    | Health check: database not connected |
+| Status | Meaning                             |
+| ------ | ----------------------------------- |
+| 200    | OK                                  |
+| 201    | Created                             |
+| 400    | Validation failed or malformed JSON |
+| 401    | Admin token missing                 |
+| 415    | Upload type not allowed             |
+| 403    | Admin token invalid                 |
+| 404    | No such route                       |
+| 413    | Body over 512 kB / upload too large |
+| 429    | Rate limit exceeded                 |
+| 503    | Admin token not configured          |
 
 ---
 
 ## `GET /api/health`
 
-Liveness and readiness. Used by the Docker health check and the CD smoke test.
+Liveness. Used after a deploy.
 
 ```json
-{
-  "ok": true,
-  "data": {
-    "status": "ok",
-    "environment": "production",
-    "database": "connected",
-    "uptimeSeconds": 3814
-  }
-}
+{ "ok": true, "data": { "status": "ok", "php": "8.3.6" } }
 ```
-
-Returns **503** with `"status": "degraded"` when the database is not connected, so an orchestrator can pull the container out of rotation.
 
 ---
 
 ## `GET /api/content`
 
-Public. Returns the single site-content document, seeding it from `server/src/seed/default-content.js` if the collection is empty — a fresh database still renders a complete site.
+Public. Returns the site content in **both languages**. Until the first save it is
+`api/seed/default-content.json`; afterwards `~/jeebhar-data/content.json`.
+
+Translatable fields are `{ "en": "…", "de": "…" }`. The client picks one language and
+falls back to English when German is blank.
 
 ```json
 {
   "ok": true,
   "data": {
     "brandName": "Jeebhar",
-    "heroEyebrow": "For restaurants and food brands",
-    "heroHeading": "Reimagine your restaurant's digital story…",
-    "heroSubheading": "Jeebhar helps restaurants and food brands…",
+    "heroEyebrow": { "en": "For restaurants and food brands", "de": "Für Restaurants und Food-Marken" },
+    "heroHeading": { "en": "Reimagine your restaurant's…", "de": "Erfinden Sie…" },
+    "heroSubheading": { "en": "…", "de": "…" },
     "mediaKitUrl": "/brand/media-kit.pdf",
-    "services": [{ "_id": "…", "title": "…", "shortDescription": "…", "longDescription": "…" }],
-    "work": [{ "_id": "…", "title": "…", "imageUrl": "https://…", "description": "…" }],
-    "reels": [
-      { "_id": "…", "title": "…", "thumbnailUrl": "https://…", "instagramUrl": "https://…" }
-    ],
-    "mediaKitMetrics": [{ "_id": "…", "label": "Followers reached", "value": "250K+" }],
-    "contact": {
-      "address": "…",
-      "email": "hello@jeebhar.com",
-      "phone": "+91-90000-00000",
-      "facebookUrl": "",
-      "youtubeUrl": "",
-      "instagramUrl": "https://www.instagram.com/",
-      "tiktokUrl": ""
-    }
+    "services": [{ "_id": "service-01", "title": { "en": "…", "de": "…" }, "shortDescription": {…}, "longDescription": {…} }],
+    "work": [{ "_id": "…", "title": {…}, "imageUrl": "/uploads/…", "description": {…} }],
+    "reels": [{ "_id": "…", "title": {…}, "thumbnailUrl": "", "instagramUrl": "https://www.instagram.com/reel/…/" }],
+    "travelReels": [],
+    "mediaKitMetrics": [{ "_id": "metric-01", "label": { "en": "Reach", "de": "Reichweite" }, "value": "3M" }],
+    "contact": { "address": "…", "email": "jeebhar410@gmail.com", "phone": "…", "facebookUrl": "", "youtubeUrl": "", "instagramUrl": "…", "tiktokUrl": "" }
   }
 }
 ```
@@ -96,25 +84,27 @@ Public. Returns the single site-content document, seeding it from `server/src/se
 
 **Requires the admin token.** Replaces the whole content document — send the full object, not a patch.
 
-**Auth** — either header works:
+**Auth** — either header works (the client sends both, because some shared hosts strip `Authorization`):
 
 ```
-Authorization: Bearer <ADMIN_TOKEN>
-x-admin-token: <ADMIN_TOKEN>
+Authorization: Bearer <admin.token>
+X-Admin-Token: <admin.token>
 ```
 
-The comparison is constant-time, so response timing does not leak the token's prefix. A missing token is **401**; a present but wrong token is **403**.
+The token is `admin.token` from `jeebhar.config.json`. The comparison is constant-time. A missing token is **401**, a wrong one **403** (10 wrong attempts per 15 minutes per IP, then **429**).
 
-**Validation** (`server/src/validators/content.validator.js`)
+The previous content is kept as `content.previous.json` (one-step undo).
+
+**Validation** (`api/src/ContentValidator.php` — the schema is declared there as data). For translatable fields, English is required where marked; German is always optional.
 
 | Field               | Rule                                                                          |
 | ------------------- | ----------------------------------------------------------------------------- |
 | `brandName`         | 1–80 chars                                                                    |
-| `heroEyebrow`       | ≤160 chars, defaults to `""`                                                  |
-| `heroHeading`       | 1–300 chars, required                                                         |
-| `heroSubheading`    | 1–600 chars, required                                                         |
-| `mediaKitUrl`       | ≤500 chars, defaults to `/brand/media-kit.pdf`                                |
-| `services[]`        | ≤24; `title` ≤120, `shortDescription` ≤300, `longDescription` ≤2000           |
+| `heroEyebrow`       | text, ≤160 chars, optional                                                    |
+| `heroHeading`       | text, ≤300 chars, English required                                            |
+| `heroSubheading`    | text, ≤600 chars, English required                                            |
+| `mediaKitUrl`       | image/file reference (below), defaults to `/brand/media-kit.pdf`              |
+| `services[]`        | ≤24; `title` ≤120, `shortDescription` ≤300, `longDescription` ≤3000 (text)    |
 | `work[]`            | ≤60; `imageUrl` is an image reference (below); `description` ≤600             |
 | `reels[]`           | ≤60; `instagramUrl` must be a valid URL; `thumbnailUrl` optional              |
 | `travelReels[]`     | ≤60; identical rules to `reels[]`                                             |
@@ -122,18 +112,18 @@ The comparison is constant-time, so response timing does not leak the token's pr
 | `contact`           | `address`, `email`, `phone` required; social URLs must be a valid URL or `""` |
 
 **Image references.** `work[].imageUrl` and `reels[].thumbnailUrl` accept either an
-absolute `http(s)://` URL or a root-relative path beginning with `/`, so images can
-be self-hosted from `client/public`. Anything else (e.g. `work/photo.jpg`) is rejected.
+absolute `http(s)://` URL or a root-relative path beginning with `/` (for example an
+upload, `/uploads/photo-1a2b.jpg`). Anything else (e.g. `work/photo.jpg`) is rejected.
 
 `thumbnailUrl` is optional and defaults to `""`. Instagram does not expose reel
 covers to third parties, so a blank cover is a normal state — the frontend renders a
 branded tile for it.
 
-Unknown keys are stripped rather than rejected, so a client cannot smuggle extra fields into the model.
+Unknown keys are stripped rather than rejected. List items without an `_id` get one. A bare string where `{ en, de }` is expected is accepted as English.
 
 ```bash
-curl -X PUT http://localhost:5000/api/content \
-  -H "Authorization: Bearer $ADMIN_TOKEN" \
+curl -X PUT https://jeebhar.com/api/content \
+  -H "X-Admin-Token: $TOKEN" \
   -H "Content-Type: application/json" \
   -d @content.json
 ```
@@ -142,7 +132,7 @@ curl -X PUT http://localhost:5000/api/content \
 
 ## `POST /api/contact`
 
-Public and throttled to **5 requests per 15 minutes per IP**, because it writes to the database and sends mail.
+Public and throttled to **5 requests per 15 minutes per IP** (`rateLimit.contactPer15Min`), because it writes to disk and sends mail.
 
 **Request**
 
@@ -169,28 +159,44 @@ Public and throttled to **5 requests per 15 minutes per IP**, because it writes 
 ```json
 {
   "ok": true,
-  "message": "Thanks — your enquiry has been received. We will be in touch shortly.",
-  "data": { "id": "6712…", "notified": true }
+  "message": "Thanks — your enquiry has been received.",
+  "data": { "id": "20261103-164923-e8158c", "notified": true }
 }
 ```
 
-`notified` reports whether the email notification was delivered. **A `false` here still means the enquiry was stored** — persistence is the contract with the visitor, and delivery is best-effort by design. With SMTP unconfigured, submissions are stored and a warning is logged.
+The enquiry is appended to `~/jeebhar-data/enquiries.jsonl` **first**, then emailed to `mail.to` with every detail the visitor entered (plus time, domain and IP). `Reply-To` is the visitor, so replying in Gmail answers them directly.
+
+`notified` reports whether the email left. **A `false` still means the enquiry was stored** — a mail outage never loses a lead. The reason is written to the PHP error log.
+
+---
+
+## `POST /api/upload`
+
+**Requires the admin token.** `multipart/form-data` with one field, `file`.
+
+Allowed: JPG, PNG, WebP, GIF, PDF, Word (`.doc`, `.docx`) — detected from the file's bytes,
+not its name. Max `uploads.maxMegabytes` (default 10). Stored as
+`public_html/uploads/<name>-<random>.<ext>`.
+
+```json
+{ "ok": true, "message": "File uploaded.", "data": { "url": "/uploads/dosa-1a2b3c4d.jpg" } }
+```
 
 ---
 
 ## Rate limits
 
-| Scope               | Limit                 | Env var                                  |
-| ------------------- | --------------------- | ---------------------------------------- |
-| All `/api`          | 100 per 15 min per IP | `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS` |
-| `POST /api/contact` | 5 per 15 min per IP   | `RATE_LIMIT_CONTACT_MAX`                 |
+| Scope               | Limit                | Config                      |
+| ------------------- | -------------------- | --------------------------- |
+| `POST /api/contact` | 5 per 15 min per IP  | `rateLimit.contactPer15Min` |
+| Wrong admin token   | 10 per 15 min per IP | —                           |
 
-Responses carry the standard `RateLimit-*` headers. Limits are disabled when `NODE_ENV=test`.
+Stored as small files in `~/jeebhar-data/ratelimit/`, keyed by a hash of the IP.
 
 ---
 
 ## CORS
 
-Allowed origins come from `CLIENT_ORIGIN` (comma-separated). Allowed headers: `Content-Type`, `Authorization`, `x-admin-token`. Methods: `GET`, `PUT`, `POST`, `OPTIONS`.
-
-In production, nginx serves the frontend and the API from the same origin, so CORS never comes into play.
+The site and the API share a domain on Bluehost, so CORS is not needed in production. Allowed
+origins (for local development and the three domains) are generated from `domains.sites` in
+`jeebhar.config.json`.

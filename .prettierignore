@@ -5,3 +5,5 @@ build
 package-lock.json
 *.min.*
 client/public/brand
+dist-bluehost
+api/data

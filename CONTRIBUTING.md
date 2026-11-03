@@ -21,7 +21,7 @@ If you cannot name the layer, do not write the code yet.
 ## Rules that CI enforces
 
 - **No `fetch` outside `services/http-client.ts`.** Timeouts, the response envelope and error normalisation live there.
-- **No `process.env` outside `server/src/config/env.js`.** No `import.meta.env` outside `client/src/config/app.config.ts`.
+- **Settings only in `jeebhar.config.json`.** No `import.meta.env` outside `client/src/config/app.config.ts`; the API reads settings only through `api/src/Config.php`.
 - **No business logic in a controller.** If a controller has an `if` about domain state, it belongs in a service.
 - **No database calls in a service.** Go through a repository.
 - **Services take collaborators as constructor parameters**, with a sensible default. That is what lets the tests run without infrastructure.
@@ -39,20 +39,20 @@ Needs data? Add a hook under `features/<name>/hooks/` and an endpoint under `fea
 
 ## Adding an API endpoint
 
-Model → repository → service → validator → controller → route, then one line in `server/src/routes/index.js`. Add a service test with a fake repository.
+A class in `api/src/` for the logic, one `case` line in `api/index.php`, a test in `api/tests/run.php`. See `docs/ARCHITECTURE.md` §6.
 
 ## Tests
 
 - **Rules and pure functions**: always. They are cheap and catch the most.
-- **Services**: always, with fakes for collaborators.
-- **HTTP behaviour that matters for security** (auth codes, middleware order, validation): `server/tests/http-pipeline.test.js` — no database needed.
+- **API rules** (validation, translations): `api/tests/run.php` — plain PHP, no framework.
+- **Interface text**: add every new string to both dictionaries in `client/src/i18n/messages.ts` — the build fails otherwise.
 - **Views**: when there is real logic worth pinning, not for every div.
 
 Run one file while iterating:
 
 ```bash
 npm --prefix client run test:watch
-node --test server/tests/contact.service.test.js
+php api/tests/run.php
 ```
 
 ## Commits and PRs
@@ -61,7 +61,7 @@ Conventional-commit style prefixes keep history scannable:
 
 ```
 feat(client): add testimonials section
-fix(server): reject blank subject on contact form
+fix(api): reject blank subject on contact form
 refactor(client): extract Carousel from Work and Reels
 docs(api): document the content envelope
 chore(ci): pin actions to major versions

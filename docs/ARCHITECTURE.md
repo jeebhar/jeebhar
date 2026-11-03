@@ -6,75 +6,50 @@ If you are about to add code and cannot say which layer it belongs to, that is t
 
 ---
 
-## 1. Backend — MVC with an explicit service and repository layer
+## 1. Backend — a small PHP API for shared hosting
+
+Bluehost shared hosting runs Apache + PHP, not Node or MongoDB, so the API is plain
+PHP 8.1 with no Composer packages. Same idea as before — each piece knows only the one
+beneath it — with fewer layers because there is less to do.
 
 ```
-HTTP request
+api/.htaccess        every /api/* request → index.php
     │
     ▼
-routes/           the pipeline: throttle → authenticate → validate
-    │             Knows nothing except which middleware runs in which order.
+api/index.php        the router: one switch, one line per endpoint. Reads config,
+    │                checks the admin token, calls ONE class, writes the response.
     ▼
-controllers/      translation only: read req.validated, call one service method,
-    │             shape the response. No branching on business rules.
-    ▼
-services/         the business rules. Pure application logic — no req, no res,
-    │             no Mongoose. Receives collaborators through the constructor.
-    ▼
-repositories/     the only code that touches a collection.
-    │
-    ▼
-models/           schema, types and invariants. No behaviour beyond validation.
+api/src/
+  ContentValidator   the content schema, declared as data, + one recursive validator
+  ContentRepository  the only code that touches content.json
+  ContactService     validate → store → email (the order is the business rule)
+  Mailer             SMTP (built in) or PHP mail(), chosen by config
+  UploadService      checks the bytes, generates the name, stores in /uploads
+  RateLimiter        file-based fixed window
+  Request/Response   the HTTP edge: parsing, auth headers, the { ok, data } envelope
+  Config             read-only view of the generated api/config.php
 ```
 
-### Why each boundary exists
+### Why these choices
 
-**`routes` → `controllers`.** Middleware guarantees preconditions. By the time a controller runs, the caller is authenticated and `req.validated` conforms to the schema — so controllers contain no defensive checks, which is what keeps them 15 lines instead of 60.
+**A JSON file instead of a database.** The whole site is one document edited by one person.
+Writes go to a temp file and are renamed into place (atomic), and the previous version is
+kept for a one-step undo. Data lives in `~/jeebhar-data`, outside the web root.
 
-**`controllers` → `services`.** Controllers are the only HTTP-aware code. Because `ContactService` never sees a request object, its tests construct it directly and pass a plain object.
+**The schema is data.** `ContentValidator::schema()` lists every field once with its type
+(`string`, `text` = `{ en, de }`, `url`, `ref`, `email`, `list`, `object`). Validation on
+save and normalisation on read both come from that one list, so a new field is one line —
+and old content missing that field is completed on read with no migration.
 
-**`services` → `repositories`.** Services state _what_ must happen; repositories know _where_ data lives. Swapping MongoDB for Postgres means rewriting two files in `repositories/` and nothing else.
+**Store, then email.** `ContactService` appends the enquiry to `enquiries.jsonl` before it
+sends mail. A broken mail server must never lose a lead.
 
-**Configuration.** `config/env.js` is the only module that reads `process.env`, and it validates at boot via `assertEnv()`. A missing `ADMIN_TOKEN` crashes on startup with a clear message rather than 500-ing on the first write six hours later.
+**One config file.** `jeebhar.config.json` is the only source of settings. The build turns
+it into `api/config.php` (secrets; a `.php` file so it executes rather than prints if the
+server were misconfigured) and into the frontend's public `VITE_*` values.
 
-**Response shape is a guarantee, not a reflection of the database.** Mongoose applies schema defaults when a document is _created_, not when an existing one is read, so a document written before a field existed comes back without it. `ContentService.complete()` fills those in on every read and write, which means adding a content field never needs a database migration — and a missing collection can never reach the frontend as `undefined`. This is the fix for a real failure: adding `travelReels` blanked the entire site for anyone whose database already held a document.
-
-**Errors.** Services and controllers throw; `middleware/error.middleware.js` is the only code that turns an error into a response. It maps Mongoose `ValidationError`, `CastError`, duplicate keys, oversized payloads and malformed JSON onto the same envelope, and redacts unexpected 5xx detail in production.
-
-### Worked example: `POST /api/contact`
-
-```
-contact.routes.js
-  contactLimiter                    5 per 15 min per IP — this endpoint writes and sends mail
-  validateBody(contactSubmissionSchema)
-                                    normalises (email lowercased, fields trimmed),
-                                    strips unknown keys, or throws 400 with per-field detail
-  contactController.submit
-
-contact.controller.js
-  service.submit(req.validated, { sourceIp: req.ip })
-  201 { ok: true, message, data: { id, notified } }
-
-contact.service.js
-  repository.create(...)            persist first — this is the promise to the visitor
-  mailer.send(...)                  best-effort; a thrown SMTP error is logged, not propagated
-  repository.markNotified(id)       only when delivery actually succeeded
-```
-
-The ordering is a deliberate business rule and it is asserted by a test: _a broken mail server must not lose an enquiry._
-
-### Dependency inversion in practice
-
-```js
-export class ContactService {
-  constructor(repository = contactSubmissionRepository, mailer = createMailer()) {
-    this.repository = repository;
-    this.mailer = mailer;
-  }
-}
-```
-
-Defaults keep production wiring trivial (`new ContactService()`); the parameters make the unit tests need no database and no SMTP server. `createMailer()` returns `SmtpMailer` when SMTP is configured and `NoopMailer` when it is not — same interface, so nothing downstream branches on it.
+**Same envelope as before.** `{ ok, data, message }` / `{ ok:false, message, details }`,
+so the React client did not change when the backend moved from Node to PHP.
 
 ---
 
@@ -109,6 +84,9 @@ Now:
 | Concern                       | Lives in                                                 |
 | ----------------------------- | -------------------------------------------------------- |
 | Loading content               | `features/content/hooks/use-site-content.ts`             |
+| Choosing the language         | `i18n/languages.ts` (pure) + `i18n/I18nProvider.tsx`     |
+| Interface text, EN + DE       | `i18n/messages.ts`                                       |
+| Content → one language        | `features/content/localize.ts` (pure)                    |
 | Contact form state            | `features/contact/hooks/use-contact-form.ts`             |
 | Contact validation rules      | `features/contact/contact.validator.ts` (pure functions) |
 | Editor draft state            | `features/content/hooks/use-content-editor.ts`           |
@@ -134,6 +112,8 @@ Now:
 | ---------------------------------------------- | ------------------------------------------------- |
 | `fetch`, timeouts, the API envelope            | `services/http-client.ts`                         |
 | `import.meta.env`                              | `config/app.config.ts`                            |
+| Interface copy, both languages                 | `i18n/messages.ts`                                |
+| Settings and secrets                           | `jeebhar.config.json` (repository root)           |
 | Section list and order                         | `config/navigation.ts`                            |
 | Brand colours                                  | `tailwind.config.ts`                              |
 | Logo artwork paths                             | `config/app.config.ts` + `components/ui/Logo.tsx` |
@@ -158,39 +138,45 @@ These are structural choices, not a polish pass, and `eslint-plugin-jsx-a11y` fa
 
 ## 4. Testing strategy
 
-| Layer                | Tests                                                                          | Needs                                                               |
-| -------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| Server services      | `tests/contact.service.test.js`, `content.service.test.js`                     | nothing — collaborators are injected                                |
-| Server validators    | `tests/validators.test.js`                                                     | nothing                                                             |
-| Server HTTP pipeline | `tests/http-pipeline.test.js` — auth, validation, 404, headers                 | nothing; these run before any DB access                             |
-| Server integration   | `tests/api.test.js` — full request/response                                    | in-memory MongoDB; **skips cleanly** when the binary is unavailable |
-| Client logic         | `contact.validator.test.ts`, `use-contact-form.test.ts`, `http-client.test.ts` | jsdom                                                               |
-| Client views         | `Logo.test.tsx`                                                                | jsdom + Testing Library                                             |
+| Layer        | Tests                                                                  | Needs                   |
+| ------------ | ---------------------------------------------------------------------- | ----------------------- |
+| API rules    | `api/tests/run.php` — schema, translations, refs, ids, completion      | PHP only                |
+| Client logic | validator, contact hook, editor hook, http-client, localize, languages | jsdom                   |
+| Client views | Header, LanguageToggle, UploadField, MediaCover, Logo, HomePage        | jsdom + Testing Library |
 
-The split is deliberate: `http-pipeline.test.js` covers the security-relevant behaviour (401 vs 403 vs 400, middleware order) with no infrastructure, so it runs everywhere including an offline runner. `api.test.js` adds full persistence coverage where a database is available.
+Run everything with `npm test`. CI also runs the API checks on PHP 8.1, the oldest
+version the code supports.
 
 ---
 
-## 5. Adding something new
+## 5. Translations
 
-**A new API resource**
+Two kinds of text, kept apart on purpose:
 
-1. `models/thing.model.js` — schema
-2. `repositories/thing.repository.js` — data access
-3. `services/thing.service.js` — rules, collaborators as constructor parameters
-4. `validators/thing.validator.js` — Zod schema
-5. `controllers/thing.controller.js` — thin adapter
-6. `routes/thing.routes.js` — pipeline, then one line in `routes/index.js`
-7. `tests/thing.service.test.js` — with a fake repository
+- **Interface text** (menu, buttons, form labels, errors) lives in `client/src/i18n/messages.ts`.
+  The German dictionary is typed against the English one, so a missing translation fails the build.
+- **Content** (hero, services, work, reels, numbers) is written by the owner in the editor and
+  stored as `{ en, de }`. `App` resolves it to one language with `localizeContent()` **once**,
+  so section components receive plain strings and know nothing about languages.
+
+---
+
+## 6. Adding something new
+
+**A new API endpoint**
+
+1. A class in `api/src/` for the logic (constructor takes `Config` and collaborators)
+2. One `case 'METHOD /path':` in `api/index.php`
+3. A test in `api/tests/run.php`
 
 **A new page section**
 
 1. `components/sections/NewSection.tsx` — props in, JSX out; compose from `components/ui`
-2. Add `{ id, label }` to `config/navigation.ts`
+2. Add `{ id, labelKey }` to `config/navigation.ts` and the label to both dictionaries in `i18n/messages.ts`
 3. Render it in `pages/HomePage.tsx`
 
 If it needs data, add a hook under `features/<name>/hooks/` and an endpoint under `features/<name>/api/`. Do not call `fetch` from a component.
 
 **A new field on the content model**
 
-`server/src/models/site-content.model.js` → `server/src/validators/content.validator.js` → `client/src/models/site-content.model.ts` → the view that renders it. The compiler will point at every place that needs attention.
+`api/src/ContentValidator.php` (one line in `schema()`) → `client/src/models/site-content.model.ts` → `features/content/localize.ts` if it is translatable → the editor field in `pages/AdminPage.tsx` → the view that renders it. The compiler will point at every client place that needs attention.

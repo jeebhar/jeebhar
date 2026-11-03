@@ -1,203 +1,145 @@
-# Deployment
+# Deployment — Bluehost
 
-## Pipelines
+The site runs on Bluehost **shared hosting** (Starter plan, Frankfurt data centre).
+Bluehost serves the files with Apache + PHP; there is no Node, no database and no
+Docker on the server.
 
-| Workflow       | Trigger                              | What it does                                                                                                             |
-| -------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| `ci.yml`       | push / PR to `main`, `develop`       | server lint + format + test · client lint + format + typecheck + test + coverage · production build · Docker image build |
-| `cd.yml`       | push to `main`, `v*.*.*` tag, manual | publish images to GHCR · deploy over SSH · `/api/health` smoke test                                                      |
-| `security.yml` | push / PR, weekly Monday 06:00 UTC   | `npm audit` (high+) · dependency review · CodeQL · tracked-`.env` check · gitleaks                                       |
+```
+~/                                  your Bluehost home directory
+├── public_html/                    ← npm run deploy:bluehost writes here
+│   ├── index.html, assets/, brand/ the React site
+│   ├── .htaccess                   HTTPS, www → apex, SPA routing, caching
+│   ├── api/                        PHP API (+ generated config.php)
+│   └── uploads/                    files added in the content editor
+└── jeebhar-data/                   created by the API on first write — NOT public
+    ├── content.json                the live site content
+    ├── content.previous.json       the version before the last save (one-step undo)
+    ├── enquiries.jsonl             every contact-form enquiry, one per line
+    └── ratelimit/
+```
 
-`ci.yml` runs client and server as independent jobs so a frontend failure never hides a backend one. `build` and `docker` only run once both pass.
+A deploy only adds and replaces files in `public_html`. It never touches
+`public_html/uploads` or `~/jeebhar-data`, so content and enquiries survive every deploy.
 
 ---
 
 ## One-time setup
 
-### Repository secrets
+### 1. The config file
 
-_Settings → Secrets and variables → Actions → Secrets_
+```bash
+cp jeebhar.config.example.json jeebhar.config.json
+```
 
-| Secret           | Needed for | Notes                                                                         |
-| ---------------- | ---------- | ----------------------------------------------------------------------------- |
-| `DEPLOY_HOST`    | SSH deploy | hostname or IP. **Absent = deploy step skips cleanly**, images still publish. |
-| `DEPLOY_USER`    | SSH deploy | user with permission to run `docker compose`                                  |
-| `DEPLOY_SSH_KEY` | SSH deploy | private key, full PEM including header and footer                             |
-| `DEPLOY_PATH`    | SSH deploy | directory on the host holding `docker-compose.yml` and `.env`                 |
+Fill in, at minimum:
 
-`GITHUB_TOKEN` is provided automatically and is what pushes to GHCR.
+| Key                | Value                                                                |
+| ------------------ | -------------------------------------------------------------------- |
+| `bluehost.sshUser` | your cPanel username (Bluehost → Websites → Settings → SSH Access)   |
+| `admin.token`      | a long random string — the editor password                           |
+| `mail.to`          | where enquiries go, e.g. `jeebhar410@gmail.com`                      |
+| `mail.smtp.pass`   | a Gmail **App Password** (Google Account → Security → App passwords) |
 
-### Repository variables
+Generate a token: `node -e "console.log(require('crypto').randomBytes(24).toString('hex'))"`
 
-_Settings → Secrets and variables → Actions → Variables_
+### 2. PHP version
 
-| Variable            | Purpose                                    | Example               |
-| ------------------- | ------------------------------------------ | --------------------- |
-| `VITE_API_BASE_URL` | baked into the frontend at build time      | `/api`                |
-| `DEPLOY_URL`        | smoke-test target and the Environment link | `https://jeebhar.com` |
+Bluehost → Websites → Settings → PHP version: **8.1 or newer** (8.3 recommended).
 
-### Environments
+### 3. SSH access
 
-Create `staging` and `production` under _Settings → Environments_. Add required reviewers to `production` to gate deploys behind a manual approval — the `deploy` job already references the environment.
+Bluehost → Websites → Settings → **SSH Access** → enable. Then either add your
+public key (`ssh-keygen -t ed25519`, paste `~/.ssh/id_ed25519.pub` into "Manage SSH Keys"
+and authorise it) or type your cPanel password when prompted. Check:
+
+```bash
+ssh <sshUser>@50.6.35.167
+```
+
+`ssh`, `scp` and `tar` are built into Windows 10/11, so `npm run deploy:bluehost` works
+from PowerShell.
+
+### 4. The three domains
+
+jeebhar.com is the primary domain on the account. Add the other two as **alias**
+(formerly "parked") domains of jeebhar.com, so all three serve the same `public_html`:
+
+Bluehost → Domains → jeebhar.de → **Assign** / "Add as alias of jeebhar.com"
+(repeat for jeebhar.in). In cPanel this is _Domains → Create a New Domain_, with
+"Share document root with jeebhar.com" ticked.
+
+If a domain was bought elsewhere, point its nameservers to `ns1.bluehost.com` and
+`ns2.bluehost.com` first.
+
+Which language each domain opens in is set in `domains.sites` in the config —
+`jeebhar.de` opens in Deutsch, the others in English. The toggle overrides it.
+
+### 5. SSL
+
+Bluehost issues free certificates (AutoSSL / Let's Encrypt) for each domain
+automatically, usually within a few hours of the domain being added. Check under
+Websites → Security → SSL. The site's `.htaccess` redirects every request to `https://`,
+so **wait until each domain shows an active certificate before going live on it**.
 
 ---
 
-## Host setup
+## Deploy
 
 ```bash
-# On the server
-mkdir -p /srv/jeebhar && cd /srv/jeebhar
-
-# Bring across docker-compose.yml and .env.docker.example
-cp .env.docker.example .env
+npm run release        # build:bluehost, then deploy:bluehost
 ```
 
-Fill in `.env`:
-
-```ini
-HTTP_PORT=8080
-MONGO_USER=jeebhar
-MONGO_PASSWORD=<strong password>
-MONGO_DB=jeebhar
-ADMIN_TOKEN=<64 hex chars>
-CLIENT_ORIGIN=https://jeebhar.com
-```
-
-Generate the admin token:
+or in two steps:
 
 ```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+npm run build:bluehost     # → dist-bluehost/
+npm run deploy:bluehost    # tar → scp → unpack into ~/public_html
 ```
 
-Then:
+Then check `https://jeebhar.com/api/health` → `{"ok":true,…}`.
 
-```bash
-docker compose up -d --build
-curl -fsS http://localhost:8080/api/health
-```
+### Without SSH (File Manager or FTP)
 
-To pull published images instead of building on the host, replace each `build:` block with the GHCR image:
-
-```yaml
-services:
-  server:
-    image: ghcr.io/<owner>/<repo>/server:latest
-  client:
-    image: ghcr.io/<owner>/<repo>/client:latest
-```
-
-Then `docker compose pull && docker compose up -d` — which is exactly what the CD job runs.
+1. `npm run build:bluehost`
+2. Zip the **contents** of `dist-bluehost/` (not the folder itself). Include the hidden
+   `.htaccess` files.
+3. Bluehost → Files → File Manager → `public_html` → Upload the zip → Extract.
 
 ---
 
-## TLS
+## After going live
 
-The bundled nginx listens on port 80 inside the container. Terminate TLS in front of it — a reverse proxy (Caddy, Traefik, or a second nginx with certbot), or a platform load balancer.
+**Edit content:** `https://jeebhar.com/#/admin`, enter `admin.token`, edit, **Save changes**.
+The first save creates `~/jeebhar-data/content.json`; until then the site shows
+`api/seed/default-content.json`.
 
-Minimal host-level nginx in front of the stack:
+**Change a setting** (email address, token, domains): edit `jeebhar.config.json`, run
+`npm run release`. Nothing else holds settings.
 
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name jeebhar.com;
+**Read enquiries if an email went missing:** every enquiry is saved before it is emailed.
+File Manager → `jeebhar-data/enquiries.jsonl`.
 
-    ssl_certificate     /etc/letsencrypt/live/jeebhar.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/jeebhar.com/privkey.pem;
+**Undo the last content save:** in File Manager, copy `content.previous.json` over
+`content.json`.
 
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_set_header Host              $host;
-        proxy_set_header X-Real-IP         $remote_addr;
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-
-server {
-    listen 80;
-    server_name jeebhar.com;
-    return 301 https://$host$request_uri;
-}
-```
-
-The API sets `trust proxy`, so rate limiting sees real client IPs through `X-Forwarded-For`.
-
----
-
-## Split deployment (static host + API host)
-
-The frontend is a static bundle, so it can go to Vercel, Netlify, S3 + CloudFront or GitHub Pages while the API runs elsewhere.
-
-1. Build with the absolute API URL:
-   ```bash
-   VITE_API_BASE_URL=https://api.jeebhar.com/api npm --prefix client run build
-   ```
-2. Publish `client/dist`.
-3. Set `CLIENT_ORIGIN=https://jeebhar.com` on the API so CORS allows the static origin.
-4. Configure the static host to rewrite unknown paths to `/index.html`.
-
----
-
-## Environment variables
-
-### Server (`server/.env`)
-
-| Variable                                              | Required | Default                 | Notes                                                     |
-| ----------------------------------------------------- | -------- | ----------------------- | --------------------------------------------------------- |
-| `NODE_ENV`                                            | no       | `development`           |                                                           |
-| `PORT`                                                | no       | `5000`                  |                                                           |
-| `LOG_LEVEL`                                           | no       | `info`                  | `error` \| `warn` \| `info` \| `debug`                    |
-| `MONGODB_URI`                                         | **yes**  | —                       | boot fails without it                                     |
-| `ADMIN_TOKEN`                                         | **yes**  | —                       | ≥24 chars enforced in production                          |
-| `CLIENT_ORIGIN`                                       | no       | `http://localhost:5173` | comma-separated                                           |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | no       | —                       | all blank ⇒ notifications skipped, enquiries still stored |
-| `MAIL_TO` / `MAIL_FROM`                               | no       | —                       | required for delivery                                     |
-| `RATE_LIMIT_WINDOW_MS`                                | no       | `900000`                |                                                           |
-| `RATE_LIMIT_MAX`                                      | no       | `100`                   |                                                           |
-| `RATE_LIMIT_CONTACT_MAX`                              | no       | `5`                     |                                                           |
-
-### Client (build time)
-
-| Variable                  | Default                     | Notes                   |
-| ------------------------- | --------------------------- | ----------------------- |
-| `VITE_API_BASE_URL`       | `http://localhost:5000/api` | inlined into the bundle |
-| `VITE_REQUEST_TIMEOUT_MS` | `15000`                     |                         |
-| `VITE_DEV_API_TARGET`     | `http://localhost:5000`     | dev proxy only          |
-
-> `VITE_*` values are **compiled into the JavaScript** and readable by anyone. Never put a secret there. The admin token is entered at runtime for exactly this reason.
-
----
-
-## Rollback
-
-Images are tagged with the release version and the short commit SHA:
-
-```bash
-cd /srv/jeebhar
-docker compose down
-# pin the previous tag in docker-compose.yml, e.g. server:1.2.3
-docker compose up -d
-```
-
-Content is data, not code, so a rollback does not revert content edits. Take a Mongo dump before a risky change:
-
-```bash
-docker compose exec mongo mongodump --archive=/tmp/jeebhar.gz --gzip \
-  -u "$MONGO_USER" -p "$MONGO_PASSWORD" --authenticationDatabase admin
-docker compose cp mongo:/tmp/jeebhar.gz ./backup-$(date +%F).gz
-```
+**Back up:** download `~/jeebhar-data/` and `public_html/uploads/`.
 
 ---
 
 ## Troubleshooting
 
-| Symptom                                                | Cause                                | Fix                                                                               |
-| ------------------------------------------------------ | ------------------------------------ | --------------------------------------------------------------------------------- |
-| Boot fails: `Missing required environment variable(s)` | `MONGODB_URI` or `ADMIN_TOKEN` unset | fill in `server/.env` or the compose `.env`                                       |
-| `/api/health` returns 503                              | database not connected               | check `MONGODB_URI` and that `mongo` is healthy                                   |
-| Site loads, content does not                           | wrong `VITE_API_BASE_URL`, or CORS   | check the browser network tab; align `CLIENT_ORIGIN`                              |
-| `PUT /api/content` → 401                               | no token sent                        | set `Authorization: Bearer …`                                                     |
-| `PUT /api/content` → 403                               | token mismatch                       | compare with `ADMIN_TOKEN` on the server                                          |
-| Contact form succeeds, no email                        | SMTP unset or refused                | check `SMTP_*`; the response's `notified: false` reports this                     |
-| CI: integration tests skipped                          | in-memory MongoDB binary unavailable | expected on restricted runners; `http-pipeline.test.js` still covers the pipeline |
-| CD: "Deploy skipped"                                   | `DEPLOY_HOST` not set                | add the deploy secrets, or deploy manually from GHCR                              |
+| Symptom                                           | Likely cause and fix                                                                                                                                                                   |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 500 error on every page                           | PHP older than 8.1 → raise it (step 2). Or a `.htaccess` edited by hand → redeploy.                                                                                                    |
+| Site loads, "Cannot reach the server"             | `public_html/api` missing → redeploy and include hidden files.                                                                                                                         |
+| Editor says "Admin editing is disabled"           | `admin.token` empty or shorter than 16 characters.                                                                                                                                     |
+| Enquiry succeeds but no email                     | Wrong `mail.smtp.pass` (must be a Gmail App Password), or Gmail blocked it. Try `"transport": "mail"` with `"from": "website@jeebhar.com"`. The enquiry is still in `enquiries.jsonl`. |
+| Upload fails with "larger than the server allows" | Raise `upload_max_filesize` in `api/.user.ini` (default 16 MB) and `uploads.maxMegabytes`.                                                                                             |
+| jeebhar.de shows a certificate warning            | AutoSSL hasn't issued that certificate yet — wait, or run it manually under SSL.                                                                                                       |
+
+## CI
+
+`.github/workflows/ci.yml` checks the PHP API (on PHP 8.1, the oldest supported version),
+lints, typechecks and tests the client, and builds the Bluehost bundle with a throwaway
+config. Deploys run from your machine with `npm run release`, so your real config and
+SSH key never leave it.
