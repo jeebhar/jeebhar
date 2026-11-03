@@ -30,3 +30,12 @@ yarn-error.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+# Jeebhar PHP / Bluehost
+jeebhar.config.json      # the ONE config file — secrets live here, never commit it
+api/config.php           # generated from jeebhar.config.json
+api/data/
+uploads/
+dist-bluehost/
+*.bundle
+*.tgz
