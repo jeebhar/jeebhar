@@ -22,7 +22,7 @@ export const HeroSection = ({ eyebrow, heading, subheading, mediaKitUrl }: HeroS
       {/* Decorative brand glow — hidden from assistive tech. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-brand-cyan/10 blur-3xl"
+        className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[820px] max-w-[100vw] -translate-x-1/2 rounded-full bg-brand-cyan/10 blur-3xl"
       />
 
       <div className="relative grid gap-6">
