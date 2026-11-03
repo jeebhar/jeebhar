@@ -1,0 +1,60 @@
+{
+  "$comment": "THE one config file for Jeebhar. Copy to jeebhar.config.json (git-ignored) and fill in. `npm run build:bluehost` turns it into everything the site needs; nothing else holds settings or secrets.",
+
+  "bluehost": {
+    "$comment": "SSH login from Bluehost → Websites → Settings → SSH Access. Enable SSH there first.",
+    "sshHost": "50.6.35.167",
+    "sshUser": "your-cpanel-username",
+    "sshPort": 22,
+    "remoteWebRoot": "public_html",
+    "remoteDataDir": "jeebhar-data"
+  },
+
+  "domains": {
+    "$comment": "Every domain serves the same site. Add jeebhar.de and jeebhar.in as alias (parked) domains of jeebhar.com in Bluehost. defaultLanguage picks the first language a new visitor sees; the toggle overrides it.",
+    "primary": "jeebhar.com",
+    "redirectWwwToApex": true,
+    "sites": [
+      { "host": "jeebhar.com", "defaultLanguage": "en" },
+      { "host": "jeebhar.in", "defaultLanguage": "en" },
+      { "host": "jeebhar.de", "defaultLanguage": "de" }
+    ]
+  },
+
+  "admin": {
+    "$comment": "Password for the content editor at https://jeebhar.com/#/admin. At least 16 characters. Generate: node -e \"console.log(require('crypto').randomBytes(24).toString('hex'))\"",
+    "token": ""
+  },
+
+  "mail": {
+    "$comment": "Where contact-form enquiries are emailed. transport 'smtp' is most reliable (Gmail needs an App Password). transport 'mail' uses Bluehost's built-in mailer with no setup — then use a 'from' address on your own domain, e.g. website@jeebhar.com.",
+    "to": "jeebhar410@gmail.com",
+    "from": "jeebhar410@gmail.com",
+    "fromName": "Jeebhar Website",
+    "transport": "smtp",
+    "smtp": {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "secure": "tls",
+      "user": "jeebhar410@gmail.com",
+      "pass": ""
+    }
+  },
+
+  "uploads": {
+    "maxMegabytes": 10
+  },
+
+  "rateLimit": {
+    "contactPer15Min": 5
+  },
+
+  "site": {
+    "timezone": "Europe/Berlin"
+  },
+
+  "dev": {
+    "$comment": "Local development only: `npm run dev` runs the PHP API on this port and Vite proxies /api to it.",
+    "apiPort": 5000
+  }
+}

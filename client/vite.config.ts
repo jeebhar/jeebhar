@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config';
 /**
  * Vite configuration.
  *
- * The dev proxy forwards `/api` to the Express server so the browser sees a
+ * The dev proxy forwards `/api` and `/uploads` to the PHP dev server so the browser sees a
  * single origin in development — no CORS surprises, and the production build
  * only needs VITE_API_BASE_URL.
  */
@@ -13,11 +13,10 @@ export default defineConfig({
 
   server: {
     port: 5173,
+    // The PHP API (npm run dev:api) serves both the API and uploaded files.
     proxy: {
-      '/api': {
-        target: process.env.VITE_DEV_API_TARGET ?? 'http://localhost:5000',
-        changeOrigin: true,
-      },
+      '/api': { target: process.env.VITE_DEV_API_TARGET ?? 'http://localhost:5000', changeOrigin: true },
+      '/uploads': { target: process.env.VITE_DEV_API_TARGET ?? 'http://localhost:5000', changeOrigin: true },
     },
   },
 

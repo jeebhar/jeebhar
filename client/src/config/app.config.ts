@@ -8,10 +8,11 @@
 const trimTrailingSlash = (value: string): string => value.replace(/\/+$/, '');
 
 export const appConfig = {
-  /** Base URL of the API, e.g. `https://api.jeebhar.com/api`. */
-  apiBaseUrl: trimTrailingSlash(
-    (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:5000/api'
-  ),
+  /**
+   * Base URL of the API. `/api` works everywhere: on Bluehost the API sits on the
+   * same domain, and in development Vite proxies `/api` to the PHP dev server.
+   */
+  apiBaseUrl: trimTrailingSlash((import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '/api'),
 
   /** How long a request may run before it is aborted (ms). */
   requestTimeoutMs: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS ?? 15_000),
