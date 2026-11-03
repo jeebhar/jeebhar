@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { Alert, Button, Section, Spinner, TextField } from '../ui';
 import { useContactForm } from '../../features/contact/hooks/use-contact-form';
 import type { ContactDetails } from '../../models/site-content.model';
+import { useI18n } from '../../i18n';
 
 /**
  * VIEW — the enquiry form.
@@ -16,6 +17,7 @@ interface ContactSectionProps {
 }
 
 export const ContactSection = ({ contact }: ContactSectionProps) => {
+  const { t } = useI18n();
   const { values, errors, state, feedback, setField, blurField, submit } = useContactForm();
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -24,16 +26,12 @@ export const ContactSection = ({ contact }: ContactSectionProps) => {
   };
 
   return (
-    <Section
-      id="contact"
-      title="Contact Us"
-      description="Tell us about your restaurant and what you want to achieve."
-    >
+    <Section id="contact" title={t('contact.title')} description={t('contact.description')}>
       <div className="grid gap-10 lg:grid-cols-[1.4fr,1fr]">
         <form onSubmit={onSubmit} noValidate className="grid gap-5">
           <div className="grid gap-5 sm:grid-cols-2">
             <TextField
-              label="Name"
+              label={t('contact.name')}
               value={values.name}
               error={errors.name}
               autoComplete="name"
@@ -42,7 +40,7 @@ export const ContactSection = ({ contact }: ContactSectionProps) => {
               onBlur={() => blurField('name', values.name)}
             />
             <TextField
-              label="Email"
+              label={t('contact.email')}
               type="email"
               value={values.email}
               error={errors.email}
@@ -52,7 +50,7 @@ export const ContactSection = ({ contact }: ContactSectionProps) => {
               onBlur={() => blurField('email', values.email)}
             />
             <TextField
-              label="Phone number"
+              label={t('contact.phone')}
               type="tel"
               value={values.phone}
               error={errors.phone}
@@ -62,7 +60,7 @@ export const ContactSection = ({ contact }: ContactSectionProps) => {
               onBlur={() => blurField('phone', values.phone)}
             />
             <TextField
-              label="Subject"
+              label={t('contact.subject')}
               value={values.subject}
               error={errors.subject}
               required
@@ -72,12 +70,12 @@ export const ContactSection = ({ contact }: ContactSectionProps) => {
           </div>
 
           <TextField
-            label="Message"
+            label={t('contact.body')}
             rows={6}
             value={values.body}
             error={errors.body}
             required
-            placeholder="What are you working on, and what does success look like?"
+            placeholder={t('contact.bodyPlaceholder')}
             onChange={(value) => setField('body', value)}
             onBlur={() => blurField('body', values.body)}
           />
@@ -90,8 +88,8 @@ export const ContactSection = ({ contact }: ContactSectionProps) => {
               disabled={state === 'submitting'}
               aria-busy={state === 'submitting'}
             >
-              {state === 'submitting' ? <Spinner label="Sending" /> : null}
-              {state === 'submitting' ? 'Sending…' : 'Send enquiry'}
+              {state === 'submitting' ? <Spinner label={t('contact.sending')} /> : null}
+              {state === 'submitting' ? t('contact.sending') : t('contact.send')}
             </Button>
           </div>
 
@@ -99,7 +97,7 @@ export const ContactSection = ({ contact }: ContactSectionProps) => {
         </form>
 
         <aside className="h-fit rounded-2xl border border-white/10 bg-brand-800/40 p-6">
-          <h3 className="text-lg font-semibold text-white">Prefer to reach us directly?</h3>
+          <h3 className="text-lg font-semibold text-white">{t('contact.direct')}</h3>
           <address className="mt-4 grid gap-3 text-sm not-italic text-brand-100">
             <span>{contact.address}</span>
             <a href={`mailto:${contact.email}`} className="text-brand-cyan hover:text-brand-mint">

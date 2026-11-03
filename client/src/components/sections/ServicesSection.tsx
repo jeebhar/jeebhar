@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Section } from '../ui';
 import type { ServiceItem } from '../../models/site-content.model';
+import { useI18n } from '../../i18n';
 
 /**
  * VIEW — services as an accessible accordion.
@@ -16,14 +17,11 @@ interface ServicesSectionProps {
 }
 
 export const ServicesSection = ({ services }: ServicesSectionProps) => {
+  const { t } = useI18n();
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <Section
-      id="services"
-      title="Our Services"
-      description="Four ways we grow restaurant brands — tap any card to read the detail."
-    >
+    <Section id="services" title={t('services.title')} description={t('services.description')}>
       <ul className="grid gap-4 sm:grid-cols-2">
         {services.map((service, index) => {
           const isOpen = openIndex === index;

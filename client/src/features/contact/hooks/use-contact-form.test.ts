@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useContactForm } from './use-contact-form';
+import { ApiError } from '../../../services/http-client';
 
 /** The hook's only collaborator is the API module, so that is what we stub. */
 const submitMock = vi.fn();
@@ -54,7 +55,7 @@ describe('useContactForm', () => {
   });
 
   it('surfaces the server message when submission fails', async () => {
-    submitMock.mockRejectedValue(new Error('Service unavailable'));
+    submitMock.mockRejectedValue(new ApiError('Service unavailable', 503));
     const { result } = renderHook(() => useContactForm());
 
     fill(result);
@@ -66,6 +67,18 @@ describe('useContactForm', () => {
     expect(result.current.feedback).toBe('Service unavailable');
     // The user's input must survive a failure so they can retry.
     expect(result.current.values.name).toBe('Asha Rao');
+  });
+
+  it('shows a translated generic message for an unexpected failure', async () => {
+    submitMock.mockRejectedValue(new Error('socket hang up'));
+    const { result } = renderHook(() => useContactForm());
+
+    fill(result);
+    await act(async () => {
+      await result.current.submit();
+    });
+
+    expect(result.current.feedback).toBe('Unable to send your enquiry. Please try again.');
   });
 
   it('validates a field on blur and clears the error once it is corrected', () => {

@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { App } from './app/App';
+import { I18nProvider } from './i18n';
 import './assets/styles/index.css';
 
 /** Entry point: mount the app. Nothing else belongs in this file. */
@@ -14,6 +15,8 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
-    <App />
+    <I18nProvider>
+      <App />
+    </I18nProvider>
   </StrictMode>
 );

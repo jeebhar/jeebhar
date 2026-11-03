@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
 
 import { Button } from './Button';
+import { useI18n } from '../../i18n';
 
 /**
  * VIEW — a horizontally scrollable rail with keyboard-reachable arrows.
@@ -34,6 +35,7 @@ export const Carousel = <T,>({
   label,
   emptyMessage = 'Nothing to show yet.',
 }: CarouselProps<T>) => {
+  const { t } = useI18n();
   const railRef = useRef<HTMLUListElement>(null);
 
   const scroll = useCallback((direction: -1 | 1) => {
@@ -67,7 +69,7 @@ export const Carousel = <T,>({
         <Button
           variant="outline"
           size="sm"
-          aria-label={`Scroll ${label} backwards`}
+          aria-label={t('carousel.back', { label })}
           onClick={() => scroll(-1)}
         >
           <span aria-hidden="true">&larr;</span>
@@ -75,7 +77,7 @@ export const Carousel = <T,>({
         <Button
           variant="outline"
           size="sm"
-          aria-label={`Scroll ${label} forwards`}
+          aria-label={t('carousel.forward', { label })}
           onClick={() => scroll(1)}
         >
           <span aria-hidden="true">&rarr;</span>

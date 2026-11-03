@@ -3,11 +3,21 @@ import { useState } from 'react';
 import { Alert, Button, Logo, Section, Spinner, TextField } from '../components/ui';
 import { EditableRowList } from '../components/admin/EditableRowList';
 import type { FieldDescriptor } from '../components/admin/EditableRowList';
+import { LocalizedTextField } from '../components/admin/LocalizedTextField';
 import { useContentEditor } from '../features/content/hooks/use-content-editor';
-import type { ReelItem, SiteContent, WorkItem } from '../models/site-content.model';
+import type {
+  ContactDetails,
+  MetricDoc,
+  ReelDoc,
+  ServiceDoc,
+  SiteContentDocument,
+  WorkDoc,
+} from '../models/site-content.model';
 
 /**
  * PAGE — the content editor, reachable only at #/admin.
+ *
+ * Every visible piece of content is edited here, in English and Deutsch.
  *
  * The admin token is typed in per session and held in memory only: never in
  * localStorage, never in the bundle, never in the URL. The server verifies it on
@@ -15,40 +25,60 @@ import type { ReelItem, SiteContent, WorkItem } from '../models/site-content.mod
  */
 
 interface AdminPageProps {
-  content: SiteContent;
-  onSaved: (content: SiteContent) => void;
+  content: SiteContentDocument;
+  onSaved: (content: SiteContentDocument) => void;
   onExit: () => void;
 }
 
-const WORK_FIELDS: ReadonlyArray<FieldDescriptor<WorkItem>> = [
-  { key: 'title', label: 'Cuisine or client', placeholder: 'South Indian' },
-  {
-    key: 'imageUrl',
-    label: 'Image URL',
-    placeholder: 'https://… or /work/south-indian.jpg',
-    hint: 'An https:// link, or a path to a file you added under client/public.',
-  },
-  { key: 'description', label: 'Description', rows: 2, placeholder: 'What did we deliver?' },
+const IMAGE_HINT = 'An https:// link, or a path such as /uploads/photo.jpg.';
+
+const SERVICE_FIELDS: ReadonlyArray<FieldDescriptor<ServiceDoc>> = [
+  { key: 'title', label: 'Title', kind: 'localized', placeholder: 'Brand Management' },
+  { key: 'shortDescription', label: 'Tile text', kind: 'localized' },
+  { key: 'longDescription', label: 'Text when expanded', kind: 'localized', rows: 4 },
 ];
 
-const REEL_FIELDS: ReadonlyArray<FieldDescriptor<ReelItem>> = [
-  { key: 'title', label: 'Title', placeholder: 'Kitchen rush' },
+const METRIC_FIELDS: ReadonlyArray<FieldDescriptor<MetricDoc>> = [
+  { key: 'value', label: 'Number', placeholder: '250K+' },
+  { key: 'label', label: 'Label', kind: 'localized', placeholder: 'Followers reached' },
+];
+
+const WORK_FIELDS: ReadonlyArray<FieldDescriptor<WorkDoc>> = [
+  { key: 'title', label: 'Cuisine or client', kind: 'localized', placeholder: 'South Indian' },
+  { key: 'imageUrl', label: 'Image', placeholder: '/uploads/south-indian.jpg', hint: IMAGE_HINT },
+  { key: 'description', label: 'Description', kind: 'localized', rows: 2 },
+];
+
+const REEL_FIELDS: ReadonlyArray<FieldDescriptor<ReelDoc>> = [
+  { key: 'title', label: 'Title', kind: 'localized', placeholder: 'Kitchen rush' },
   {
     key: 'instagramUrl',
     label: 'Instagram URL',
     placeholder: 'https://www.instagram.com/reel/…',
+    hint: 'Opens in a new tab when the cover is clicked.',
   },
   {
     key: 'thumbnailUrl',
-    label: 'Cover image (optional)',
-    placeholder: '/reels/DQWG611DCCr.jpg',
-    hint: 'Leave blank to show a branded tile. See client/public/reels/README.md.',
+    label: 'Cover photo (optional)',
+    placeholder: '/uploads/reel-cover.jpg',
+    hint: 'Leave blank to show a branded tile.',
   },
+];
+
+const CONTACT_FIELDS: ReadonlyArray<{ key: keyof ContactDetails; label: string }> = [
+  { key: 'address', label: 'Address' },
+  { key: 'email', label: 'Email' },
+  { key: 'phone', label: 'Phone' },
+  { key: 'instagramUrl', label: 'Instagram URL' },
+  { key: 'facebookUrl', label: 'Facebook URL' },
+  { key: 'youtubeUrl', label: 'YouTube URL' },
+  { key: 'tiktokUrl', label: 'TikTok URL' },
 ];
 
 export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
   const [token, setToken] = useState('');
   const editor = useContentEditor(content);
+  const { singles, updateSingles } = editor;
 
   const onSave = async () => {
     const saved = await editor.save(token);
@@ -58,13 +88,16 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
   };
 
   return (
-    <main id="main" className="mx-auto max-w-5xl px-4 pb-20">
+    <main id="main" className="mx-auto max-w-5xl px-4 pb-32">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 py-6">
         <div className="flex items-center gap-4">
           <Logo variant="mark" height={40} />
           <div>
             <h1 className="text-xl font-bold text-white">Content editor</h1>
-            <p className="text-sm text-brand-200">Manage the Work, Reels and Travel carousels.</p>
+            <p className="text-sm text-brand-200">
+              Everything on the site, in English and Deutsch. Empty German fields show the English
+              text.
+            </p>
           </div>
         </div>
         <Button variant="ghost" onClick={onExit}>
@@ -79,7 +112,7 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
             type="password"
             value={token}
             autoComplete="current-password"
-            placeholder="Paste your ADMIN_TOKEN"
+            placeholder="admin.token from jeebhar.config.json"
             onChange={setToken}
           />
           <p className="text-xs text-brand-200">
@@ -91,6 +124,45 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
 
       <Section title="Content">
         <div className="grid gap-8">
+          <fieldset className="grid gap-4 rounded-2xl border border-white/10 bg-brand-800/30 p-5">
+            <legend className="px-2 text-lg font-semibold text-white">Top of the page</legend>
+            <LocalizedTextField
+              label="Small line above the heading"
+              value={singles.heroEyebrow}
+              onChange={(heroEyebrow) => updateSingles({ heroEyebrow })}
+            />
+            <LocalizedTextField
+              label="Heading"
+              rows={2}
+              value={singles.heroHeading}
+              onChange={(heroHeading) => updateSingles({ heroHeading })}
+            />
+            <LocalizedTextField
+              label="Text under the heading"
+              rows={3}
+              value={singles.heroSubheading}
+              onChange={(heroSubheading) => updateSingles({ heroSubheading })}
+            />
+          </fieldset>
+
+          <EditableRowList
+            legend="Our Services"
+            description="Tiles that expand into the long text when clicked."
+            list={editor.services}
+            fields={SERVICE_FIELDS}
+            addLabel="Add service"
+            emptyMessage="No services yet."
+          />
+
+          <EditableRowList
+            legend="Our Experience — media kit numbers"
+            description="Followers, interactions and other headline numbers. Up to 12."
+            list={editor.metrics}
+            fields={METRIC_FIELDS}
+            addLabel="Add number"
+            emptyMessage="No numbers yet."
+          />
+
           <EditableRowList
             legend="Our Work"
             description="One card per cuisine or client. Rows without a title and image are dropped on save."
@@ -117,34 +189,71 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
             addLabel="Add travel reel"
             emptyMessage="No travel reels yet."
           />
+
+          <fieldset className="grid gap-4 rounded-2xl border border-white/10 bg-brand-800/30 p-5">
+            <legend className="px-2 text-lg font-semibold text-white">Media kit</legend>
+            <TextField
+              label="Media kit file"
+              value={singles.mediaKitUrl}
+              placeholder="/brand/media-kit.pdf"
+              onChange={(mediaKitUrl) => updateSingles({ mediaKitUrl })}
+            />
+            <p className="text-xs text-brand-200">
+              Opened by the “Media Kit” button. A PDF opens in the browser; a Word file downloads.
+            </p>
+          </fieldset>
+
+          <fieldset className="grid gap-4 rounded-2xl border border-white/10 bg-brand-800/30 p-5 md:grid-cols-2">
+            <legend className="px-2 text-lg font-semibold text-white">
+              Contact details &amp; social links (footer)
+            </legend>
+            <TextField
+              label="Brand name"
+              value={singles.brandName}
+              onChange={(brandName) => updateSingles({ brandName })}
+            />
+            {CONTACT_FIELDS.map((field) => (
+              <TextField
+                key={field.key}
+                label={field.label}
+                value={singles.contact[field.key]}
+                onChange={(value) =>
+                  updateSingles({ contact: { ...singles.contact, [field.key]: value } })
+                }
+              />
+            ))}
+          </fieldset>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Button
-            variant="accent"
-            size="lg"
-            onClick={() => void onSave()}
-            disabled={editor.state === 'saving' || !editor.dirty}
-            aria-busy={editor.state === 'saving'}
-          >
-            {editor.state === 'saving' ? <Spinner label="Saving" /> : null}
-            {editor.state === 'saving' ? 'Saving…' : 'Save changes'}
-          </Button>
+        {/* Sticky so Save is reachable from anywhere on this long page. */}
+        <div className="sticky bottom-0 -mx-4 mt-8 border-t border-white/10 bg-brand-950/95 px-4 py-4 backdrop-blur">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="accent"
+              size="lg"
+              onClick={() => void onSave()}
+              disabled={editor.state === 'saving' || !editor.dirty}
+              aria-busy={editor.state === 'saving'}
+            >
+              {editor.state === 'saving' ? <Spinner label="Saving" /> : null}
+              {editor.state === 'saving' ? 'Saving…' : 'Save changes'}
+            </Button>
 
-          <Button variant="ghost" onClick={editor.reset} disabled={!editor.dirty}>
-            Discard changes
-          </Button>
+            <Button variant="ghost" onClick={editor.reset} disabled={!editor.dirty}>
+              Discard changes
+            </Button>
 
-          {!editor.dirty && editor.state !== 'saved' && (
-            <span className="text-sm text-brand-200">No unsaved changes.</span>
+            {!editor.dirty && editor.state !== 'saved' && (
+              <span className="text-sm text-brand-200">No unsaved changes.</span>
+            )}
+          </div>
+
+          {editor.feedback && (
+            <Alert tone={editor.state === 'saved' ? 'success' : 'error'} className="mt-3">
+              {editor.feedback}
+            </Alert>
           )}
         </div>
-
-        {editor.feedback && (
-          <Alert tone={editor.state === 'saved' ? 'success' : 'error'} className="mt-4">
-            {editor.feedback}
-          </Alert>
-        )}
       </Section>
     </main>
   );

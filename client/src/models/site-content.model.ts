@@ -1,10 +1,28 @@
 /**
  * MODEL — the shape of the data the app renders.
  *
- * These types are the contract between the API and every view. Components take
- * them as props and hold no shape knowledge of their own, so a change here is
- * caught by the compiler everywhere it matters.
+ * Two layers, on purpose:
+ *
+ *   SiteContentDocument   what the API stores and the editor edits.
+ *                         Translatable text is { en, de }.
+ *   SiteContent           what the page renders: the document resolved to ONE
+ *                         language by `localizeContent()`. Plain strings only.
+ *
+ * Section components only ever see SiteContent, so they know nothing about
+ * languages — switching language changes their props, not their code.
  */
+
+import type { Language } from '../i18n/languages';
+
+/** A piece of text the owner writes in both languages. German may be blank. */
+export type LocalizedText = Record<Language, string>;
+
+/** `T` with the listed keys turned into LocalizedText. */
+type Localized<T, K extends keyof T> = Omit<T, K> & { [P in K]: LocalizedText };
+
+// ---------------------------------------------------------------------------
+// View model — one language, what components render
+// ---------------------------------------------------------------------------
 
 export interface ServiceItem {
   _id?: string;
@@ -25,8 +43,8 @@ export interface ReelItem {
   title: string;
   /**
    * Optional cover image. Instagram does not expose reel covers to third
-   * parties, so this is either a self-hosted path under `client/public` or
-   * blank — in which case the view renders a branded tile instead.
+   * parties, so this is either an uploaded image or blank — in which case the
+   * view renders a branded tile instead.
    */
   thumbnailUrl: string;
   instagramUrl: string;
@@ -64,8 +82,45 @@ export interface SiteContent {
   contact: ContactDetails;
 }
 
-/** A blank editor row — used when the admin adds an item. */
-export const emptyWorkItem = (): WorkItem => ({ title: '', imageUrl: '', description: '' });
+// ---------------------------------------------------------------------------
+// Document model — both languages, what the API stores and the editor edits
+// ---------------------------------------------------------------------------
 
-/** A blank editor row — used when the admin adds a reel. */
-export const emptyReelItem = (): ReelItem => ({ title: '', thumbnailUrl: '', instagramUrl: '' });
+export type ServiceDoc = Localized<ServiceItem, 'title' | 'shortDescription' | 'longDescription'>;
+export type WorkDoc = Localized<WorkItem, 'title' | 'description'>;
+export type ReelDoc = Localized<ReelItem, 'title'>;
+export type MetricDoc = Localized<MediaMetric, 'label'>;
+
+export interface SiteContentDocument {
+  brandName: string;
+  heroEyebrow: LocalizedText;
+  heroHeading: LocalizedText;
+  heroSubheading: LocalizedText;
+  mediaKitUrl: string;
+  services: ServiceDoc[];
+  work: WorkDoc[];
+  reels: ReelDoc[];
+  travelReels: ReelDoc[];
+  mediaKitMetrics: MetricDoc[];
+  contact: ContactDetails;
+}
+
+export const emptyText = (): LocalizedText => ({ en: '', de: '' });
+
+/** Blank editor rows — used when the admin clicks "Add …". */
+export const emptyServiceDoc = (): ServiceDoc => ({
+  title: emptyText(),
+  shortDescription: emptyText(),
+  longDescription: emptyText(),
+});
+export const emptyWorkDoc = (): WorkDoc => ({
+  title: emptyText(),
+  imageUrl: '',
+  description: emptyText(),
+});
+export const emptyReelDoc = (): ReelDoc => ({
+  title: emptyText(),
+  thumbnailUrl: '',
+  instagramUrl: '',
+});
+export const emptyMetricDoc = (): MetricDoc => ({ label: emptyText(), value: '' });

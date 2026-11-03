@@ -6,6 +6,10 @@ import { ReelsSection } from '../components/sections/ReelsSection';
 import { ServicesSection } from '../components/sections/ServicesSection';
 import { WorkSection } from '../components/sections/WorkSection';
 import { resolveMediaKitUrl } from '../utils/content';
+import type { ReactNode } from 'react';
+
+import { useI18n } from '../i18n';
+import type { MessageKey } from '../i18n';
 import type { SiteContent } from '../models/site-content.model';
 
 /**
@@ -21,59 +25,87 @@ import type { SiteContent } from '../models/site-content.model';
  *     the page down.
  *   - Each section sits in its own ErrorBoundary, so one failure degrades to a
  *     single line of copy instead of a blank page.
+ *
+ * `content` is already in the visitor's language (see App), so the only
+ * translation here is the fixed section copy.
  */
 
 interface HomePageProps {
   content: SiteContent;
 }
 
-export const HomePage = ({ content }: HomePageProps) => (
-  <main id="main" className="mx-auto max-w-6xl px-4">
-    <ErrorBoundary label="The introduction">
-      <HeroSection
-        eyebrow={content.heroEyebrow}
-        heading={content.heroHeading}
-        subheading={content.heroSubheading}
-        mediaKitUrl={resolveMediaKitUrl(content.mediaKitUrl)}
-      />
+/** An ErrorBoundary whose fallback copy is in the current language. */
+const SectionBoundary = ({ labelKey, children }: { labelKey: MessageKey; children: ReactNode }) => {
+  const { t } = useI18n();
+  const label = t(labelKey);
+  return (
+    <ErrorBoundary
+      label={label}
+      fallback={
+        <section className="py-10">
+          <p className="rounded-lg border border-white/10 bg-brand-800/40 px-4 py-3 text-sm text-brand-200">
+            {t('section.failed', { label })}
+          </p>
+        </section>
+      }
+    >
+      {children}
     </ErrorBoundary>
+  );
+};
 
-    <ErrorBoundary label="Our Services">
-      <ServicesSection services={content.services ?? []} />
-    </ErrorBoundary>
+export const HomePage = ({ content }: HomePageProps) => {
+  const { t } = useI18n();
 
-    <ErrorBoundary label="Our Experience">
-      <ExperienceSection metrics={content.mediaKitMetrics ?? []} />
-    </ErrorBoundary>
+  return (
+    <main id="main" className="mx-auto max-w-6xl px-4">
+      <SectionBoundary labelKey="nav.home">
+        <HeroSection
+          eyebrow={content.heroEyebrow}
+          heading={content.heroHeading}
+          subheading={content.heroSubheading}
+          mediaKitUrl={resolveMediaKitUrl(content.mediaKitUrl)}
+        />
+      </SectionBoundary>
 
-    <ErrorBoundary label="Our Work">
-      <WorkSection work={content.work ?? []} />
-    </ErrorBoundary>
+      <SectionBoundary labelKey="services.title">
+        <ServicesSection services={content.services ?? []} />
+      </SectionBoundary>
 
-    {/* Two usages of one component — see ReelsSection. */}
-    <ErrorBoundary label="Our Reels">
-      <ReelsSection
-        id="reels"
-        title="Our Reels"
-        description="Food vlogs and restaurant ad creatives that earned the scroll-stop."
-        reels={content.reels ?? []}
-        badge="Food & ads"
-      />
-    </ErrorBoundary>
+      <SectionBoundary labelKey="experience.title">
+        <ExperienceSection metrics={content.mediaKitMetrics ?? []} />
+      </SectionBoundary>
 
-    <ErrorBoundary label="Travel Reels">
-      <ReelsSection
-        id="travel"
-        title="Travel Reels"
-        description="Destination and travel storytelling, shot and edited in house."
-        reels={content.travelReels ?? []}
-        badge="Travel"
-        emptyMessage="Travel reels are coming soon."
-      />
-    </ErrorBoundary>
+      <SectionBoundary labelKey="work.title">
+        <WorkSection work={content.work ?? []} />
+      </SectionBoundary>
 
-    <ErrorBoundary label="Contact Us">
-      <ContactSection contact={content.contact} />
-    </ErrorBoundary>
-  </main>
-);
+      {/* Two usages of one component — see ReelsSection. */}
+      <SectionBoundary labelKey="reels.title">
+        <ReelsSection
+          id="reels"
+          title={t('reels.title')}
+          description={t('reels.description')}
+          reels={content.reels ?? []}
+          badge={t('reels.badge')}
+          emptyMessage={t('reels.empty')}
+        />
+      </SectionBoundary>
+
+      <SectionBoundary labelKey="travel.title">
+        <ReelsSection
+          id="travel"
+          title={t('travel.title')}
+          description={t('travel.description')}
+          reels={content.travelReels ?? []}
+          badge={t('travel.badge')}
+          emptyMessage={t('travel.empty')}
+        />
+      </SectionBoundary>
+
+      <SectionBoundary labelKey="contact.title">
+        <ContactSection contact={content.contact} />
+      </SectionBoundary>
+    </main>
+  );
+};

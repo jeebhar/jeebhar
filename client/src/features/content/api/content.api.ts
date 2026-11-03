@@ -1,5 +1,5 @@
 import { httpClient } from '../../../services/http-client';
-import type { SiteContent } from '../../../models/site-content.model';
+import type { SiteContentDocument } from '../../../models/site-content.model';
 
 /**
  * API — the content endpoints, typed.
@@ -8,10 +8,21 @@ import type { SiteContent } from '../../../models/site-content.model';
  * and verbs, so an endpoint rename never reaches a component.
  */
 
-export const fetchSiteContent = (signal?: AbortSignal): Promise<SiteContent> =>
-  httpClient.get<SiteContent>('/content', { signal });
+/** Both languages; the page resolves one with `localizeContent()`. */
+export const fetchSiteContent = (signal?: AbortSignal): Promise<SiteContentDocument> =>
+  httpClient.get<SiteContentDocument>('/content', { signal });
 
-export const saveSiteContent = (content: SiteContent, adminToken: string): Promise<SiteContent> =>
-  httpClient.put<SiteContent>('/content', content, {
-    headers: { Authorization: `Bearer ${adminToken}` },
-  });
+/**
+ * The token goes in both headers: some shared hosts (Bluehost included) strip
+ * `Authorization` before PHP sees it, but never a custom header.
+ */
+export const adminHeaders = (adminToken: string): Record<string, string> => ({
+  Authorization: `Bearer ${adminToken}`,
+  'X-Admin-Token': adminToken,
+});
+
+export const saveSiteContent = (
+  content: SiteContentDocument,
+  adminToken: string
+): Promise<SiteContentDocument> =>
+  httpClient.put<SiteContentDocument>('/content', content, { headers: adminHeaders(adminToken) });

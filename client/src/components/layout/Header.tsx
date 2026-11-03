@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 
 import { Button, Logo } from '../ui';
+import { LanguageToggle } from './LanguageToggle';
 import { NAV_SECTIONS, NAV_SECTION_IDS } from '../../config/navigation';
 import { useActiveSection } from '../../hooks/use-active-section';
 import { scrollToSection } from '../../utils/scroll';
+import { useI18n } from '../../i18n';
 
 /**
- * VIEW — sticky site header: logo, section nav, media-kit link.
+ * VIEW — sticky site header: logo, section nav, media-kit link, EN/DE toggle.
  *
  * The logo sits top-left as the home affordance; the active section is
  * highlighted from scroll position and exposed via `aria-current`.
@@ -18,6 +20,7 @@ interface HeaderProps {
 }
 
 export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
+  const { t } = useI18n();
   const [menuOpen, setMenuOpen] = useState(false);
   const activeSection = useActiveSection(NAV_SECTION_IDS);
 
@@ -44,12 +47,12 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
             go('home');
           }}
           className="shrink-0 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-cyan"
-          aria-label={`${brandName} — back to top`}
+          aria-label={t('nav.backToTop', { brand: brandName })}
         >
           <Logo variant="full" height={36} />
         </a>
 
-        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+        <nav aria-label={t('nav.main')} className="hidden items-center gap-1 lg:flex">
           {NAV_SECTIONS.map((section) => (
             <a
               key={section.id}
@@ -65,7 +68,7 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
                   : 'text-brand-100 hover:bg-white/10 hover:text-white'
               }`}
             >
-              {section.label}
+              {t(section.labelKey)}
             </a>
           ))}
           <a
@@ -74,26 +77,30 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
             rel="noopener noreferrer"
             className="ml-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-cyan"
           >
-            Media Kit
+            {t('nav.mediaKit')}
           </a>
+          <LanguageToggle className="ml-2" />
         </nav>
 
-        <Button
-          variant="outline"
-          size="sm"
-          className="lg:hidden"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav"
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          {menuOpen ? 'Close' : 'Menu'}
-        </Button>
+        {/* Phones and tablets: the language switch stays visible next to the menu. */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <LanguageToggle />
+          <Button
+            variant="outline"
+            size="sm"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? t('nav.close') : t('nav.menu')}
+          </Button>
+        </div>
       </div>
 
       {menuOpen && (
         <nav
           id="mobile-nav"
-          aria-label="Main"
+          aria-label={t('nav.main')}
           className="border-t border-white/10 bg-brand-950 px-4 py-3 lg:hidden"
         >
           <ul className="grid gap-1">
@@ -108,7 +115,7 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
                   }}
                   className="block rounded-md px-3 py-2.5 text-brand-100 hover:bg-white/10 hover:text-white"
                 >
-                  {section.label}
+                  {t(section.labelKey)}
                 </a>
               </li>
             ))}
@@ -119,7 +126,7 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
                 rel="noopener noreferrer"
                 className="block rounded-md px-3 py-2.5 font-semibold text-accent hover:bg-white/10"
               >
-                Media Kit
+                {t('nav.mediaKit')}
               </a>
             </li>
           </ul>

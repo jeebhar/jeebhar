@@ -3,22 +3,24 @@
  *
  * The header, the mobile menu and the scroll targets all read this list, so a
  * new section is one entry here rather than three edits (Single Source of Truth
- * / Open–Closed).
+ * / Open–Closed). Labels are message keys, translated in the header.
  */
+
+import type { MessageKey } from '../i18n/messages';
 
 export interface NavSection {
   id: string;
-  label: string;
+  labelKey: MessageKey;
 }
 
 export const NAV_SECTIONS: readonly NavSection[] = [
-  { id: 'home', label: 'Home' },
-  { id: 'services', label: 'Our Services' },
-  { id: 'experience', label: 'Our Experience' },
-  { id: 'work', label: 'Our Work' },
-  { id: 'reels', label: 'Our Reels' },
-  { id: 'travel', label: 'Travel Reels' },
-  { id: 'contact', label: 'Contact Us' },
+  { id: 'home', labelKey: 'nav.home' },
+  { id: 'services', labelKey: 'nav.services' },
+  { id: 'experience', labelKey: 'nav.experience' },
+  { id: 'work', labelKey: 'nav.work' },
+  { id: 'reels', labelKey: 'nav.reels' },
+  { id: 'travel', labelKey: 'nav.travel' },
+  { id: 'contact', labelKey: 'nav.contact' },
 ] as const;
 
 /**

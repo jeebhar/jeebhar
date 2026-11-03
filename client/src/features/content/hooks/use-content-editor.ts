@@ -1,18 +1,31 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { saveSiteContent } from '../api/content.api';
-import { emptyReelItem, emptyWorkItem } from '../../../models/site-content.model';
-import type { ReelItem, SiteContent, WorkItem } from '../../../models/site-content.model';
+import {
+  emptyMetricDoc,
+  emptyReelDoc,
+  emptyServiceDoc,
+  emptyWorkDoc,
+} from '../../../models/site-content.model';
+import type {
+  MetricDoc,
+  ReelDoc,
+  ServiceDoc,
+  SiteContentDocument,
+  WorkDoc,
+} from '../../../models/site-content.model';
+import { ApiError } from '../../../services/http-client';
 import { toErrorMessage } from '../../../utils/error';
 
 /**
- * CONTROLLER (hook) — the admin editor's draft state.
+ * CONTROLLER (hook) — the admin editor's draft of the whole site.
  *
  * Edits are kept local until "Save", then sent with the admin token.
  *
- * The three editable collections (work, food reels, travel reels) are driven by
- * one internal `useEditableList`, so a fourth collection is one more line here
- * rather than another four callbacks on the public interface.
+ * The draft has two parts:
+ *   - `singles`: one-off fields (brand, hero text, media kit, contact details)
+ *   - five lists (services, stats, work, reels, travel reels), all driven by one
+ *     internal `useEditableList`, so another list is one more line here.
  */
 
 export interface EditableRow<T> {
@@ -28,16 +41,26 @@ export interface EditableList<T> {
   remove: (key: string) => void;
 }
 
+/** Everything that is not a list. */
+export type SingleFields = Pick<
+  SiteContentDocument,
+  'brandName' | 'heroEyebrow' | 'heroHeading' | 'heroSubheading' | 'mediaKitUrl' | 'contact'
+>;
+
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
 interface UseContentEditorResult {
-  work: EditableList<WorkItem>;
-  reels: EditableList<ReelItem>;
-  travelReels: EditableList<ReelItem>;
+  singles: SingleFields;
+  updateSingles: (patch: Partial<SingleFields>) => void;
+  services: EditableList<ServiceDoc>;
+  metrics: EditableList<MetricDoc>;
+  work: EditableList<WorkDoc>;
+  reels: EditableList<ReelDoc>;
+  travelReels: EditableList<ReelDoc>;
   state: SaveState;
   feedback: string;
   dirty: boolean;
-  save: (token: string) => Promise<SiteContent | null>;
+  save: (token: string) => Promise<SiteContentDocument | null>;
   reset: () => void;
 }
 
@@ -101,18 +124,35 @@ const useEditableList = <T extends { _id?: string }>(
   return { rows, update, add, remove, syncFrom, values };
 };
 
-/** A reel is publishable once it has a title and a link; the cover is optional. */
-const isPublishableReel = (reel: ReelItem): boolean =>
-  Boolean(reel.title.trim() && reel.instagramUrl.trim());
+// English is required for anything to be published; German is optional and
+// falls back to English on the German page.
+const has = (value: string | undefined): boolean => Boolean(value?.trim());
+
+const isPublishableService = (item: ServiceDoc): boolean =>
+  has(item.title.en) && has(item.shortDescription.en) && has(item.longDescription.en);
+
+const isPublishableMetric = (item: MetricDoc): boolean => has(item.label.en) && has(item.value);
 
 /** A work card needs both a title and an image to render. */
-const isPublishableWork = (item: WorkItem): boolean =>
-  Boolean(item.title.trim() && item.imageUrl.trim());
+const isPublishableWork = (item: WorkDoc): boolean => has(item.title.en) && has(item.imageUrl);
 
-export const useContentEditor = (content: SiteContent | null): UseContentEditorResult => {
+/** A reel is publishable once it has a title and a link; the cover is optional. */
+const isPublishableReel = (reel: ReelDoc): boolean => has(reel.title.en) && has(reel.instagramUrl);
+
+const singlesOf = (content: SiteContentDocument): SingleFields => ({
+  brandName: content.brandName,
+  heroEyebrow: content.heroEyebrow,
+  heroHeading: content.heroHeading,
+  heroSubheading: content.heroSubheading,
+  mediaKitUrl: content.mediaKitUrl,
+  contact: content.contact,
+});
+
+export const useContentEditor = (content: SiteContentDocument): UseContentEditorResult => {
   const [state, setState] = useState<SaveState>('idle');
   const [feedback, setFeedback] = useState('');
   const [dirty, setDirty] = useState(false);
+  const [singles, setSingles] = useState<SingleFields>(() => singlesOf(content));
 
   const touch = useCallback(() => {
     setDirty(true);
@@ -120,49 +160,66 @@ export const useContentEditor = (content: SiteContent | null): UseContentEditorR
     setFeedback('');
   }, []);
 
-  const work = useEditableList<WorkItem>('work', emptyWorkItem, touch);
-  const reels = useEditableList<ReelItem>('reel', emptyReelItem, touch);
-  const travelReels = useEditableList<ReelItem>('travel', emptyReelItem, touch);
+  const updateSingles = useCallback(
+    (patch: Partial<SingleFields>) => {
+      touch();
+      setSingles((current) => ({ ...current, ...patch }));
+    },
+    [touch]
+  );
+
+  const services = useEditableList<ServiceDoc>('service', emptyServiceDoc, touch);
+  const metrics = useEditableList<MetricDoc>('metric', emptyMetricDoc, touch);
+  const work = useEditableList<WorkDoc>('work', emptyWorkDoc, touch);
+  const reels = useEditableList<ReelDoc>('reel', emptyReelDoc, touch);
+  const travelReels = useEditableList<ReelDoc>('travel', emptyReelDoc, touch);
 
   // A successful save sends the new content up to the parent, which passes it
   // straight back down as a fresh `content` object. Without this ref the sync
   // effect below would treat that as externally-loaded content and immediately
   // clear the "Content saved." confirmation the user needs to see.
-  const justSavedRef = useRef<SiteContent | null>(null);
+  const justSavedRef = useRef<SiteContentDocument | null>(null);
 
   // The signature of the content the draft was last synced from. Comparing
   // values rather than object identity means a caller that rebuilds `content`
   // on every render cannot drive this effect in a loop.
   const syncedSignatureRef = useRef<string | null>(null);
 
+  const { syncFrom: syncServices } = services;
+  const { syncFrom: syncMetrics } = metrics;
   const { syncFrom: syncWork } = work;
   const { syncFrom: syncReels } = reels;
   const { syncFrom: syncTravelReels } = travelReels;
 
+  const loadDraft = useCallback(
+    (source: SiteContentDocument) => {
+      setSingles(singlesOf(source));
+      syncServices(source.services ?? []);
+      syncMetrics(source.mediaKitMetrics ?? []);
+      syncWork(source.work ?? []);
+      syncReels(source.reels ?? []);
+      syncTravelReels(source.travelReels ?? []);
+    },
+    [syncServices, syncMetrics, syncWork, syncReels, syncTravelReels]
+  );
+
   const reset = useCallback(() => {
-    syncWork(content?.work ?? []);
-    syncReels(content?.reels ?? []);
-    syncTravelReels(content?.travelReels ?? []);
+    loadDraft(content);
     setDirty(false);
     setState('idle');
     setFeedback('');
-  }, [content, syncWork, syncReels, syncTravelReels]);
+  }, [content, loadDraft]);
 
-  // Re-sync the draft only when the editable content has actually changed.
+  // Re-sync the draft only when the content has actually changed.
   useEffect(() => {
-    const signature = JSON.stringify({
-      work: content?.work ?? [],
-      reels: content?.reels ?? [],
-      travelReels: content?.travelReels ?? [],
-    });
-
+    const signature = JSON.stringify(content);
     if (signature === syncedSignatureRef.current) {
       return;
     }
     syncedSignatureRef.current = signature;
 
     // Our own save round-tripping back through the parent — keep the feedback.
-    if (content && content === justSavedRef.current) {
+    if (content === justSavedRef.current) {
       justSavedRef.current = null;
       return;
     }
@@ -170,15 +227,14 @@ export const useContentEditor = (content: SiteContent | null): UseContentEditorR
     reset();
   }, [content, reset]);
 
+  const serviceValues = services.values;
+  const metricValues = metrics.values;
   const workValues = work.values;
   const reelValues = reels.values;
   const travelReelValues = travelReels.values;
 
   const save = useCallback(
-    async (token: string): Promise<SiteContent | null> => {
-      if (!content) {
-        return null;
-      }
+    async (token: string): Promise<SiteContentDocument | null> => {
       if (!token.trim()) {
         setState('error');
         setFeedback('Enter your admin token before saving.');
@@ -186,8 +242,11 @@ export const useContentEditor = (content: SiteContent | null): UseContentEditorR
       }
 
       // Half-filled rows are dropped rather than sent to be rejected.
-      const payload: SiteContent = {
+      const payload: SiteContentDocument = {
         ...content,
+        ...singles,
+        services: serviceValues.filter(isPublishableService),
+        mediaKitMetrics: metricValues.filter(isPublishableMetric),
         work: workValues.filter(isPublishableWork),
         reels: reelValues.filter(isPublishableReel),
         travelReels: travelReelValues.filter(isPublishableReel),
@@ -199,21 +258,44 @@ export const useContentEditor = (content: SiteContent | null): UseContentEditorR
       try {
         const saved = await saveSiteContent(payload, token.trim());
         justSavedRef.current = saved;
-        syncWork(saved.work);
-        syncReels(saved.reels);
-        syncTravelReels(saved.travelReels);
+        loadDraft(saved);
         setDirty(false);
         setState('saved');
-        setFeedback('Content saved.');
+        setFeedback('Content saved. The site shows it straight away.');
         return saved;
       } catch (error) {
         setState('error');
-        setFeedback(toErrorMessage(error, 'Unable to save content.'));
+        // Name the first rejected field, e.g. "work.2.imageUrl — Enter an https:// URL…".
+        const detail = error instanceof ApiError ? error.details?.[0] : undefined;
+        const message = toErrorMessage(error, 'Unable to save content.');
+        setFeedback(detail ? `${message} ${detail.field} — ${detail.message}` : message);
         return null;
       }
     },
-    [content, workValues, reelValues, travelReelValues, syncWork, syncReels, syncTravelReels]
+    [
+      content,
+      singles,
+      serviceValues,
+      metricValues,
+      workValues,
+      reelValues,
+      travelReelValues,
+      loadDraft,
+    ]
   );
 
-  return { work, reels, travelReels, state, feedback, dirty, save, reset };
+  return {
+    singles,
+    updateSingles,
+    services,
+    metrics,
+    work,
+    reels,
+    travelReels,
+    state,
+    feedback,
+    dirty,
+    save,
+    reset,
+  };
 };

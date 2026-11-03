@@ -7,12 +7,31 @@
 
 const trimTrailingSlash = (value: string): string => value.replace(/\/+$/, '');
 
+const parseDomainLanguages = (raw: string | undefined): Record<string, string> => {
+  try {
+    const parsed: unknown = JSON.parse(raw ?? '{}');
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+};
+
 export const appConfig = {
   /**
    * Base URL of the API. `/api` works everywhere: on Bluehost the API sits on the
    * same domain, and in development Vite proxies `/api` to the PHP dev server.
    */
-  apiBaseUrl: trimTrailingSlash((import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '/api'),
+  apiBaseUrl: trimTrailingSlash(
+    (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '/api'
+  ),
+
+  /**
+   * Host → default language, from jeebhar.config.json (domains.sites), injected
+   * by `npm run build:bluehost`. jeebhar.de opens in German, .com/.in in English.
+   */
+  domainLanguages: parseDomainLanguages(
+    import.meta.env.VITE_DOMAIN_LANGUAGES as string | undefined
+  ),
 
   /** How long a request may run before it is aborted (ms). */
   requestTimeoutMs: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS ?? 15_000),

@@ -1,5 +1,6 @@
 import { Card, Carousel, MediaCover, Section } from '../ui';
 import type { ReelItem } from '../../models/site-content.model';
+import { useI18n } from '../../i18n';
 
 /**
  * VIEW — a rail of Instagram reels; each card opens the reel in a new tab.
@@ -26,31 +27,34 @@ export const ReelsSection = ({
   description,
   reels,
   badge,
-  emptyMessage = 'Reels are coming soon.',
-}: ReelsSectionProps) => (
-  <Section id={id} title={title} description={description}>
-    <Carousel
-      items={reels}
-      label={title}
-      emptyMessage={emptyMessage}
-      keyOf={(reel, index) => reel._id ?? `${reel.instagramUrl}-${index}`}
-      renderItem={(reel) => (
-        <Card as="a" href={reel.instagramUrl} interactive className="group h-full">
-          <div className="relative">
-            <MediaCover src={reel.thumbnailUrl} title={reel.title} badge={badge} />
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 grid place-items-center bg-brand-950/30 text-4xl text-white/90 opacity-0 transition group-hover:opacity-100"
-            >
-              &#9658;
-            </span>
-          </div>
-          <div className="p-5">
-            <h3 className="text-lg font-semibold text-white">{reel.title}</h3>
-            <p className="mt-1 text-sm text-brand-cyan">Watch on Instagram &rarr;</p>
-          </div>
-        </Card>
-      )}
-    />
-  </Section>
-);
+  emptyMessage,
+}: ReelsSectionProps) => {
+  const { t } = useI18n();
+  return (
+    <Section id={id} title={title} description={description}>
+      <Carousel
+        items={reels}
+        label={title}
+        emptyMessage={emptyMessage ?? t('reels.empty')}
+        keyOf={(reel, index) => reel._id ?? `${reel.instagramUrl}-${index}`}
+        renderItem={(reel) => (
+          <Card as="a" href={reel.instagramUrl} interactive className="group h-full">
+            <div className="relative">
+              <MediaCover src={reel.thumbnailUrl} title={reel.title} badge={badge} />
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 grid place-items-center bg-brand-950/30 text-4xl text-white/90 opacity-0 transition group-hover:opacity-100"
+              >
+                &#9658;
+              </span>
+            </div>
+            <div className="p-5">
+              <h3 className="text-lg font-semibold text-white">{reel.title}</h3>
+              <p className="mt-1 text-sm text-brand-cyan">{t('reels.watch')} &rarr;</p>
+            </div>
+          </Card>
+        )}
+      />
+    </Section>
+  );
+};

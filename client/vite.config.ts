@@ -15,8 +15,14 @@ export default defineConfig({
     port: 5173,
     // The PHP API (npm run dev:api) serves both the API and uploaded files.
     proxy: {
-      '/api': { target: process.env.VITE_DEV_API_TARGET ?? 'http://localhost:5000', changeOrigin: true },
-      '/uploads': { target: process.env.VITE_DEV_API_TARGET ?? 'http://localhost:5000', changeOrigin: true },
+      '/api': {
+        target: process.env.VITE_DEV_API_TARGET ?? 'http://localhost:5000',
+        changeOrigin: true,
+      },
+      '/uploads': {
+        target: process.env.VITE_DEV_API_TARGET ?? 'http://localhost:5000',
+        changeOrigin: true,
+      },
     },
   },
 

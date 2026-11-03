@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { fetchSiteContent } from '../api/content.api';
-import type { SiteContent } from '../../../models/site-content.model';
+import type { SiteContentDocument } from '../../../models/site-content.model';
 import { toErrorMessage } from '../../../utils/error';
 
 /**
@@ -14,14 +14,14 @@ import { toErrorMessage } from '../../../utils/error';
 export type LoadStatus = 'loading' | 'ready' | 'error';
 
 interface UseSiteContentResult {
-  content: SiteContent | null;
+  content: SiteContentDocument | null;
   status: LoadStatus;
   error: string;
   reload: () => void;
 }
 
 export const useSiteContent = (): UseSiteContentResult => {
-  const [content, setContent] = useState<SiteContent | null>(null);
+  const [content, setContent] = useState<SiteContentDocument | null>(null);
   const [status, setStatus] = useState<LoadStatus>('loading');
   const [error, setError] = useState('');
   const [reloadToken, setReloadToken] = useState(0);
