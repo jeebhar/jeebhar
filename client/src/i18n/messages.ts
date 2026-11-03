@@ -14,10 +14,8 @@ const en = {
   // Navigation
   'nav.home': 'Home',
   'nav.services': 'Our Services',
-  'nav.experience': 'Our Experience',
   'nav.work': 'Our Work',
   'nav.reels': 'Our Reels',
-  'nav.travel': 'Travel Reels',
   'nav.contact': 'Contact Us',
   'nav.mediaKit': 'Media Kit',
   'nav.menu': 'Menu',
@@ -96,10 +94,8 @@ export type Messages = Record<MessageKey, string>;
 const de: Messages = {
   'nav.home': 'Start',
   'nav.services': 'Leistungen',
-  'nav.experience': 'Erfahrung',
   'nav.work': 'Unsere Arbeit',
   'nav.reels': 'Unsere Reels',
-  'nav.travel': 'Reise-Reels',
   'nav.contact': 'Kontakt',
   'nav.mediaKit': 'Media Kit',
   'nav.menu': 'Menü',

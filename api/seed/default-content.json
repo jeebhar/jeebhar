@@ -305,45 +305,77 @@
   ],
   "mediaKitMetrics": [
     {
-      "_id": "metric-27",
+      "_id": "metric-01",
       "label": {
-        "en": "Followers reached",
-        "de": "Erreichte Follower"
+        "en": "Reach",
+        "de": "Reichweite"
       },
-      "value": "250K+"
+      "value": "3M"
     },
     {
-      "_id": "metric-28",
+      "_id": "metric-02",
       "label": {
-        "en": "Monthly interactions",
-        "de": "Monatliche Interaktionen"
+        "en": "Impressions",
+        "de": "Impressionen"
       },
-      "value": "1.8M+"
+      "value": "90K"
     },
     {
-      "_id": "metric-29",
+      "_id": "metric-03",
       "label": {
-        "en": "Campaigns delivered",
-        "de": "Umgesetzte Kampagnen"
+        "en": "Average likes per post",
+        "de": "Ø Likes pro Beitrag"
       },
-      "value": "120+"
+      "value": "2K"
     },
     {
-      "_id": "metric-30",
+      "_id": "metric-04",
       "label": {
-        "en": "Cuisines covered",
-        "de": "Abgedeckte Küchen"
+        "en": "Instagram followers",
+        "de": "Instagram-Follower"
       },
-      "value": "8+"
+      "value": "9.7K"
+    },
+    {
+      "_id": "metric-05",
+      "label": {
+        "en": "Facebook followers",
+        "de": "Facebook-Follower"
+      },
+      "value": "15K"
+    },
+    {
+      "_id": "metric-06",
+      "label": {
+        "en": "YouTube subscribers",
+        "de": "YouTube-Abonnenten"
+      },
+      "value": "970"
+    },
+    {
+      "_id": "metric-07",
+      "label": {
+        "en": "TikTok followers",
+        "de": "TikTok-Follower"
+      },
+      "value": "350"
+    },
+    {
+      "_id": "metric-08",
+      "label": {
+        "en": "Audience in Germany",
+        "de": "Publikum in Deutschland"
+      },
+      "value": "30%"
     }
   ],
   "contact": {
     "address": "Your Office Address, City, Country",
-    "email": "hello@jeebhar.com",
+    "email": "jeebhar410@gmail.com",
     "phone": "+91-90000-00000",
     "facebookUrl": "https://www.facebook.com/",
     "youtubeUrl": "https://www.youtube.com/",
-    "instagramUrl": "https://www.instagram.com/",
+    "instagramUrl": "https://www.instagram.com/jeebhar/",
     "tiktokUrl": "https://www.tiktok.com/"
   }
 }

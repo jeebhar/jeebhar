@@ -14,12 +14,14 @@ export interface NavSection {
 }
 
 export const NAV_SECTIONS: readonly NavSection[] = [
+  // The five entries from the brief. "Our Experience" (media-kit numbers) and
+  // "Travel Reels" are still on the page — they sit under Services and Reels —
+  // but are not separate menu items, to keep the menu short on phones.
+  // The Media Kit button and the EN | DE toggle follow these in the header.
   { id: 'home', labelKey: 'nav.home' },
   { id: 'services', labelKey: 'nav.services' },
-  { id: 'experience', labelKey: 'nav.experience' },
   { id: 'work', labelKey: 'nav.work' },
   { id: 'reels', labelKey: 'nav.reels' },
-  { id: 'travel', labelKey: 'nav.travel' },
   { id: 'contact', labelKey: 'nav.contact' },
 ] as const;
 

@@ -11,8 +11,11 @@ import { cleanup } from '@testing-library/react';
  */
 
 // jsdom has no matchMedia; the header and scroll helper both query it.
+// A plain function, not vi.fn(): `vi.restoreAllMocks()` below would strip a
+// mock's implementation after the first test, and matchMedia() would then
+// return undefined for every later test that renders the header.
 if (!window.matchMedia) {
-  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+  window.matchMedia = ((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -21,7 +24,7 @@ if (!window.matchMedia) {
     addListener: vi.fn(),
     removeListener: vi.fn(),
     dispatchEvent: vi.fn(),
-  }));
+  })) as unknown as typeof window.matchMedia;
 }
 
 // jsdom has no IntersectionObserver; useActiveSection constructs one.
