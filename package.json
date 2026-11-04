@@ -7,7 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "install:all": "npm install && npm --prefix client install",
+    "install:all": "npm install && cd client && npm install",
     "dev": "concurrently -n api,client -c cyan,magenta \"npm:dev:api\" \"npm:dev:client\"",
     "dev:api": "node scripts/dev-api.mjs",
     "dev:client": "npm --prefix client run dev --",
