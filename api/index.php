@@ -45,7 +45,16 @@ try {
 
     switch ($route) {
         case 'GET /health':
-            Response::json(200, ['status' => 'ok', 'php' => PHP_VERSION]);
+            // Which optional extensions are on — useful when mail or uploads misbehave.
+            Response::json(200, [
+                'status' => 'ok',
+                'php' => PHP_VERSION,
+                'extensions' => [
+                    'openssl' => extension_loaded('openssl'),
+                    'mbstring' => extension_loaded('mbstring'),
+                    'fileinfo' => extension_loaded('fileinfo'),
+                ],
+            ]);
 
         case 'GET /content':
             $content = (new ContentRepository($config->dataDir(), __DIR__ . '/seed/default-content.json'))->get();

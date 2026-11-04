@@ -67,6 +67,9 @@ final class Mailer
     /** @param array<string, string> $headers */
     private function sendSmtp(string $from, string $to, array $headers, string $body): void
     {
+        if (!extension_loaded('openssl')) {
+            throw new \RuntimeException('SMTP needs the PHP openssl extension (enable extension=openssl in php.ini)');
+        }
         $host = $this->config->string('mail.smtp.host');
         $port = $this->config->int('mail.smtp.port', 587);
         // "tls" = STARTTLS on 587, "ssl" = implicit TLS on 465.

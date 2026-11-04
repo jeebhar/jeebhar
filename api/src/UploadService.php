@@ -32,6 +32,40 @@ final class UploadService
         $this->config = $config;
     }
 
+    /**
+     * The file's real type, from its bytes.
+     *
+     * Uses the fileinfo extension when it is enabled, otherwise reads the
+     * file's signature directly — fileinfo is off in a fresh Windows PHP
+     * install, and uploads must still work there.
+     */
+    private static function detectType(string $path): string
+    {
+        if (class_exists(\finfo::class)) {
+            return (new \finfo(FILEINFO_MIME_TYPE))->file($path) ?: '';
+        }
+
+        $head = (string) file_get_contents($path, false, null, 0, 16);
+        $signatures = [
+            "\xFF\xD8\xFF" => 'image/jpeg',
+            "\x89PNG\r\n\x1A\n" => 'image/png',
+            'GIF87a' => 'image/gif',
+            'GIF89a' => 'image/gif',
+            '%PDF-' => 'application/pdf',
+            "PK\x03\x04" => 'application/zip',
+            "\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1" => 'application/msword',
+        ];
+        foreach ($signatures as $magic => $type) {
+            if (strncmp($head, $magic, strlen($magic)) === 0) {
+                return $type;
+            }
+        }
+        if (strncmp($head, 'RIFF', 4) === 0 && substr($head, 8, 4) === 'WEBP') {
+            return 'image/webp';
+        }
+        return '';
+    }
+
     /** @param array<string, mixed>|null $file one entry of $_FILES */
     public function store(?array $file): string
     {
@@ -50,7 +84,7 @@ final class UploadService
             throw new HttpError(413, 'Files may be at most ' . ($maxBytes / 1048576) . ' MB.');
         }
 
-        $mime = (new \finfo(FILEINFO_MIME_TYPE))->file((string) $file['tmp_name']) ?: '';
+        $mime = self::detectType((string) $file['tmp_name']);
         // .docx is a zip; finfo on some hosts only reports that.
         if ($mime === 'application/zip' && preg_match('/\.docx$/i', (string) $file['name'])) {
             $mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
