@@ -58,7 +58,7 @@ export const HomePage = ({ content }: HomePageProps) => {
   const { t } = useI18n();
 
   return (
-    <main id="main" className="mx-auto max-w-6xl px-4">
+    <main id="main">
       <SectionBoundary labelKey="nav.home">
         <HeroSection
           eyebrow={content.heroEyebrow}
@@ -68,45 +68,47 @@ export const HomePage = ({ content }: HomePageProps) => {
           mediaKitUrl={resolveMediaKitUrl(content.mediaKitUrl)}
         />
       </SectionBoundary>
+      {/* The hero spans the full width; everything else sits in the page column. */}
+      <div className="mx-auto max-w-6xl px-4">
+        <SectionBoundary labelKey="services.title">
+          <ServicesSection services={content.services ?? []} />
+        </SectionBoundary>
 
-      <SectionBoundary labelKey="services.title">
-        <ServicesSection services={content.services ?? []} />
-      </SectionBoundary>
+        <SectionBoundary labelKey="experience.title">
+          <ExperienceSection metrics={content.mediaKitMetrics ?? []} />
+        </SectionBoundary>
 
-      <SectionBoundary labelKey="experience.title">
-        <ExperienceSection metrics={content.mediaKitMetrics ?? []} />
-      </SectionBoundary>
+        <SectionBoundary labelKey="work.title">
+          <WorkSection work={content.work ?? []} />
+        </SectionBoundary>
 
-      <SectionBoundary labelKey="work.title">
-        <WorkSection work={content.work ?? []} />
-      </SectionBoundary>
+        {/* Two usages of one component — see ReelsSection. */}
+        <SectionBoundary labelKey="reels.title">
+          <ReelsSection
+            id="reels"
+            title={t('reels.title')}
+            description={t('reels.description')}
+            reels={content.reels ?? []}
+            badge={t('reels.badge')}
+            emptyMessage={t('reels.empty')}
+          />
+        </SectionBoundary>
 
-      {/* Two usages of one component — see ReelsSection. */}
-      <SectionBoundary labelKey="reels.title">
-        <ReelsSection
-          id="reels"
-          title={t('reels.title')}
-          description={t('reels.description')}
-          reels={content.reels ?? []}
-          badge={t('reels.badge')}
-          emptyMessage={t('reels.empty')}
-        />
-      </SectionBoundary>
+        <SectionBoundary labelKey="travel.title">
+          <ReelsSection
+            id="travel"
+            title={t('travel.title')}
+            description={t('travel.description')}
+            reels={content.travelReels ?? []}
+            badge={t('travel.badge')}
+            emptyMessage={t('travel.empty')}
+          />
+        </SectionBoundary>
 
-      <SectionBoundary labelKey="travel.title">
-        <ReelsSection
-          id="travel"
-          title={t('travel.title')}
-          description={t('travel.description')}
-          reels={content.travelReels ?? []}
-          badge={t('travel.badge')}
-          emptyMessage={t('travel.empty')}
-        />
-      </SectionBoundary>
-
-      <SectionBoundary labelKey="contact.title">
-        <ContactSection contact={content.contact} />
-      </SectionBoundary>
+        <SectionBoundary labelKey="contact.title">
+          <ContactSection contact={content.contact} />
+        </SectionBoundary>
+      </div>
     </main>
   );
 };

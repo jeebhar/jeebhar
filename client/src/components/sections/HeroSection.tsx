@@ -5,13 +5,13 @@ import { scrollToSection } from '../../utils/scroll';
 import { useI18n } from '../../i18n';
 
 /**
- * VIEW — above-the-fold pitch and primary call to action, on a banner image.
+ * VIEW — above-the-fold pitch and primary call to action, on a full-width banner.
  *
- * The banner is decorative (empty alt): the heading carries the meaning. On
- * wide screens it fills the right ~2/3 and fades in from the left, so the text
- * sits on a calm background; on phones it fills the card under a stronger
- * gradient. Either way any photo the owner uploads keeps the text readable.
- * If the image is missing or fails, the brand gradient shows instead.
+ * The photo fills the whole section, edge to edge. It is decorative (empty
+ * alt): the heading carries the meaning. A gradient darkens the text side so
+ * any photo the owner uploads keeps the text readable, and the whole layer
+ * fades out at the bottom into the page background, with no visible edge. If the image is missing
+ * or fails, the brand gradient shows instead.
  */
 
 interface HeroSectionProps {
@@ -35,25 +35,30 @@ export const HeroSection = ({
   const showImage = Boolean(imageUrl) && !imageFailed;
 
   return (
-    <section id="home" aria-labelledby="home-heading" className="scroll-mt-24 pt-6 md:pt-10">
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-brand-600 via-brand-900 to-brand-950 px-6 py-16 sm:px-10 md:px-14 md:py-28">
+    <section
+      id="home"
+      aria-labelledby="home-heading"
+      className="relative isolate flex min-h-[78svh] items-center overflow-hidden"
+    >
+      {/* Photo + readability gradient, faded out at the bottom into the page. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 bg-gradient-to-br from-brand-600 via-brand-900 to-transparent [mask-image:linear-gradient(to_bottom,black_70%,transparent)]"
+      >
         {showImage && (
           <img
             src={imageUrl}
             alt=""
             decoding="async"
             onError={() => setImageFailed(true)}
-            className="absolute inset-y-0 right-0 h-full w-full object-cover object-right md:w-[50%] md:[mask-image:linear-gradient(to_right,transparent,black_35%)]"
+            className="h-full w-full object-cover"
           />
         )}
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-950/95 via-brand-950/70 to-brand-950/25" />
+      </div>
 
-        {/* Readability layer between photo and text. */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-brand-950/95 via-brand-950/85 to-brand-950/65 md:bg-gradient-to-r md:from-brand-950/90 md:via-brand-950/55 md:to-transparent"
-        />
-
-        <div className="relative grid gap-6">
+      <div className="mx-auto w-full max-w-6xl px-4 py-20 md:py-28">
+        <div className="grid gap-6">
           {eyebrow && (
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-cyan">
               {eyebrow}
