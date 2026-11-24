@@ -22,7 +22,7 @@ export const useActiveSection = (sectionIds: readonly string[]): string => {
     }
 
     const observer = new IntersectionObserver(
-      (entries, _observer) => {
+      (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
