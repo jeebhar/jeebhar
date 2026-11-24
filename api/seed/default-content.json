@@ -77,6 +77,54 @@
   ],
   "work": [
     {
+      "_id": "work-accor",
+      "title": {
+        "en": "Accor hotels",
+        "de": "Accor Hotels"
+      },
+      "imageUrl": "/work/accor.jpg",
+      "description": {
+        "en": "Accommodation collaborations with hotels of the Accor group.",
+        "de": "Unterkunfts-Kooperationen mit Hotels der Accor-Gruppe."
+      }
+    },
+    {
+      "_id": "work-myprotein",
+      "title": {
+        "en": "Myprotein",
+        "de": "Myprotein"
+      },
+      "imageUrl": "/work/myprotein.jpg",
+      "description": {
+        "en": "Brand partnership with Myprotein.",
+        "de": "Markenpartnerschaft mit Myprotein."
+      }
+    },
+    {
+      "_id": "work-cookware",
+      "title": {
+        "en": "HexClad & Stoneline",
+        "de": "HexClad & Stoneline"
+      },
+      "imageUrl": "/work/cookware.jpg",
+      "description": {
+        "en": "Cookware collaborations with HexClad and Stoneline.",
+        "de": "Kochgeschirr-Kooperationen mit HexClad und Stoneline."
+      }
+    },
+    {
+      "_id": "work-temu",
+      "title": {
+        "en": "Temu",
+        "de": "Temu"
+      },
+      "imageUrl": "/work/temu.jpg",
+      "description": {
+        "en": "Product collaborations with Temu.",
+        "de": "Produkt-Kooperationen mit Temu."
+      }
+    },
+    {
       "_id": "work-05",
       "title": {
         "en": "South Indian",
@@ -171,14 +219,26 @@
         "en": "Broth steam, herbs and noodles — quiet, fresh frames that still stop the scroll.",
         "de": "Dampfende Brühe, Kräuter und Nudeln – ruhige, frische Bilder, die trotzdem stoppen."
       }
+    },
+    {
+      "_id": "work-more",
+      "title": {
+        "en": "And many more",
+        "de": "Und viele mehr"
+      },
+      "imageUrl": "/work/more.jpg",
+      "description": {
+        "en": "Restaurants, hotels and brands across Germany and Europe.",
+        "de": "Restaurants, Hotels und Marken in ganz Deutschland und Europa."
+      }
     }
   ],
   "reels": [
     {
       "_id": "reel-13",
       "title": {
-        "en": "Food reel 01",
-        "de": "Food-Reel 01"
+        "en": "Noodles & dumplings · Frankfurt",
+        "de": "Nudeln & Dumplings · Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/DQWG611DCCr/",
       "thumbnailUrl": "/reels/DQWG611DCCr.jpg"
@@ -186,8 +246,8 @@
     {
       "_id": "reel-14",
       "title": {
-        "en": "Food reel 02",
-        "de": "Food-Reel 02"
+        "en": "Vada pav · Stuttgart",
+        "de": "Vada Pav · Stuttgart"
       },
       "instagramUrl": "https://www.instagram.com/reel/DPqOeoIjLh_/",
       "thumbnailUrl": "/reels/DPqOeoIjLh_.jpg"
@@ -195,8 +255,8 @@
     {
       "_id": "reel-15",
       "title": {
-        "en": "Food reel 03",
-        "de": "Food-Reel 03"
+        "en": "Indian buffet · Frankfurt",
+        "de": "Indisches Buffet · Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/DYhR4-mM0BV/",
       "thumbnailUrl": "/reels/DYhR4-mM0BV.jpg"
@@ -204,8 +264,8 @@
     {
       "_id": "reel-16",
       "title": {
-        "en": "Food reel 04",
-        "de": "Food-Reel 04"
+        "en": "Nepali momos · Frankfurt",
+        "de": "Nepalesische Momos · Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/Dbu8-CPgzk3/",
       "thumbnailUrl": "/reels/Dbu8-CPgzk3.jpg"
@@ -213,8 +273,8 @@
     {
       "_id": "reel-17",
       "title": {
-        "en": "Food reel 05",
-        "de": "Food-Reel 05"
+        "en": "Veg food at German fairs",
+        "de": "Vegetarisch auf deutschen Volksfesten"
       },
       "instagramUrl": "https://www.instagram.com/reel/DXPCTb4jF2x/",
       "thumbnailUrl": "/reels/DXPCTb4jF2x.jpg"
@@ -222,8 +282,8 @@
     {
       "_id": "reel-18",
       "title": {
-        "en": "Food reel 06",
-        "de": "Food-Reel 06"
+        "en": "Vegan food · Stuttgart",
+        "de": "Veganes Essen · Stuttgart"
       },
       "instagramUrl": "https://www.instagram.com/reel/DR4cFZFiAsH/",
       "thumbnailUrl": "/reels/DR4cFZFiAsH.jpg"
@@ -231,8 +291,8 @@
     {
       "_id": "reel-19",
       "title": {
-        "en": "Food reel 07",
-        "de": "Food-Reel 07"
+        "en": "Burger & döner · Stuttgart",
+        "de": "Burger & Döner · Stuttgart"
       },
       "instagramUrl": "https://www.instagram.com/reel/DP3J4VADCvy/",
       "thumbnailUrl": "/reels/DP3J4VADCvy.jpg"
@@ -240,8 +300,8 @@
     {
       "_id": "reel-20",
       "title": {
-        "en": "Food reel 08",
-        "de": "Food-Reel 08"
+        "en": "Georgian food",
+        "de": "Georgisches Essen"
       },
       "instagramUrl": "https://www.instagram.com/reel/DPLYUGoDJ9U/",
       "thumbnailUrl": "/reels/DPLYUGoDJ9U.jpg"
@@ -251,8 +311,8 @@
     {
       "_id": "travel-21",
       "title": {
-        "en": "Travel reel 01",
-        "de": "Reise-Reel 01"
+        "en": "Accommodation ideas",
+        "de": "Ideen für Unterkünfte"
       },
       "instagramUrl": "https://www.instagram.com/reel/DaiErQFgKyc/",
       "thumbnailUrl": "/reels/DaiErQFgKyc.jpg"
@@ -260,8 +320,8 @@
     {
       "_id": "travel-22",
       "title": {
-        "en": "Travel reel 02",
-        "de": "Reise-Reel 02"
+        "en": "Belgium",
+        "de": "Belgien"
       },
       "instagramUrl": "https://www.instagram.com/reel/DTdFmqADE_Z/",
       "thumbnailUrl": "/reels/DTdFmqADE_Z.jpg"
@@ -269,8 +329,8 @@
     {
       "_id": "travel-23",
       "title": {
-        "en": "Travel reel 03",
-        "de": "Reise-Reel 03"
+        "en": "Veg food in Europe",
+        "de": "Vegetarisch essen in Europa"
       },
       "instagramUrl": "https://www.instagram.com/reel/DRz0ai4jE-p/",
       "thumbnailUrl": "/reels/DRz0ai4jE-p.jpg"
@@ -278,8 +338,8 @@
     {
       "_id": "travel-24",
       "title": {
-        "en": "Travel reel 04",
-        "de": "Reise-Reel 04"
+        "en": "Rüdesheim",
+        "de": "Rüdesheim"
       },
       "instagramUrl": "https://www.instagram.com/reel/DOQW7hWDOtA/",
       "thumbnailUrl": "/reels/DOQW7hWDOtA.jpg"
@@ -287,8 +347,8 @@
     {
       "_id": "travel-25",
       "title": {
-        "en": "Travel reel 05",
-        "de": "Reise-Reel 05"
+        "en": "Hidden spot in Frankfurt",
+        "de": "Geheimtipp in Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/DNYF1KLsFEq/",
       "thumbnailUrl": "/reels/DNYF1KLsFEq.jpg"
@@ -296,8 +356,8 @@
     {
       "_id": "travel-26",
       "title": {
-        "en": "Travel reel 06",
-        "de": "Reise-Reel 06"
+        "en": "Venice in Germany",
+        "de": "Venedig in Deutschland"
       },
       "instagramUrl": "https://www.instagram.com/reel/DNFUxQyoo2F/",
       "thumbnailUrl": "/reels/DNFUxQyoo2F.jpg"
@@ -376,6 +436,6 @@
     "facebookUrl": "https://www.facebook.com/jeebhar2.0",
     "youtubeUrl": "https://www.youtube.com/@jeebhar/",
     "instagramUrl": "https://www.instagram.com/jeebhar/",
-    "tiktokUrl": "https://www.tiktok.com/jeebhar"
+    "tiktokUrl": "https://www.tiktok.com/@jeebhar"
   }
 }

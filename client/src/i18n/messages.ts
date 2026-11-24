@@ -36,8 +36,7 @@ const en = {
   'experience.title': 'Our Experience',
   'experience.description': 'A snapshot of what we have delivered for restaurant and food brands.',
   'work.title': 'Our Work',
-  'work.description':
-    'The cuisines we shoot, style and campaign for — from dosa counters to beer halls.',
+  'work.description': 'Brands we partner with, and the cuisines we shoot, style and campaign for.',
   'work.empty': 'Case studies are on their way.',
   'reels.title': 'Our Reels',
   'reels.description': 'Food vlogs and restaurant ad creatives that earned the scroll-stop.',
@@ -118,7 +117,7 @@ const de: Messages = {
   'experience.description': 'Ein Überblick über unsere Ergebnisse für Restaurants und Food-Marken.',
   'work.title': 'Unsere Arbeit',
   'work.description':
-    'Die Küchen, die wir fotografieren, stylen und bewerben — vom Dosa-Stand bis zum Brauhaus.',
+    'Marken, mit denen wir zusammenarbeiten, und die Küchen, die wir fotografieren, stylen und bewerben.',
   'work.empty': 'Referenzen folgen in Kürze.',
   'reels.title': 'Unsere Reels',
   'reels.description': 'Food-Vlogs und Restaurant-Werbung, bei denen man nicht weiterscrollt.',
