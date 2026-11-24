@@ -12,7 +12,7 @@
     "en": "Jeebhar helps restaurants and food brands build an unforgettable social presence through strategy, content and performance campaigns.",
     "de": "Jeebhar hilft Restaurants und Food-Marken, mit Strategie, Content und Performance-Kampagnen eine unvergessliche Social-Media-Präsenz aufzubauen."
   },
-  "heroImageUrl": "/brand/hero-banner.jpg",
+  "heroImageUrl": "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=2000&q=80",
   "mediaKitUrl": "/brand/media-kit.pdf",
   "services": [
     {
@@ -83,7 +83,7 @@
         "en": "Accor hotels",
         "de": "Accor Hotels"
       },
-      "imageUrl": "/work/accor.jpg",
+      "imageUrl": "https://images.unsplash.com/photo-1621293954908-907159247fc8?auto=format&fit=crop&w=1200&h=900&q=80",
       "description": {
         "en": "Accommodation collaborations with hotels of the Accor group.",
         "de": "Unterkunfts-Kooperationen mit Hotels der Accor-Gruppe."
@@ -95,7 +95,7 @@
         "en": "Myprotein",
         "de": "Myprotein"
       },
-      "imageUrl": "/work/myprotein.jpg",
+      "imageUrl": "https://images.unsplash.com/photo-1558017487-06bf9f82613a?auto=format&fit=crop&w=1200&h=900&q=80",
       "description": {
         "en": "Brand partnership with Myprotein.",
         "de": "Markenpartnerschaft mit Myprotein."
@@ -107,7 +107,7 @@
         "en": "HexClad & Stoneline",
         "de": "HexClad & Stoneline"
       },
-      "imageUrl": "/work/cookware.jpg",
+      "imageUrl": "https://images.unsplash.com/photo-1612487439139-c2d7bac13577?auto=format&fit=crop&w=1200&h=900&q=80",
       "description": {
         "en": "Cookware collaborations with HexClad and Stoneline.",
         "de": "Kochgeschirr-Kooperationen mit HexClad und Stoneline."
@@ -119,7 +119,7 @@
         "en": "Temu",
         "de": "Temu"
       },
-      "imageUrl": "/work/temu.jpg",
+      "imageUrl": "https://images.unsplash.com/photo-1760565030243-c92ed557e8da?auto=format&fit=crop&w=1200&h=900&q=80",
       "description": {
         "en": "Product collaborations with Temu.",
         "de": "Produkt-Kooperationen mit Temu."
@@ -227,7 +227,7 @@
         "en": "And many more",
         "de": "Und viele mehr"
       },
-      "imageUrl": "/work/more.jpg",
+      "imageUrl": "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&h=900&q=80",
       "description": {
         "en": "Restaurants, hotels and brands across Germany and Europe.",
         "de": "Restaurants, Hotels und Marken in ganz Deutschland und Europa."
@@ -242,7 +242,7 @@
         "de": "Nudeln & Dumplings · Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/DQWG611DCCr/",
-      "thumbnailUrl": "/reels/DQWG611DCCr.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1632440722248-abcc3214b298?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "reel-14",
@@ -251,7 +251,7 @@
         "de": "Vada Pav · Stuttgart"
       },
       "instagramUrl": "https://www.instagram.com/reel/DPqOeoIjLh_/",
-      "thumbnailUrl": "/reels/DPqOeoIjLh_.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1769030905851-c0e0a4fe5c51?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "reel-15",
@@ -260,7 +260,7 @@
         "de": "Indisches Buffet · Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/DYhR4-mM0BV/",
-      "thumbnailUrl": "/reels/DYhR4-mM0BV.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1742281257707-0c7f7e5ca9c6?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "reel-16",
@@ -269,7 +269,7 @@
         "de": "Nepalesische Momos · Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/Dbu8-CPgzk3/",
-      "thumbnailUrl": "/reels/Dbu8-CPgzk3.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "reel-17",
@@ -278,7 +278,7 @@
         "de": "Vegetarisch auf deutschen Volksfesten"
       },
       "instagramUrl": "https://www.instagram.com/reel/DXPCTb4jF2x/",
-      "thumbnailUrl": "/reels/DXPCTb4jF2x.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1765044203136-fa42c59771ff?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "reel-18",
@@ -287,7 +287,7 @@
         "de": "Veganes Essen · Stuttgart"
       },
       "instagramUrl": "https://www.instagram.com/reel/DR4cFZFiAsH/",
-      "thumbnailUrl": "/reels/DR4cFZFiAsH.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "reel-19",
@@ -296,7 +296,7 @@
         "de": "Burger & Döner · Stuttgart"
       },
       "instagramUrl": "https://www.instagram.com/reel/DP3J4VADCvy/",
-      "thumbnailUrl": "/reels/DP3J4VADCvy.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1530469912745-a215c6b256ea?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "reel-20",
@@ -305,7 +305,7 @@
         "de": "Georgisches Essen"
       },
       "instagramUrl": "https://www.instagram.com/reel/DPLYUGoDJ9U/",
-      "thumbnailUrl": "/reels/DPLYUGoDJ9U.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1687686515394-5f5b7d50b01b?auto=format&fit=crop&w=720&h=960&q=80"
     }
   ],
   "travelReels": [
@@ -316,7 +316,7 @@
         "de": "Ideen für Unterkünfte"
       },
       "instagramUrl": "https://www.instagram.com/reel/DaiErQFgKyc/",
-      "thumbnailUrl": "/reels/DaiErQFgKyc.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "travel-22",
@@ -325,7 +325,7 @@
         "de": "Belgien"
       },
       "instagramUrl": "https://www.instagram.com/reel/DTdFmqADE_Z/",
-      "thumbnailUrl": "/reels/DTdFmqADE_Z.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1548092304-e0205cb0031b?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "travel-23",
@@ -334,7 +334,7 @@
         "de": "Vegetarisch essen in Europa"
       },
       "instagramUrl": "https://www.instagram.com/reel/DRz0ai4jE-p/",
-      "thumbnailUrl": "/reels/DRz0ai4jE-p.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1567575990843-105a1c70d76e?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "travel-24",
@@ -343,7 +343,7 @@
         "de": "Rüdesheim"
       },
       "instagramUrl": "https://www.instagram.com/reel/DOQW7hWDOtA/",
-      "thumbnailUrl": "/reels/DOQW7hWDOtA.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1751225334062-8d639308d4c9?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "travel-25",
@@ -352,7 +352,7 @@
         "de": "Geheimtipp in Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/DNYF1KLsFEq/",
-      "thumbnailUrl": "/reels/DNYF1KLsFEq.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1774112168630-f27f4ff650c8?auto=format&fit=crop&w=720&h=960&q=80"
     },
     {
       "_id": "travel-26",
@@ -361,7 +361,7 @@
         "de": "Venedig in Deutschland"
       },
       "instagramUrl": "https://www.instagram.com/reel/DNFUxQyoo2F/",
-      "thumbnailUrl": "/reels/DNFUxQyoo2F.jpg"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1580122638347-1a84abee0416?auto=format&fit=crop&w=720&h=960&q=80"
     }
   ],
   "mediaKitMetrics": [

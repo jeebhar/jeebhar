@@ -74,6 +74,8 @@ jeebhar.config.json ──► npm run build:bluehost ──► dist-bluehost/  (
 | Footer                   | Contact details & social links | Address, email, phone, Facebook, YouTube, Instagram, TikTok |
 | Media Kit (menu)         | Media kit                      | PDF or Word file, opens in a new tab                        |
 
+Default photos (hero, reel covers, Our Work) are free [Unsplash](https://unsplash.com) photos loaded from `images.unsplash.com`. Replace any of them with **Upload…** in the editor.
+
 Every text field has an **English** and a **Deutsch** box. Leave German empty and the German
 page shows the English text, so you can translate gradually. Interface text (menu, buttons,
 form labels) is in [`client/src/i18n/messages.ts`](client/src/i18n/messages.ts).

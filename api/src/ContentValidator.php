@@ -40,7 +40,7 @@ final class ContentValidator
             'heroEyebrow' => ['type' => 'text', 'max' => 160],
             'heroHeading' => ['type' => 'text', 'required' => true, 'max' => 300],
             'heroSubheading' => ['type' => 'text', 'required' => true, 'max' => 600],
-            'heroImageUrl' => ['type' => 'ref', 'default' => '/brand/hero-banner.jpg'],
+            'heroImageUrl' => ['type' => 'ref'],
             'mediaKitUrl' => ['type' => 'ref', 'default' => '/brand/media-kit.pdf'],
             'services' => ['type' => 'list', 'max' => 24, 'item' => [
                 'title' => ['type' => 'text', 'required' => true, 'max' => 120],

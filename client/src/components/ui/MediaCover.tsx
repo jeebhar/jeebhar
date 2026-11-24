@@ -15,7 +15,7 @@ import { useState } from 'react';
  *     broken-image icon.
  *
  * With the tile underneath, every one of those states looks designed, and
- * dropping a file into `client/public/reels/` makes the real cover appear with no
+ * uploading a cover in the editor (or any image URL) makes it appear with no
  * code change.
  *
  * The tile is decorative (`aria-hidden`): the card's own heading already names
