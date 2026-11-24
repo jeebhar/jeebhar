@@ -81,14 +81,13 @@ export const useAutoAdvance = (
   useEffect(() => {
     const element = containerRef.current;
     if (!element || typeof IntersectionObserver === 'undefined') return undefined;
-    const observer = new IntersectionObserver(() => {
-      const rect = element.getBoundingClientRect();
-      visible.current =
-        rect.bottom > 0 &&
-        rect.right > 0 &&
-        rect.top < window.innerHeight &&
-        rect.left < window.innerWidth;
-    });
+    const rect = element.getBoundingClientRect();
+    visible.current =
+      rect.bottom > 0 &&
+      rect.right > 0 &&
+      rect.top < window.innerHeight &&
+      rect.left < window.innerWidth;
+    const observer = new IntersectionObserver();
     observer.observe(element);
     return () => observer.disconnect();
   }, [containerRef]);
