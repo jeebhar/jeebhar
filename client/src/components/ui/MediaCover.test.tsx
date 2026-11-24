@@ -98,4 +98,18 @@ describe('MediaCover', () => {
 
     expect(screen.getByRole('img')).toHaveAttribute('loading', 'lazy');
   });
+
+  it('marks a reel cover as a video: play badge over a softly blurred photo', () => {
+    render(<MediaCover src="/reels/a.jpg" title="Food reel 01" />);
+
+    expect(screen.getByTestId('media-cover-play')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Food reel 01' }).className).toContain('blur-[2px]');
+  });
+
+  it('keeps work photos sharp and without a play badge', () => {
+    render(<MediaCover src="/work/a.jpg" title="Thai" aspect="landscape" showPlayIcon={false} />);
+
+    expect(screen.queryByTestId('media-cover-play')).toBeNull();
+    expect(screen.getByRole('img', { name: 'Thai' }).className).not.toContain('blur');
+  });
 });
