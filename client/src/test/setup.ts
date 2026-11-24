@@ -28,7 +28,14 @@ if (!window.matchMedia) {
 }
 
 // jsdom has no IntersectionObserver; useActiveSection constructs one.
+// The constructor takes the same arguments as the real one, so code scanners
+// (CodeQL) don't conclude that the callback passed in the app is superfluous.
 class MockIntersectionObserver implements IntersectionObserver {
+  constructor(
+    readonly callback: IntersectionObserverCallback,
+    readonly options?: IntersectionObserverInit
+  ) {}
+
   readonly root = null;
   readonly rootMargin = '';
   readonly thresholds: readonly number[] = [];
