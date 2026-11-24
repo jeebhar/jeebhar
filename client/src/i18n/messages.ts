@@ -58,7 +58,7 @@ const en = {
   'contact.description': 'Tell us about your restaurant and what you want to achieve.',
   'contact.name': 'Name',
   'contact.email': 'Email',
-  'contact.phone': 'Phone number',
+  'contact.phone': 'Phone number with country code',
   'contact.subject': 'Subject',
   'contact.body': 'Message',
   'contact.bodyPlaceholder': 'What are you working on, and what does success look like?',
