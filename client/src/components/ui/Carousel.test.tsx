@@ -72,11 +72,11 @@ describe('Carousel', () => {
     expect(rail.scrollBy).toHaveBeenCalledTimes(1);
   });
 
-  it('holds still while hovered', () => {
-    const { container } = renderCarousel();
+  it('holds still while the cards are hovered', () => {
+    renderCarousel();
     const rail = layout();
 
-    fireEvent.mouseEnter(container.firstElementChild as Element);
+    fireEvent.mouseEnter(rail);
     act(() => vi.advanceTimersByTime(3000));
 
     expect(rail.scrollBy).not.toHaveBeenCalled();
@@ -90,9 +90,16 @@ describe('Carousel', () => {
     act(() => vi.advanceTimersByTime(3000));
     expect(rail.scrollBy).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Play Our work' }));
+    // Regression: the Play button keeps focus and the mouse after the click;
+    // that must not keep the rail still.
+    const play = screen.getByRole('button', { name: 'Play Our work' });
+    fireEvent.mouseEnter(play);
+    play.focus();
+    fireEvent.click(play);
+    expect(rail.scrollBy).toHaveBeenCalledTimes(1); // moves at once on Play
+
     act(() => vi.advanceTimersByTime(1000));
-    expect(rail.scrollBy).toHaveBeenCalledTimes(1);
+    expect(rail.scrollBy).toHaveBeenCalledTimes(2);
   });
 
   it('starts paused for visitors who prefer reduced motion', () => {

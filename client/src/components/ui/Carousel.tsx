@@ -53,7 +53,6 @@ export const Carousel = <T,>({
   intervalMs,
 }: CarouselProps<T>) => {
   const { t } = useI18n();
-  const rootRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLUListElement>(null);
 
   /** One card forward or back; wraps around at either end. */
@@ -72,7 +71,9 @@ export const Carousel = <T,>({
     }
   }, []);
 
-  const auto = useAutoAdvance(rootRef, { onTick: () => move(1), intervalMs });
+  // Watch the rail only, not the controls: otherwise the Play button itself
+  // (focused and hovered right after the click) would keep the rail still.
+  const auto = useAutoAdvance(railRef, { onTick: () => move(1), intervalMs });
 
   const step = (direction: -1 | 1) => {
     auto.hold();
@@ -86,7 +87,7 @@ export const Carousel = <T,>({
   }
 
   return (
-    <div ref={rootRef} className="relative">
+    <div className="relative">
       <ul
         ref={railRef}
         aria-label={label}
@@ -107,7 +108,10 @@ export const Carousel = <T,>({
           variant="outline"
           size="sm"
           aria-label={t(auto.paused ? 'carousel.play' : 'carousel.pause', { label })}
-          onClick={auto.togglePaused}
+          onClick={() => {
+            if (auto.paused) move(1); // visible feedback straight away
+            auto.togglePaused();
+          }}
         >
           <span aria-hidden="true">{auto.paused ? '▶' : '❚❚'}</span>
         </Button>
