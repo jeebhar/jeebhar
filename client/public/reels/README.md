@@ -1,5 +1,8 @@
 # Reel cover images
 
+> The `.jpg` files here are illustrated covers made by
+> `design/covers/generate.mjs`. Replace any of them with a real frame from the reel:
+>
 > **Easiest:** open `/#/admin`, find the reel and click **Upload…** next to "Cover photo".
 > The file goes to `/uploads/` and the reel uses it after **Save changes**. The manual
 > method below (files in this folder, which are part of the build) still works.
