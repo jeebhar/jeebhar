@@ -50,6 +50,8 @@ const en = {
   'travel.empty': 'Travel reels are coming soon.',
   'carousel.back': 'Scroll {label} backwards',
   'carousel.forward': 'Scroll {label} forwards',
+  'carousel.pause': 'Pause {label}',
+  'carousel.play': 'Play {label}',
   'section.failed': '{label} could not be displayed.',
 
   // Contact
@@ -129,6 +131,8 @@ const de: Messages = {
   'travel.empty': 'Reise-Reels folgen in Kürze.',
   'carousel.back': '{label} zurückblättern',
   'carousel.forward': '{label} vorblättern',
+  'carousel.pause': '{label} anhalten',
+  'carousel.play': '{label} abspielen',
   'section.failed': '{label} konnte nicht angezeigt werden.',
 
   'contact.title': 'Kontakt',

@@ -2,13 +2,16 @@ import { useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
 
 import { Button } from './Button';
+import { useAutoAdvance } from '../../hooks/use-auto-advance';
 import { useI18n } from '../../i18n';
 
 /**
- * VIEW — a horizontally scrollable rail with keyboard-reachable arrows.
+ * VIEW — a horizontally scrollable rail that moves on by itself.
  *
- * Generic over its items, so Work and Reels share one implementation instead of
- * two near-identical blocks (the duplication this replaces).
+ * Generic over its items, so Work, Reels and Travel Reels share one
+ * implementation. Every few seconds it moves one card forward and wraps back to
+ * the start at the end. The ← / → buttons step one card (also wrapping), and
+ * Pause stops the motion. When it holds still is decided in `useAutoAdvance`.
  */
 
 interface CarouselProps<T> {
@@ -24,9 +27,22 @@ interface CarouselProps<T> {
   /** Announced to assistive tech, e.g. "Our work". */
   label: string;
   emptyMessage?: string;
+  /** Time between automatic moves. */
+  intervalMs?: number;
 }
 
-const SCROLL_STEP = 340;
+/** Fallback when the card width can't be measured (e.g. before layout). */
+const DEFAULT_STEP = 340;
+/** Pixels of slack when deciding "we're at the end", for sub-pixel rounding. */
+const EDGE = 8;
+
+/** One card plus the gap after it — so each move lands exactly on a card. */
+const stepOf = (rail: HTMLElement): number => {
+  const first = rail.firstElementChild as HTMLElement | null;
+  if (!first) return DEFAULT_STEP;
+  const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
+  return first.getBoundingClientRect().width + gap || DEFAULT_STEP;
+};
 
 export const Carousel = <T,>({
   items,
@@ -34,13 +50,34 @@ export const Carousel = <T,>({
   renderItem,
   label,
   emptyMessage = 'Nothing to show yet.',
+  intervalMs,
 }: CarouselProps<T>) => {
   const { t } = useI18n();
+  const rootRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLUListElement>(null);
 
-  const scroll = useCallback((direction: -1 | 1) => {
-    railRef.current?.scrollBy({ left: direction * SCROLL_STEP, behavior: 'smooth' });
+  /** One card forward or back; wraps around at either end. */
+  const move = useCallback((direction: -1 | 1) => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const max = rail.scrollWidth - rail.clientWidth;
+    if (max <= EDGE) return; // everything already fits on screen
+
+    if (direction === 1 && rail.scrollLeft >= max - EDGE) {
+      rail.scrollTo({ left: 0, behavior: 'smooth' });
+    } else if (direction === -1 && rail.scrollLeft <= EDGE) {
+      rail.scrollTo({ left: max, behavior: 'smooth' });
+    } else {
+      rail.scrollBy({ left: direction * stepOf(rail), behavior: 'smooth' });
+    }
   }, []);
+
+  const auto = useAutoAdvance(rootRef, { onTick: () => move(1), intervalMs });
+
+  const step = (direction: -1 | 1) => {
+    auto.hold();
+    move(direction);
+  };
 
   const safeItems = Array.isArray(items) ? items : [];
 
@@ -49,7 +86,7 @@ export const Carousel = <T,>({
   }
 
   return (
-    <div className="relative">
+    <div ref={rootRef} className="relative">
       <ul
         ref={railRef}
         aria-label={label}
@@ -69,8 +106,16 @@ export const Carousel = <T,>({
         <Button
           variant="outline"
           size="sm"
+          aria-label={t(auto.paused ? 'carousel.play' : 'carousel.pause', { label })}
+          onClick={auto.togglePaused}
+        >
+          <span aria-hidden="true">{auto.paused ? '▶' : '❚❚'}</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
           aria-label={t('carousel.back', { label })}
-          onClick={() => scroll(-1)}
+          onClick={() => step(-1)}
         >
           <span aria-hidden="true">&larr;</span>
         </Button>
@@ -78,7 +123,7 @@ export const Carousel = <T,>({
           variant="outline"
           size="sm"
           aria-label={t('carousel.forward', { label })}
-          onClick={() => scroll(1)}
+          onClick={() => step(1)}
         >
           <span aria-hidden="true">&rarr;</span>
         </Button>

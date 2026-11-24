@@ -46,6 +46,7 @@ if (!('IntersectionObserver' in globalThis)) {
 // jsdom does not implement scrolling.
 Element.prototype.scrollIntoView = vi.fn();
 Element.prototype.scrollBy = vi.fn();
+Element.prototype.scrollTo = vi.fn();
 
 afterEach(() => {
   cleanup();
