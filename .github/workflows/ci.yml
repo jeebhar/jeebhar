@@ -1,0 +1,117 @@
+name: CI
+
+# Quality gate for every push and pull request.
+#
+# API (PHP) and client (React) run as independent jobs so a frontend failure does
+# not hide a backend one. `build` runs last and only if both pass: it assembles
+# the exact Bluehost bundle, so a green run means the site can be deployed.
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+# A new push to the same branch cancels the previous run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  api:
+    name: API — PHP lint and tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.1 (the oldest version the API supports)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: none
+
+      - name: Syntax check
+        run: find api -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Test
+        run: php api/tests/run.php
+
+  client:
+    name: Client — lint, typecheck, test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test:coverage
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-coverage
+          path: client/coverage
+          retention-days: 7
+          if-no-files-found: ignore
+
+  build:
+    name: Bluehost bundle
+    runs-on: ubuntu-latest
+    needs: [api, client]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm ci
+
+      # A throwaway config with dummy secrets: this proves the bundle assembles,
+      # it is never deployed. Real deploys run `npm run release` with the real
+      # jeebhar.config.json on your own machine.
+      - name: Build dist-bluehost
+        run: |
+          node -e "const c=require('./jeebhar.config.example.json');c.admin.token='ci-'.padEnd(32,'x');c.mail.smtp.pass='ci';require('fs').writeFileSync('jeebhar.config.json',JSON.stringify(c))"
+          node scripts/build-bluehost.mjs
+          test -f dist-bluehost/index.html
+          test -f dist-bluehost/.htaccess
+          test -f dist-bluehost/api/config.php
+          test ! -e dist-bluehost/api/tests
+          ! find dist-bluehost -name '*.map' | grep .

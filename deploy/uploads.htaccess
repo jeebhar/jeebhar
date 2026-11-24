@@ -1,0 +1,13 @@
+# public_html/uploads — files added through the content editor.
+# Nothing in here may ever run as code.
+Options -Indexes -ExecCGI
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar
+RemoveType .php .phtml .phar
+<FilesMatch "\.(php|phtml|phar|cgi|pl|py|sh)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>

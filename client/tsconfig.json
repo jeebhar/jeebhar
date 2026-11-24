@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "useDefineForClassFields": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+
+    /* Strictness — the compiler is the cheapest test suite available. */
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": false,
+
+    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"]
+  },
+  // Config files are checked by tsconfig.node.json, which `npm run typecheck`
+  // runs as a second pass. Deliberately not a project reference: `tsc --noEmit`
+  // does not check referenced projects, so errors there would go unseen in CI.
+  "include": ["src"]
+}

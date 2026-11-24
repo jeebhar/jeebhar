@@ -1,0 +1,18 @@
+# Jeebhar API — every request in /api goes through index.php.
+Options -Indexes
+
+# Some Bluehost PHP handlers drop the Authorization header; pass it through.
+# (The client also sends X-Admin-Token, which is never stripped.)
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+RewriteRule ^index\.php$ - [L]
+RewriteRule ^ index.php [L,QSA]
+
+# Belt and braces: source, config and seed files are never served directly.
+<FilesMatch "\.(json|jsonl|log|md|ini)$|^config\.php$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>

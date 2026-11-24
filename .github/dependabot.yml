@@ -1,0 +1,26 @@
+version: 2
+
+# Weekly dependency updates, grouped so review stays manageable.
+updates:
+  - package-ecosystem: npm
+    directory: /client
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      client-dev:
+        dependency-type: development
+        update-types: [minor, patch]
+      client-prod:
+        dependency-type: production
+        update-types: [minor, patch]
+
+      server-prod:
+        dependency-type: production
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

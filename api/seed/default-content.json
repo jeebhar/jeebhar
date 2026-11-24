@@ -1,0 +1,442 @@
+{
+  "brandName": "Jeebhar",
+  "heroEyebrow": {
+    "en": "For restaurants and food brands",
+    "de": "Für Restaurants und Food-Marken"
+  },
+  "heroHeading": {
+    "en": "Reimagine your restaurant's digital story and turn every scroll into footfall.",
+    "de": "Erfinden Sie die digitale Geschichte Ihres Restaurants neu – und machen Sie aus jedem Scroll einen Besuch."
+  },
+  "heroSubheading": {
+    "en": "Jeebhar helps restaurants and food brands build an unforgettable social presence through strategy, content and performance campaigns.",
+    "de": "Jeebhar hilft Restaurants und Food-Marken, mit Strategie, Content und Performance-Kampagnen eine unvergessliche Social-Media-Präsenz aufzubauen."
+  },
+  "heroImageUrl": "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=2000&q=80",
+  "mediaKitUrl": "/brand/media-kit.pdf",
+  "services": [
+    {
+      "_id": "service-01",
+      "title": {
+        "en": "Brand Management",
+        "de": "Markenmanagement"
+      },
+      "shortDescription": {
+        "en": "Build a memorable identity customers trust.",
+        "de": "Eine unverwechselbare Identität, der Gäste vertrauen."
+      },
+      "longDescription": {
+        "en": "We shape your brand voice, visual identity and communication strategy so every post, reel and campaign reinforces the same positioning.",
+        "de": "Wir entwickeln Markenstimme, visuelle Identität und Kommunikationsstrategie, damit jeder Post, jedes Reel und jede Kampagne dieselbe Positionierung stärkt."
+      }
+    },
+    {
+      "_id": "service-02",
+      "title": {
+        "en": "Social Media Management",
+        "de": "Social-Media-Management"
+      },
+      "shortDescription": {
+        "en": "Consistent publishing and growth-focused execution.",
+        "de": "Regelmäßige Veröffentlichungen mit Fokus auf Wachstum."
+      },
+      "longDescription": {
+        "en": "From content calendars to community engagement and analytics, we run your channels end to end with a growth mindset.",
+        "de": "Von Redaktionsplänen über Community-Management bis zur Auswertung betreuen wir Ihre Kanäle komplett – mit klarem Blick auf Wachstum."
+      }
+    },
+    {
+      "_id": "service-03",
+      "title": {
+        "en": "Content Creation",
+        "de": "Content-Produktion"
+      },
+      "shortDescription": {
+        "en": "High-converting visuals and narratives.",
+        "de": "Bilder und Geschichten, die überzeugen."
+      },
+      "longDescription": {
+        "en": "We produce scroll-stopping photo, video and copy crafted specifically for restaurants and the people who love eating at them.",
+        "de": "Wir produzieren Fotos, Videos und Texte, die zum Anhalten bringen – gemacht für Restaurants und die Menschen, die dort gerne essen."
+      }
+    },
+    {
+      "_id": "service-04",
+      "title": {
+        "en": "Social Media Advertising",
+        "de": "Social-Media-Werbung"
+      },
+      "shortDescription": {
+        "en": "Paid campaigns built for ROI.",
+        "de": "Bezahlte Kampagnen mit messbarem ROI."
+      },
+      "longDescription": {
+        "en": "We design and optimise ad funnels for awareness, bookings, online orders and repeat customers with data-backed targeting.",
+        "de": "Wir planen und optimieren Anzeigen-Funnels für Reichweite, Reservierungen, Online-Bestellungen und Stammgäste – mit datenbasiertem Targeting."
+      }
+    }
+  ],
+  "work": [
+    {
+      "_id": "work-accor",
+      "title": {
+        "en": "Accor hotels",
+        "de": "Accor Hotels"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1621293954908-907159247fc8?auto=format&fit=crop&w=1200&h=900&q=80",
+      "description": {
+        "en": "Accommodation collaborations with hotels of the Accor group.",
+        "de": "Unterkunfts-Kooperationen mit Hotels der Accor-Gruppe."
+      }
+    },
+    {
+      "_id": "work-myprotein",
+      "title": {
+        "en": "Myprotein",
+        "de": "Myprotein"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1558017487-06bf9f82613a?auto=format&fit=crop&w=1200&h=900&q=80",
+      "description": {
+        "en": "Brand partnership with Myprotein.",
+        "de": "Markenpartnerschaft mit Myprotein."
+      }
+    },
+    {
+      "_id": "work-cookware",
+      "title": {
+        "en": "HexClad & Stoneline",
+        "de": "HexClad & Stoneline"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1612487439139-c2d7bac13577?auto=format&fit=crop&w=1200&h=900&q=80",
+      "description": {
+        "en": "Cookware collaborations with HexClad and Stoneline.",
+        "de": "Kochgeschirr-Kooperationen mit HexClad und Stoneline."
+      }
+    },
+    {
+      "_id": "work-temu",
+      "title": {
+        "en": "Temu",
+        "de": "Temu"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1760565030243-c92ed557e8da?auto=format&fit=crop&w=1200&h=900&q=80",
+      "description": {
+        "en": "Product collaborations with Temu.",
+        "de": "Produkt-Kooperationen mit Temu."
+      }
+    },
+    {
+      "_id": "work-05",
+      "title": {
+        "en": "South Indian",
+        "de": "Südindisch"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1741376509680-9517d487689f?auto=format&fit=crop&w=1200&q=80",
+      "description": {
+        "en": "Dosa, idli and thali storytelling that makes the filter coffee run cold.",
+        "de": "Dosa, Idli und Thali so erzählt, dass der Filterkaffee kalt wird."
+      }
+    },
+    {
+      "_id": "work-06",
+      "title": {
+        "en": "Nepali Momo House",
+        "de": "Nepalesisches Momo-Haus"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=1200&q=80",
+      "description": {
+        "en": "Steam, chilli dip and the first bite — momos shot the way regulars order them.",
+        "de": "Dampf, Chili-Dip und der erste Biss – Momos so gefilmt, wie Stammgäste sie bestellen."
+      }
+    },
+    {
+      "_id": "work-07",
+      "title": {
+        "en": "Georgian Restaurant",
+        "de": "Georgisches Restaurant"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1746185601009-3ddac4b23121?auto=format&fit=crop&w=1200&q=80",
+      "description": {
+        "en": "Khachapuri and khinkali framed for a cuisine most diners meet for the first time.",
+        "de": "Khachapuri und Khinkali in Szene gesetzt für eine Küche, die viele zum ersten Mal entdecken."
+      }
+    },
+    {
+      "_id": "work-08",
+      "title": {
+        "en": "Mexican Grill House",
+        "de": "Mexikanisches Grillhaus"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1648437595587-e6a8b0cdf1f9?auto=format&fit=crop&w=1200&q=80",
+      "description": {
+        "en": "Grill smoke, lime and salsa colour — high-energy creatives for a loud room.",
+        "de": "Grillrauch, Limette und Salsa-Farben – energiegeladene Creatives für einen lauten Laden."
+      }
+    },
+    {
+      "_id": "work-09",
+      "title": {
+        "en": "North Indian",
+        "de": "Nordindisch"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1742599361498-79824d24e355?auto=format&fit=crop&w=1200&q=80",
+      "description": {
+        "en": "Butter chicken, tandoor char and fresh naan, styled for delivery-app appetite.",
+        "de": "Butter Chicken, Tandoor-Röstaromen und frisches Naan – gestylt für Appetit auf Lieferdienst-Apps."
+      }
+    },
+    {
+      "_id": "work-10",
+      "title": {
+        "en": "Italian Pizzeria",
+        "de": "Italienische Pizzeria"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1622880833523-7cf1c0bd4296?auto=format&fit=crop&w=1200&q=80",
+      "description": {
+        "en": "The cheese pull, the leopard-spotted crust, the table everyone wants to sit at.",
+        "de": "Der Käsezug, der gefleckte Rand, der Tisch, an dem alle sitzen wollen."
+      }
+    },
+    {
+      "_id": "work-11",
+      "title": {
+        "en": "German Brauhaus",
+        "de": "Deutsches Brauhaus"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1745827223757-c98bc93108d2?auto=format&fit=crop&w=1200&q=80",
+      "description": {
+        "en": "Sausage, sauerkraut and beer-hall warmth translated into a social-first calendar.",
+        "de": "Wurst, Sauerkraut und Bierhallen-Gemütlichkeit als Social-First-Redaktionsplan."
+      }
+    },
+    {
+      "_id": "work-12",
+      "title": {
+        "en": "Vietnamese Cuisine",
+        "de": "Vietnamesische Küche"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1766050586763-723571af4dde?auto=format&fit=crop&w=1200&q=80",
+      "description": {
+        "en": "Broth steam, herbs and noodles — quiet, fresh frames that still stop the scroll.",
+        "de": "Dampfende Brühe, Kräuter und Nudeln – ruhige, frische Bilder, die trotzdem stoppen."
+      }
+    },
+    {
+      "_id": "work-more",
+      "title": {
+        "en": "And many more",
+        "de": "Und viele mehr"
+      },
+      "imageUrl": "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&h=900&q=80",
+      "description": {
+        "en": "Restaurants, hotels and brands across Germany and Europe.",
+        "de": "Restaurants, Hotels und Marken in ganz Deutschland und Europa."
+      }
+    }
+  ],
+  "reels": [
+    {
+      "_id": "reel-13",
+      "title": {
+        "en": "Noodles & dumplings · Frankfurt",
+        "de": "Nudeln & Dumplings · Frankfurt"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DQWG611DCCr/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1632440722248-abcc3214b298?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "reel-14",
+      "title": {
+        "en": "Vada pav · Stuttgart",
+        "de": "Vada Pav · Stuttgart"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DPqOeoIjLh_/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1769030905851-c0e0a4fe5c51?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "reel-15",
+      "title": {
+        "en": "Indian buffet · Frankfurt",
+        "de": "Indisches Buffet · Frankfurt"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DYhR4-mM0BV/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1742281257707-0c7f7e5ca9c6?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "reel-16",
+      "title": {
+        "en": "Nepali momos · Frankfurt",
+        "de": "Nepalesische Momos · Frankfurt"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/Dbu8-CPgzk3/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "reel-17",
+      "title": {
+        "en": "Veg food at German fairs",
+        "de": "Vegetarisch auf deutschen Volksfesten"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DXPCTb4jF2x/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1765044203136-fa42c59771ff?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "reel-18",
+      "title": {
+        "en": "Vegan food · Stuttgart",
+        "de": "Veganes Essen · Stuttgart"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DR4cFZFiAsH/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "reel-19",
+      "title": {
+        "en": "Burger & döner · Stuttgart",
+        "de": "Burger & Döner · Stuttgart"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DP3J4VADCvy/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1530469912745-a215c6b256ea?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "reel-20",
+      "title": {
+        "en": "Georgian food",
+        "de": "Georgisches Essen"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DPLYUGoDJ9U/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1687686515394-5f5b7d50b01b?auto=format&fit=crop&w=720&h=960&q=80"
+    }
+  ],
+  "travelReels": [
+    {
+      "_id": "travel-21",
+      "title": {
+        "en": "Accommodation ideas",
+        "de": "Ideen für Unterkünfte"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DaiErQFgKyc/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "travel-22",
+      "title": {
+        "en": "Belgium",
+        "de": "Belgien"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DTdFmqADE_Z/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1548092304-e0205cb0031b?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "travel-23",
+      "title": {
+        "en": "Veg food in Europe",
+        "de": "Vegetarisch essen in Europa"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DRz0ai4jE-p/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1567575990843-105a1c70d76e?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "travel-24",
+      "title": {
+        "en": "Rüdesheim",
+        "de": "Rüdesheim"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DOQW7hWDOtA/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1751225334062-8d639308d4c9?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "travel-25",
+      "title": {
+        "en": "Hidden spot in Frankfurt",
+        "de": "Geheimtipp in Frankfurt"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DNYF1KLsFEq/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1774112168630-f27f4ff650c8?auto=format&fit=crop&w=720&h=960&q=80"
+    },
+    {
+      "_id": "travel-26",
+      "title": {
+        "en": "Venice in Germany",
+        "de": "Venedig in Deutschland"
+      },
+      "instagramUrl": "https://www.instagram.com/reel/DNFUxQyoo2F/",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1580122638347-1a84abee0416?auto=format&fit=crop&w=720&h=960&q=80"
+    }
+  ],
+  "mediaKitMetrics": [
+    {
+      "_id": "metric-01",
+      "label": {
+        "en": "Reach",
+        "de": "Reichweite"
+      },
+      "value": "3M"
+    },
+    {
+      "_id": "metric-02",
+      "label": {
+        "en": "Impressions",
+        "de": "Impressionen"
+      },
+      "value": "90K"
+    },
+    {
+      "_id": "metric-03",
+      "label": {
+        "en": "Average likes per post",
+        "de": "Ø Likes pro Beitrag"
+      },
+      "value": "2K"
+    },
+    {
+      "_id": "metric-04",
+      "label": {
+        "en": "Instagram followers",
+        "de": "Instagram-Follower"
+      },
+      "value": "9.7K"
+    },
+    {
+      "_id": "metric-05",
+      "label": {
+        "en": "Facebook followers",
+        "de": "Facebook-Follower"
+      },
+      "value": "15K"
+    },
+    {
+      "_id": "metric-06",
+      "label": {
+        "en": "YouTube subscribers",
+        "de": "YouTube-Abonnenten"
+      },
+      "value": "970"
+    },
+    {
+      "_id": "metric-07",
+      "label": {
+        "en": "TikTok followers",
+        "de": "TikTok-Follower"
+      },
+      "value": "350"
+    },
+    {
+      "_id": "metric-08",
+      "label": {
+        "en": "Audience in Germany",
+        "de": "Publikum in Deutschland"
+      },
+      "value": "30%"
+    }
+  ],
+  "contact": {
+    "address": "Offenbach, Germany",
+    "email": "jeebhar410@gmail.com",
+    "phone": "+176 879 61714",
+    "facebookUrl": "https://www.facebook.com/jeebhar2.0",
+    "youtubeUrl": "https://www.youtube.com/@jeebhar/",
+    "instagramUrl": "https://www.instagram.com/jeebhar/",
+    "tiktokUrl": "https://www.tiktok.com/@jeebhar"
+  }
+}

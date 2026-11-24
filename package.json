@@ -1,0 +1,33 @@
+{
+  "name": "jeebhar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jeebhar — social media marketing site for restaurants and food brands (React + PHP, hosted on Bluehost)",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "install:all": "npm install && cd client && npm install",
+    "dev": "concurrently -n api,client -c cyan,magenta \"npm:dev:api\" \"npm:dev:client\"",
+    "dev:api": "node scripts/dev-api.mjs",
+    "dev:client": "npm --prefix client run dev --",
+    "build": "npm --prefix client run build --",
+    "build:bluehost": "node scripts/build-bluehost.mjs",
+    "deploy:bluehost": "node scripts/deploy-bluehost.mjs",
+    "release": "npm run build:bluehost && npm run deploy:bluehost",
+    "lint": "npm --prefix client run lint && npm run lint:api",
+    "lint:api": "node scripts/lint-php.mjs",
+    "lint:fix": "npm --prefix client run lint:fix",
+    "typecheck": "npm --prefix client run typecheck --",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test:api && npm run test:client",
+    "test:api": "php api/tests/run.php",
+    "test:client": "npm --prefix client run test --",
+    "verify": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.4.2"
+  }
+}
