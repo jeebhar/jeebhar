@@ -71,6 +71,8 @@ export interface SiteContent {
   heroEyebrow: string;
   heroHeading: string;
   heroSubheading: string;
+  /** Banner behind the hero text. Same image in both languages. */
+  heroImageUrl: string;
   mediaKitUrl: string;
   services: ServiceItem[];
   work: WorkItem[];
@@ -96,6 +98,7 @@ export interface SiteContentDocument {
   heroEyebrow: LocalizedText;
   heroHeading: LocalizedText;
   heroSubheading: LocalizedText;
+  heroImageUrl: string;
   mediaKitUrl: string;
   services: ServiceDoc[];
   work: WorkDoc[];

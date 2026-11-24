@@ -34,6 +34,7 @@ export const localizeContent = (doc: SiteContentDocument, language: Language): S
   heroEyebrow: pick(doc.heroEyebrow, language),
   heroHeading: pick(doc.heroHeading, language),
   heroSubheading: pick(doc.heroSubheading, language),
+  heroImageUrl: doc.heroImageUrl ?? '',
   mediaKitUrl: doc.mediaKitUrl,
   services: (doc.services ?? []).map((service) => ({
     ...service,

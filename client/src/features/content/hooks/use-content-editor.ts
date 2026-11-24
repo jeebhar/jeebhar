@@ -44,7 +44,13 @@ export interface EditableList<T> {
 /** Everything that is not a list. */
 export type SingleFields = Pick<
   SiteContentDocument,
-  'brandName' | 'heroEyebrow' | 'heroHeading' | 'heroSubheading' | 'mediaKitUrl' | 'contact'
+  | 'brandName'
+  | 'heroEyebrow'
+  | 'heroHeading'
+  | 'heroSubheading'
+  | 'heroImageUrl'
+  | 'mediaKitUrl'
+  | 'contact'
 >;
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
@@ -144,6 +150,7 @@ const singlesOf = (content: SiteContentDocument): SingleFields => ({
   heroEyebrow: content.heroEyebrow,
   heroHeading: content.heroHeading,
   heroSubheading: content.heroSubheading,
+  heroImageUrl: content.heroImageUrl ?? '',
   mediaKitUrl: content.mediaKitUrl,
   contact: content.contact,
 });

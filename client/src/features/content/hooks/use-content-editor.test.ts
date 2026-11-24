@@ -17,6 +17,7 @@ const content = (overrides: Partial<SiteContentDocument> = {}): SiteContentDocum
   heroEyebrow: L(''),
   heroHeading: L('Heading', 'Überschrift'),
   heroSubheading: L('Subheading'),
+  heroImageUrl: '/brand/hero-banner.jpg',
   mediaKitUrl: '/brand/media-kit.pdf',
   services: [],
   work: [{ _id: 'w1', title: L('South Indian'), imageUrl: 'https://x/a.jpg', description: L('') }],

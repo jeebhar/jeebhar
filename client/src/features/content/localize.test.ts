@@ -8,6 +8,7 @@ const doc = {
   heroEyebrow: { en: 'For restaurants', de: '' },
   heroHeading: { en: 'Reimagine', de: 'Neu denken' },
   heroSubheading: { en: 'Sub', de: 'Unter' },
+  heroImageUrl: '/brand/hero-banner.jpg',
   mediaKitUrl: '/brand/media-kit.pdf',
   services: [
     {

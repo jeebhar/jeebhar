@@ -64,6 +64,7 @@ export const HomePage = ({ content }: HomePageProps) => {
           eyebrow={content.heroEyebrow}
           heading={content.heroHeading}
           subheading={content.heroSubheading}
+          imageUrl={content.heroImageUrl}
           mediaKitUrl={resolveMediaKitUrl(content.mediaKitUrl)}
         />
       </SectionBoundary>

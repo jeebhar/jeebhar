@@ -158,6 +158,15 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
               value={singles.heroSubheading}
               onChange={(heroSubheading) => updateSingles({ heroSubheading })}
             />
+            <UploadField
+              accept="image"
+              label="Banner image behind the text"
+              value={singles.heroImageUrl}
+              placeholder="/brand/hero-banner.jpg"
+              onChange={(heroImageUrl) => updateSingles({ heroImageUrl })}
+              upload={upload}
+              hint="A wide photo (about 2400 × 1000). The left side is darkened so the text stays readable. Leave empty for a plain background."
+            />
           </fieldset>
 
           <EditableRowList

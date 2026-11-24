@@ -20,6 +20,7 @@ const fullContent = (): SiteContent => ({
   heroEyebrow: 'For restaurants',
   heroHeading: 'Turn every scroll into footfall',
   heroSubheading: 'We help restaurants grow.',
+  heroImageUrl: '',
   mediaKitUrl: '/brand/media-kit.pdf',
   services: [{ _id: 's1', title: 'Brand', shortDescription: 'a', longDescription: 'b' }],
   work: [{ _id: 'w1', title: 'South Indian', imageUrl: 'https://x/a.jpg', description: 'd' }],
