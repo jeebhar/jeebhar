@@ -1,12 +1,10 @@
-import { Logo } from '../ui';
+import { Logo, SocialLinks } from '../ui';
 import type { ContactDetails } from '../../models/site-content.model';
 import { useI18n } from '../../i18n';
 
 /**
- * VIEW — site footer: logo, contact details, social links.
- *
- * Social entries are filtered to those actually configured, so an unset URL
- * disappears instead of rendering a dead link.
+ * VIEW — site footer, centred: logo and tagline, contact details, social
+ * icons, copyright. Social icons for unset profiles are left out.
  */
 
 interface FooterProps {
@@ -14,22 +12,16 @@ interface FooterProps {
   contact: ContactDetails;
 }
 
-const socialLinks = (contact: ContactDetails) =>
-  [
-    { label: 'Instagram', href: contact.instagramUrl },
-    { label: 'Facebook', href: contact.facebookUrl },
-    { label: 'YouTube', href: contact.youtubeUrl },
-    { label: 'TikTok', href: contact.tiktokUrl },
-  ].filter((link) => Boolean(link.href));
-
 export const Footer = ({ brandName, contact }: FooterProps) => {
   const { t } = useI18n();
+  const tel = contact.phone.replace(/\s/g, '');
+
   return (
     <footer className="border-t border-white/10 bg-brand-950/60">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:grid-cols-[1.2fr,1fr,1fr]">
-        <div>
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-14 text-center">
+        <div className="flex flex-col items-center">
           <Logo variant="full" height={40} />
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-brand-200">
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-brand-200">
             {t('footer.tagline')}
           </p>
         </div>
@@ -38,12 +30,12 @@ export const Footer = ({ brandName, contact }: FooterProps) => {
           <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-cyan">
             {t('footer.contact')}
           </h2>
-          <address className="mt-4 grid gap-2 text-sm not-italic text-brand-100">
+          <address className="mt-3 flex flex-col items-center gap-x-6 gap-y-2 text-sm not-italic text-brand-100 sm:flex-row sm:flex-wrap sm:justify-center">
             <span>{contact.address}</span>
             <a href={`mailto:${contact.email}`} className="hover:text-white">
               {contact.email}
             </a>
-            <a href={`tel:${contact.phone.replace(/\s/g, '')}`} className="hover:text-white">
+            <a href={`tel:${tel}`} className="hover:text-white">
               {contact.phone}
             </a>
           </address>
@@ -53,25 +45,12 @@ export const Footer = ({ brandName, contact }: FooterProps) => {
           <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-cyan">
             {t('footer.follow')}
           </h2>
-          <ul className="mt-4 grid gap-2 text-sm">
-            {socialLinks(contact).map((link) => (
-              <li key={link.label}>
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-brand-100 hover:text-white"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <SocialLinks contact={contact} className="mt-3 justify-center" />
         </div>
       </div>
 
       <div className="border-t border-white/10 px-4 py-5">
-        <p className="mx-auto max-w-6xl text-xs text-brand-200">
+        <p className="mx-auto max-w-6xl text-center text-xs text-brand-200">
           {t('footer.rights', { year: new Date().getFullYear(), brand: brandName })}
         </p>
       </div>

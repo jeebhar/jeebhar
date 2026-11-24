@@ -8,3 +8,4 @@ export { MediaCover } from './MediaCover';
 export { Section } from './Section';
 export { Spinner } from './Spinner';
 export { TextField } from './TextField';
+export { SocialLinks } from './SocialLinks';

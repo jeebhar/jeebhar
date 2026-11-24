@@ -1,6 +1,6 @@
 import type { FormEvent } from 'react';
 
-import { Alert, Button, Section, Spinner, TextField } from '../ui';
+import { Alert, Button, Section, SocialLinks, Spinner, TextField } from '../ui';
 import { useContactForm } from '../../features/contact/hooks/use-contact-form';
 import type { ContactDetails } from '../../models/site-content.model';
 import { useI18n } from '../../i18n';
@@ -110,6 +110,7 @@ export const ContactSection = ({ contact }: ContactSectionProps) => {
               {contact.phone}
             </a>
           </address>
+          <SocialLinks contact={contact} size="sm" className="mt-5" />
         </aside>
       </div>
     </Section>
