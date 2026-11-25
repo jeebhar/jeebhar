@@ -153,5 +153,15 @@ $test('unknown paths are 404 and noindex', function () use ($page, $assert) {
     $assert($page('jeebhar.com', '/?utm_source=x')['status'] === 200, 'query string on home');
 });
 
+$test('robots.txt and sitemap.xml point at the requesting domain and list all versions', function () use ($domains, $assert) {
+    $renderer = new Jeebhar\PageRenderer($domains);
+    $assert(str_contains($renderer->robots('www.jeebhar.in'), 'Sitemap: https://jeebhar.in/sitemap.xml'), 'robots sitemap');
+    $assert(str_contains($renderer->robots('jeebhar.in'), 'Disallow: /api/'), 'robots api');
+    $xml = $renderer->sitemap('jeebhar.de', '2026-11-25');
+    $assert(simplexml_load_string($xml) !== false, 'sitemap is not valid XML');
+    $assert(str_contains($xml, '<loc>https://jeebhar.de/</loc>'), 'loc');
+    $assert(substr_count($xml, 'xhtml:link') === 4, 'alternates');
+});
+
 echo $failures === 0 ? "All API tests passed.\n" : "$failures test(s) failed.\n";
 exit($failures === 0 ? 0 : 1);

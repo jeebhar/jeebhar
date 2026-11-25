@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 /**
- * public_html/index.php — every page request (not files, not /api) lands here.
+ * public_html/index.php — every page request (not files, not /api) lands here,
+ * including /robots.txt and /sitemap.xml, which are generated per domain.
  *
  * Reads the built index.html and serves it with the domain's language, SEO
  * tags and a crawlable copy of the content filled in (see
@@ -20,19 +21,36 @@ use Jeebhar\ContentRepository;
 use Jeebhar\PageRenderer;
 
 $template = (string) @file_get_contents(__DIR__ . '/index.html');
-
-header('Content-Type: text/html; charset=utf-8');
-header('Cache-Control: no-cache');
+$host = (string) ($_SERVER['HTTP_HOST'] ?? '');
+$path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH);
 
 try {
     $config = Config::load(__DIR__ . '/api/config.php');
-    $content = (new ContentRepository($config->dataDir(), __DIR__ . '/api/seed/default-content.json'))->get();
     $domains = $config->get('domains', []);
+    $renderer = new PageRenderer(is_array($domains) ? $domains : []);
 
-    $page = (new PageRenderer(is_array($domains) ? $domains : []))->render(
+    // robots.txt and sitemap.xml are generated per domain.
+    if ($path === '/robots.txt') {
+        header('Content-Type: text/plain; charset=utf-8');
+        echo $renderer->robots($host);
+        exit;
+    }
+    if ($path === '/sitemap.xml') {
+        $stored = $config->dataDir() . '/content.json';
+        $changed = is_file($stored) ? filemtime($stored) : filemtime(__DIR__ . '/api/seed/default-content.json');
+        header('Content-Type: application/xml; charset=utf-8');
+        echo $renderer->sitemap($host, date('Y-m-d', $changed ?: time()));
+        exit;
+    }
+
+    header('Content-Type: text/html; charset=utf-8');
+    header('Cache-Control: no-cache');
+    $content = (new ContentRepository($config->dataDir(), __DIR__ . '/api/seed/default-content.json'))->get();
+
+    $page = $renderer->render(
         $template,
         $content,
-        (string) ($_SERVER['HTTP_HOST'] ?? ''),
+        $host,
         (string) ($_SERVER['REQUEST_URI'] ?? '/')
     );
 

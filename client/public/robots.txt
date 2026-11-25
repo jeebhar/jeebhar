@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-# The content editor is not useful to crawlers.
-Disallow: /#/admin

@@ -113,6 +113,40 @@ final class PageRenderer
         return ['status' => $isHome ? 200 : 404, 'html' => $html];
     }
 
+    /** robots.txt for the requesting domain, pointing at its own sitemap. */
+    public function robots(string $requestHost): string
+    {
+        $host = $this->siteFor($requestHost)['host'];
+        return "User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: https://$host/sitemap.xml\n";
+    }
+
+    /**
+     * sitemap.xml listing the home page with all its language versions, so
+     * search engines find jeebhar.de, .in and .com and how they relate.
+     *
+     * @param string $lastModified date of the last content change, Y-m-d
+     */
+    public function sitemap(string $requestHost, string $lastModified): string
+    {
+        $host = $this->siteFor($requestHost)['host'];
+        $alternates = '';
+        foreach ($this->sites as $site) {
+            $alternates .= '    <xhtml:link rel="alternate" hreflang="' . self::e($site['hreflang'])
+                . '" href="https://' . self::e($site['host']) . "/\" />\n";
+        }
+        $alternates .= '    <xhtml:link rel="alternate" hreflang="x-default" href="https://'
+            . self::e($this->primary) . "/\" />\n";
+
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            . "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n"
+            . "  <url>\n"
+            . '    <loc>https://' . self::e($host) . "/</loc>\n"
+            . '    <lastmod>' . self::e($lastModified) . "</lastmod>\n"
+            . $alternates
+            . "  </url>\n"
+            . "</urlset>\n";
+    }
+
     /** @return array{host: string, lang: string, hreflang: string} */
     public function siteFor(string $requestHost): array
     {
