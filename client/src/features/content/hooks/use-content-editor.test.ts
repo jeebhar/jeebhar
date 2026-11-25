@@ -18,6 +18,8 @@ const content = (overrides: Partial<SiteContentDocument> = {}): SiteContentDocum
   heroHeading: L('Heading', 'Überschrift'),
   heroSubheading: L('Subheading'),
   heroImageUrl: '/brand/hero-banner.jpg',
+  seoTitle: { en: 'Title', de: 'Titel' },
+  seoDescription: { en: 'Description', de: 'Beschreibung' },
   mediaKitUrl: '/brand/media-kit.pdf',
   services: [],
   work: [{ _id: 'w1', title: L('South Indian'), imageUrl: 'https://x/a.jpg', description: L('') }],
@@ -282,5 +284,19 @@ describe('useContentEditor', () => {
 
     const [sent] = saveMock.mock.calls[0] as [SiteContentDocument];
     expect(sent.mediaKitMetrics).toEqual([{ label: { en: 'Followers', de: '' }, value: '10K' }]);
+  });
+
+  it('saves the search-engine title and description in both languages', async () => {
+    saveMock.mockImplementation((payload: SiteContentDocument) => Promise.resolve(payload));
+    const { result } = renderHook(() => useContentEditor(content()));
+
+    act(() => result.current.updateSingles({ seoTitle: { en: 'UGC agency', de: 'UGC-Agentur' } }));
+    await act(async () => {
+      await result.current.save(TOKEN);
+    });
+
+    const [sent] = saveMock.mock.calls[0] as [SiteContentDocument];
+    expect(sent.seoTitle).toEqual({ en: 'UGC agency', de: 'UGC-Agentur' });
+    expect(sent.seoDescription).toEqual({ en: 'Description', de: 'Beschreibung' });
   });
 });

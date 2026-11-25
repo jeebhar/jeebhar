@@ -41,6 +41,9 @@ final class ContentValidator
             'heroHeading' => ['type' => 'text', 'required' => true, 'max' => 300],
             'heroSubheading' => ['type' => 'text', 'required' => true, 'max' => 600],
             'heroImageUrl' => ['type' => 'ref'],
+            // Search engines: the page <title> and meta description, per language.
+            'seoTitle' => ['type' => 'text', 'max' => 70],
+            'seoDescription' => ['type' => 'text', 'max' => 170],
             'mediaKitUrl' => ['type' => 'ref', 'default' => '/brand/media-kit.pdf'],
             'services' => ['type' => 'list', 'max' => 24, 'item' => [
                 'title' => ['type' => 'text', 'required' => true, 'max' => 120],

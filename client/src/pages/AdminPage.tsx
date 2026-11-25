@@ -169,6 +169,29 @@ export const AdminPage = ({ content, onSaved, onExit }: AdminPageProps) => {
             />
           </fieldset>
 
+          <fieldset className="grid gap-4 rounded-2xl border border-white/10 bg-brand-800/30 p-5">
+            <legend className="px-2 text-lg font-semibold text-white">
+              Search engines (Google)
+            </legend>
+            <p className="text-sm text-brand-200">
+              Not shown on the page. This is the blue headline and the grey text Google shows for
+              your site. Keep the title under 60 characters and the description under 155, with the
+              words people search for (e.g. &ldquo;UGC&rdquo;, &ldquo;Social-Media-Agentur&rdquo;,
+              &ldquo;food&rdquo;, &ldquo;Frankfurt&rdquo;).
+            </p>
+            <LocalizedTextField
+              label="Page title"
+              value={singles.seoTitle}
+              onChange={(seoTitle) => updateSingles({ seoTitle })}
+            />
+            <LocalizedTextField
+              label="Description"
+              rows={3}
+              value={singles.seoDescription}
+              onChange={(seoDescription) => updateSingles({ seoDescription })}
+            />
+          </fieldset>
+
           <EditableRowList
             legend="Our Services"
             description="Tiles that expand into the long text when clicked."

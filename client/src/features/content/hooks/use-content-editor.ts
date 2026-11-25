@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { saveSiteContent } from '../api/content.api';
 import {
   emptyMetricDoc,
+  emptyText,
   emptyReelDoc,
   emptyServiceDoc,
   emptyWorkDoc,
@@ -49,6 +50,8 @@ export type SingleFields = Pick<
   | 'heroHeading'
   | 'heroSubheading'
   | 'heroImageUrl'
+  | 'seoTitle'
+  | 'seoDescription'
   | 'mediaKitUrl'
   | 'contact'
 >;
@@ -151,6 +154,8 @@ const singlesOf = (content: SiteContentDocument): SingleFields => ({
   heroHeading: content.heroHeading,
   heroSubheading: content.heroSubheading,
   heroImageUrl: content.heroImageUrl ?? '',
+  seoTitle: content.seoTitle ?? emptyText(),
+  seoDescription: content.seoDescription ?? emptyText(),
   mediaKitUrl: content.mediaKitUrl,
   contact: content.contact,
 });
