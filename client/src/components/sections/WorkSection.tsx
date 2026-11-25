@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import { Card, Carousel, MediaCover, Section } from '../ui';
 import type { WorkItem } from '../../models/site-content.model';
 import { useI18n } from '../../i18n';
@@ -6,16 +8,18 @@ import { useI18n } from '../../i18n';
 
 interface WorkSectionProps {
   work: WorkItem[];
+  /** Replaces the default "on their way" text, e.g. for an empty region. */
+  emptyMessage?: ReactNode;
 }
 
-export const WorkSection = ({ work }: WorkSectionProps) => {
+export const WorkSection = ({ work, emptyMessage }: WorkSectionProps) => {
   const { t } = useI18n();
   return (
     <Section id="work" title={t('work.title')} description={t('work.description')}>
       <Carousel
         items={work}
         label={t('work.title')}
-        emptyMessage={t('work.empty')}
+        emptyMessage={emptyMessage ?? t('work.empty')}
         keyOf={(item, index) => item._id ?? `${item.title}-${index}`}
         renderItem={(item) => (
           <Card as="div" className="flex h-full flex-col">
