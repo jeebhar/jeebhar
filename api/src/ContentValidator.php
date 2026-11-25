@@ -16,6 +16,7 @@ namespace Jeebhar;
  *   url       absolute http(s) URL, or "" when optional
  *   ref       http(s) URL or a site path beginning with "/" (images, media kit)
  *   email     email address
+ *   enum      one of `values`; anything else (or nothing) becomes `default`
  *   list      array of objects described by `item`
  *   object    nested object described by `fields`
  *
@@ -29,10 +30,15 @@ final class ContentValidator
     /** @return array<string, array<string, mixed>> */
     public static function schema(): array
     {
+        // Where a piece of work is from: shown on jeebhar.de (Europe), jeebhar.in
+        // (India) or everywhere. jeebhar.com shows all of it.
+        $region = ['type' => 'enum', 'values' => ['all', 'eu', 'in'], 'default' => 'all'];
+
         $reel = [
             'title' => ['type' => 'text', 'required' => true, 'max' => 160],
             'instagramUrl' => ['type' => 'url', 'required' => true],
             'thumbnailUrl' => ['type' => 'ref'],
+            'region' => $region,
         ];
 
         return [
@@ -54,6 +60,7 @@ final class ContentValidator
                 'title' => ['type' => 'text', 'required' => true, 'max' => 160],
                 'imageUrl' => ['type' => 'ref', 'required' => true],
                 'description' => ['type' => 'text', 'max' => 600],
+                'region' => $region,
             ]],
             'reels' => ['type' => 'list', 'max' => 60, 'item' => $reel],
             'travelReels' => ['type' => 'list', 'max' => 60, 'item' => $reel],
@@ -159,6 +166,12 @@ final class ContentValidator
     private function scalar(mixed $value, array $rule, string $path, bool $enforceRequired): string
     {
         $text = is_scalar($value) ? trim((string) $value) : '';
+
+        if ($rule['type'] === 'enum') {
+            // Lenient on purpose: content from before the field existed, or a
+            // typo, falls back to the default instead of blocking a save.
+            return in_array($text, $rule['values'], true) ? $text : (string) $rule['default'];
+        }
 
         if ($text === '') {
             if ($enforceRequired && !empty($rule['required'])) {

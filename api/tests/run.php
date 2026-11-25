@@ -83,6 +83,16 @@ $test('complete() fills a fully empty document without throwing', function () us
     $assert($clean['reels'] === [], 'reels not empty');
 });
 
+$test('region: valid values kept, missing or unknown become "all"', function () use ($seed, $assert) {
+    $seed['work'][0]['region'] = 'in';
+    $seed['work'][1]['region'] = 'mars';
+    unset($seed['reels'][0]['region']);
+    $clean = (new ContentValidator())->validate($seed);
+    $assert($clean['work'][0]['region'] === 'in', 'in kept');
+    $assert($clean['work'][1]['region'] === 'all', 'unknown not defaulted');
+    $assert($clean['reels'][0]['region'] === 'all', 'missing not defaulted');
+});
+
 // ---------------------------------------------------------------- PageRenderer
 
 $domains = [
