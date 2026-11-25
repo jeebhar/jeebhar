@@ -25,6 +25,13 @@ const en = {
   'nav.skipToContent': 'Skip to content',
   'language.label': 'Language',
   'language.switchTo': 'Switch to {language}',
+  'region.label': 'Show work from',
+  'region.all': 'All',
+  'region.eu': 'Europe',
+  'region.in': 'India',
+  'region.allLong': 'all regions',
+  'region.empty': 'Nothing from {region} here yet.',
+  'region.showAll': 'Show all regions',
 
   // Hero
   'hero.cta': 'Let’s reimagine your business',
@@ -106,6 +113,13 @@ const de: Messages = {
   'nav.skipToContent': 'Zum Inhalt springen',
   'language.label': 'Sprache',
   'language.switchTo': 'Zu {language} wechseln',
+  'region.label': 'Arbeiten zeigen aus',
+  'region.all': 'Alle',
+  'region.eu': 'Europa',
+  'region.in': 'Indien',
+  'region.allLong': 'allen Regionen',
+  'region.empty': 'Aus {region} gibt es hier noch nichts.',
+  'region.showAll': 'Alle Regionen zeigen',
 
   'hero.cta': 'Lassen Sie uns Ihr Business neu denken',
   'hero.mediaKit': 'Media Kit ansehen',

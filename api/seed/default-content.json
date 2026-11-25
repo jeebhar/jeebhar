@@ -95,7 +95,8 @@
       "description": {
         "en": "Accommodation collaborations with hotels of the Accor group.",
         "de": "Unterkunfts-Kooperationen mit Hotels der Accor-Gruppe."
-      }
+      },
+      "region": "all"
     },
     {
       "_id": "work-myprotein",
@@ -107,7 +108,8 @@
       "description": {
         "en": "Brand partnership with Myprotein.",
         "de": "Markenpartnerschaft mit Myprotein."
-      }
+      },
+      "region": "all"
     },
     {
       "_id": "work-cookware",
@@ -119,7 +121,8 @@
       "description": {
         "en": "Cookware collaborations with HexClad and Stoneline.",
         "de": "Kochgeschirr-Kooperationen mit HexClad und Stoneline."
-      }
+      },
+      "region": "all"
     },
     {
       "_id": "work-temu",
@@ -131,7 +134,8 @@
       "description": {
         "en": "Product collaborations with Temu.",
         "de": "Produkt-Kooperationen mit Temu."
-      }
+      },
+      "region": "all"
     },
     {
       "_id": "work-05",
@@ -143,7 +147,8 @@
       "description": {
         "en": "Dosa, idli and thali storytelling that makes the filter coffee run cold.",
         "de": "Dosa, Idli und Thali so erzählt, dass der Filterkaffee kalt wird."
-      }
+      },
+      "region": "eu"
     },
     {
       "_id": "work-06",
@@ -155,7 +160,8 @@
       "description": {
         "en": "Steam, chilli dip and the first bite — momos shot the way regulars order them.",
         "de": "Dampf, Chili-Dip und der erste Biss – Momos so gefilmt, wie Stammgäste sie bestellen."
-      }
+      },
+      "region": "eu"
     },
     {
       "_id": "work-07",
@@ -167,7 +173,8 @@
       "description": {
         "en": "Khachapuri and khinkali framed for a cuisine most diners meet for the first time.",
         "de": "Khachapuri und Khinkali in Szene gesetzt für eine Küche, die viele zum ersten Mal entdecken."
-      }
+      },
+      "region": "eu"
     },
     {
       "_id": "work-08",
@@ -179,7 +186,8 @@
       "description": {
         "en": "Grill smoke, lime and salsa colour — high-energy creatives for a loud room.",
         "de": "Grillrauch, Limette und Salsa-Farben – energiegeladene Creatives für einen lauten Laden."
-      }
+      },
+      "region": "eu"
     },
     {
       "_id": "work-09",
@@ -191,7 +199,8 @@
       "description": {
         "en": "Butter chicken, tandoor char and fresh naan, styled for delivery-app appetite.",
         "de": "Butter Chicken, Tandoor-Röstaromen und frisches Naan – gestylt für Appetit auf Lieferdienst-Apps."
-      }
+      },
+      "region": "eu"
     },
     {
       "_id": "work-10",
@@ -203,7 +212,8 @@
       "description": {
         "en": "The cheese pull, the leopard-spotted crust, the table everyone wants to sit at.",
         "de": "Der Käsezug, der gefleckte Rand, der Tisch, an dem alle sitzen wollen."
-      }
+      },
+      "region": "eu"
     },
     {
       "_id": "work-11",
@@ -215,7 +225,8 @@
       "description": {
         "en": "Sausage, sauerkraut and beer-hall warmth translated into a social-first calendar.",
         "de": "Wurst, Sauerkraut und Bierhallen-Gemütlichkeit als Social-First-Redaktionsplan."
-      }
+      },
+      "region": "eu"
     },
     {
       "_id": "work-12",
@@ -227,7 +238,8 @@
       "description": {
         "en": "Broth steam, herbs and noodles — quiet, fresh frames that still stop the scroll.",
         "de": "Dampfende Brühe, Kräuter und Nudeln – ruhige, frische Bilder, die trotzdem stoppen."
-      }
+      },
+      "region": "eu"
     },
     {
       "_id": "work-more",
@@ -239,7 +251,8 @@
       "description": {
         "en": "Restaurants, hotels and brands across Germany and Europe.",
         "de": "Restaurants, Hotels und Marken in ganz Deutschland und Europa."
-      }
+      },
+      "region": "all"
     }
   ],
   "reels": [
@@ -250,7 +263,8 @@
         "de": "Nudeln & Dumplings · Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/DQWG611DCCr/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1632440722248-abcc3214b298?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1632440722248-abcc3214b298?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "reel-14",
@@ -259,7 +273,8 @@
         "de": "Vada Pav · Stuttgart"
       },
       "instagramUrl": "https://www.instagram.com/reel/DPqOeoIjLh_/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1769030905851-c0e0a4fe5c51?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1769030905851-c0e0a4fe5c51?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "reel-15",
@@ -268,7 +283,8 @@
         "de": "Indisches Buffet · Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/DYhR4-mM0BV/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1742281257707-0c7f7e5ca9c6?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1742281257707-0c7f7e5ca9c6?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "reel-16",
@@ -277,7 +293,8 @@
         "de": "Nepalesische Momos · Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/Dbu8-CPgzk3/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "reel-17",
@@ -286,7 +303,8 @@
         "de": "Vegetarisch auf deutschen Volksfesten"
       },
       "instagramUrl": "https://www.instagram.com/reel/DXPCTb4jF2x/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1765044203136-fa42c59771ff?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1765044203136-fa42c59771ff?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "reel-18",
@@ -295,7 +313,8 @@
         "de": "Veganes Essen · Stuttgart"
       },
       "instagramUrl": "https://www.instagram.com/reel/DR4cFZFiAsH/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "reel-19",
@@ -304,7 +323,8 @@
         "de": "Burger & Döner · Stuttgart"
       },
       "instagramUrl": "https://www.instagram.com/reel/DP3J4VADCvy/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1530469912745-a215c6b256ea?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1530469912745-a215c6b256ea?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "reel-20",
@@ -313,7 +333,8 @@
         "de": "Georgisches Essen"
       },
       "instagramUrl": "https://www.instagram.com/reel/DPLYUGoDJ9U/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1687686515394-5f5b7d50b01b?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1687686515394-5f5b7d50b01b?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     }
   ],
   "travelReels": [
@@ -324,7 +345,8 @@
         "de": "Ideen für Unterkünfte"
       },
       "instagramUrl": "https://www.instagram.com/reel/DaiErQFgKyc/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "travel-22",
@@ -333,7 +355,8 @@
         "de": "Belgien"
       },
       "instagramUrl": "https://www.instagram.com/reel/DTdFmqADE_Z/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1548092304-e0205cb0031b?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1548092304-e0205cb0031b?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "travel-23",
@@ -342,7 +365,8 @@
         "de": "Vegetarisch essen in Europa"
       },
       "instagramUrl": "https://www.instagram.com/reel/DRz0ai4jE-p/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1567575990843-105a1c70d76e?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1567575990843-105a1c70d76e?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "travel-24",
@@ -351,7 +375,8 @@
         "de": "Rüdesheim"
       },
       "instagramUrl": "https://www.instagram.com/reel/DOQW7hWDOtA/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1751225334062-8d639308d4c9?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1751225334062-8d639308d4c9?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "travel-25",
@@ -360,7 +385,8 @@
         "de": "Geheimtipp in Frankfurt"
       },
       "instagramUrl": "https://www.instagram.com/reel/DNYF1KLsFEq/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1774112168630-f27f4ff650c8?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1774112168630-f27f4ff650c8?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     },
     {
       "_id": "travel-26",
@@ -369,7 +395,8 @@
         "de": "Venedig in Deutschland"
       },
       "instagramUrl": "https://www.instagram.com/reel/DNFUxQyoo2F/",
-      "thumbnailUrl": "https://images.unsplash.com/photo-1580122638347-1a84abee0416?auto=format&fit=crop&w=720&h=960&q=80"
+      "thumbnailUrl": "https://images.unsplash.com/photo-1580122638347-1a84abee0416?auto=format&fit=crop&w=720&h=960&q=80",
+      "region": "eu"
     }
   ],
   "mediaKitMetrics": [

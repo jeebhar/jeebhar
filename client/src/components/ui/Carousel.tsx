@@ -26,7 +26,8 @@ interface CarouselProps<T> {
   renderItem: (item: T) => ReactNode;
   /** Announced to assistive tech, e.g. "Our work". */
   label: string;
-  emptyMessage?: string;
+  /** Text, or a small block (e.g. a message with a button), when there are no items. */
+  emptyMessage?: ReactNode;
   /** Time between automatic moves. */
   intervalMs?: number;
 }
@@ -83,7 +84,7 @@ export const Carousel = <T,>({
   const safeItems = Array.isArray(items) ? items : [];
 
   if (safeItems.length === 0) {
-    return <p className="text-brand-200">{emptyMessage}</p>;
+    return <div className="text-brand-200">{emptyMessage}</div>;
   }
 
   return (

@@ -14,6 +14,12 @@
 
 import type { Language } from '../i18n/languages';
 
+/**
+ * Where a piece of work is from. jeebhar.de shows Europe, jeebhar.in India,
+ * jeebhar.com everything; visitors can switch with the region toggle.
+ */
+export type Region = 'all' | 'eu' | 'in';
+
 /** A piece of text the owner writes in both languages. German may be blank. */
 export type LocalizedText = Record<Language, string>;
 
@@ -36,6 +42,7 @@ export interface WorkItem {
   title: string;
   imageUrl: string;
   description: string;
+  region?: Region;
 }
 
 export interface ReelItem {
@@ -48,6 +55,7 @@ export interface ReelItem {
    */
   thumbnailUrl: string;
   instagramUrl: string;
+  region?: Region;
 }
 
 export interface MediaMetric {
@@ -123,10 +131,12 @@ export const emptyWorkDoc = (): WorkDoc => ({
   title: emptyText(),
   imageUrl: '',
   description: emptyText(),
+  region: 'all',
 });
 export const emptyReelDoc = (): ReelDoc => ({
   title: emptyText(),
   thumbnailUrl: '',
   instagramUrl: '',
+  region: 'all',
 });
 export const emptyMetricDoc = (): MetricDoc => ({ label: emptyText(), value: '' });

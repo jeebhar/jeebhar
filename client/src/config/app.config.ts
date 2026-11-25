@@ -7,7 +7,8 @@
 
 const trimTrailingSlash = (value: string): string => value.replace(/\/+$/, '');
 
-const parseDomainLanguages = (raw: string | undefined): Record<string, string> => {
+/** Parses a host → value map baked in at build time, e.g. VITE_DOMAIN_LANGUAGES. */
+const parseDomainMap = (raw: string | undefined): Record<string, string> => {
   try {
     const parsed: unknown = JSON.parse(raw ?? '{}');
     return parsed && typeof parsed === 'object' ? (parsed as Record<string, string>) : {};
@@ -29,9 +30,13 @@ export const appConfig = {
    * Host → default language, from jeebhar.config.json (domains.sites), injected
    * by `npm run build:bluehost`. jeebhar.de opens in German, .com/.in in English.
    */
-  domainLanguages: parseDomainLanguages(
-    import.meta.env.VITE_DOMAIN_LANGUAGES as string | undefined
-  ),
+  domainLanguages: parseDomainMap(import.meta.env.VITE_DOMAIN_LANGUAGES as string | undefined),
+
+  /**
+   * Host → region (eu / in / all), from jeebhar.config.json (domains.sites),
+   * injected by `npm run build:bluehost`. jeebhar.de shows Europe, jeebhar.in India.
+   */
+  domainRegions: parseDomainMap(import.meta.env.VITE_DOMAIN_REGIONS as string | undefined),
 
   /** How long a request may run before it is aborted (ms). */
   requestTimeoutMs: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS ?? 15_000),

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 
 import { App } from './app/App';
 import { I18nProvider } from './i18n';
+import { RegionProvider } from './region';
 import './assets/styles/index.css';
 
 /** Entry point: mount the app. Nothing else belongs in this file. */
@@ -16,7 +17,9 @@ if (!container) {
 createRoot(container).render(
   <StrictMode>
     <I18nProvider>
-      <App />
+      <RegionProvider>
+        <App />
+      </RegionProvider>
     </I18nProvider>
   </StrictMode>
 );

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { Button, Logo } from '../ui';
 import { LanguageToggle } from './LanguageToggle';
+import { RegionToggle } from './RegionToggle';
 import { NAV_SECTIONS, NAV_SECTION_IDS } from '../../config/navigation';
 import { useActiveSection } from '../../hooks/use-active-section';
 import { scrollToSection } from '../../utils/scroll';
@@ -26,7 +27,7 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
 
   // Close the mobile menu when the viewport grows to the desktop layout.
   useEffect(() => {
-    const query = window.matchMedia('(min-width: 1024px)');
+    const query = window.matchMedia('(min-width: 1280px)');
     const close = () => setMenuOpen(false);
     query.addEventListener('change', close);
     return () => query.removeEventListener('change', close);
@@ -52,7 +53,7 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
           <Logo variant="full" height={36} />
         </a>
 
-        <nav aria-label={t('nav.main')} className="hidden items-center gap-1 lg:flex">
+        <nav aria-label={t('nav.main')} className="hidden items-center gap-1 xl:flex">
           {NAV_SECTIONS.map((section) => (
             <a
               key={section.id}
@@ -80,10 +81,11 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
             {t('nav.mediaKit')}
           </a>
           <LanguageToggle className="ml-2" />
+          <RegionToggle className="ml-2" />
         </nav>
 
-        {/* Phones and tablets: the language switch stays visible next to the menu. */}
-        <div className="flex items-center gap-2 lg:hidden">
+        {/* Below 1280px: language switch next to the menu; region switch inside it. */}
+        <div className="flex items-center gap-2 xl:hidden">
           <LanguageToggle />
           <Button
             variant="outline"
@@ -101,8 +103,12 @@ export const Header = ({ mediaKitUrl, brandName }: HeaderProps) => {
         <nav
           id="mobile-nav"
           aria-label={t('nav.main')}
-          className="border-t border-white/10 bg-brand-950 px-4 py-3 lg:hidden"
+          className="border-t border-white/10 bg-brand-950 px-4 py-3 xl:hidden"
         >
+          <div className="mb-3 flex flex-wrap items-center gap-3 border-b border-white/10 pb-3 text-sm text-brand-200">
+            <span>{t('region.label')}</span>
+            <RegionToggle />
+          </div>
           <ul className="grid gap-1">
             {NAV_SECTIONS.map((section) => (
               <li key={section.id}>

@@ -83,6 +83,16 @@ $test('complete() fills a fully empty document without throwing', function () us
     $assert($clean['reels'] === [], 'reels not empty');
 });
 
+$test('region: valid values kept, missing or unknown become "all"', function () use ($seed, $assert) {
+    $seed['work'][0]['region'] = 'in';
+    $seed['work'][1]['region'] = 'mars';
+    unset($seed['reels'][0]['region']);
+    $clean = (new ContentValidator())->validate($seed);
+    $assert($clean['work'][0]['region'] === 'in', 'in kept');
+    $assert($clean['work'][1]['region'] === 'all', 'unknown not defaulted');
+    $assert($clean['reels'][0]['region'] === 'all', 'missing not defaulted');
+});
+
 // ---------------------------------------------------------------- PageRenderer
 
 $domains = [
@@ -151,6 +161,22 @@ $test('unknown paths are 404 and noindex', function () use ($page, $assert) {
     $assert($result['status'] === 404, 'status');
     $assert(str_contains($result['html'], 'name="robots" content="noindex"'), 'noindex');
     $assert($page('jeebhar.com', '/?utm_source=x')['status'] === 200, 'query string on home');
+});
+
+$test('each domain renders its region: .de European work, .in Indian + everywhere, .com all', function () use ($page, $assert) {
+    // Seed: cuisine cards and reels are Europe, brand cards (Accor, ...) everywhere.
+    // Only the crawlable copy: the embedded JSON holds everything on purpose
+    // (visitors can switch region in the app).
+    $snapshot = static fn (string $html): string =>
+        explode('<script id="jeebhar-content"', explode('<div id="root">', $html, 2)[1])[0];
+    $de = $snapshot($page('jeebhar.de')['html']);
+    $in = $snapshot($page('jeebhar.in')['html']);
+    $com = $snapshot($page('jeebhar.com')['html']);
+    $assert(str_contains($de, 'Südindisch') && str_contains($de, 'Accor'), '.de misses European or everywhere work');
+    $assert(str_contains($in, 'Accor hotels'), '.in misses work tagged everywhere');
+    $assert(!str_contains($in, 'Nepali Momo House'), '.in shows European work');
+    $assert(!str_contains($in, 'instagram.com/reel/DQWG611DCCr'), '.in shows a European reel');
+    $assert(str_contains($com, 'Nepali Momo House') && str_contains($com, 'instagram.com/reel/DQWG611DCCr'), '.com not complete');
 });
 
 $test('robots.txt and sitemap.xml point at the requesting domain and list all versions', function () use ($domains, $assert) {

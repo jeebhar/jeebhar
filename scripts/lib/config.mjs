@@ -94,11 +94,24 @@ export const phpConfig = (config, target) => {
   ].join('\n');
 };
 
+/** A site's region: from config, else from the domain (.de Europe, .in India). */
+export const regionOf = (site) =>
+  ['all', 'eu', 'in'].includes(site.region)
+    ? site.region
+    : site.host?.endsWith('.de')
+      ? 'eu'
+      : site.host?.endsWith('.in')
+        ? 'in'
+        : 'all';
+
 /** Public, non-secret values for the frontend. */
 export const viteEnv = (config) => ({
   VITE_API_BASE_URL: '/api',
   VITE_DOMAIN_LANGUAGES: JSON.stringify(
     Object.fromEntries((config.domains.sites ?? []).map((s) => [s.host, s.defaultLanguage ?? 'en']))
+  ),
+  VITE_DOMAIN_REGIONS: JSON.stringify(
+    Object.fromEntries((config.domains.sites ?? []).map((s) => [s.host, regionOf(s)]))
   ),
 });
 

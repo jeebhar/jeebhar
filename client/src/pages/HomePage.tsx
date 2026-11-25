@@ -9,6 +9,8 @@ import { resolveMediaKitUrl } from '../utils/content';
 import type { ReactNode } from 'react';
 
 import { useI18n } from '../i18n';
+import { filterByRegion, useRegion } from '../region';
+import { RegionEmpty } from '../components/sections/RegionEmpty';
 import type { MessageKey } from '../i18n';
 import type { SiteContent } from '../models/site-content.model';
 
@@ -56,6 +58,16 @@ const SectionBoundary = ({ labelKey, children }: { labelKey: MessageKey; childre
 
 export const HomePage = ({ content }: HomePageProps) => {
   const { t } = useI18n();
+  const { region } = useRegion();
+
+  // Work and reels follow the region switch (Europe / India / all). Items
+  // tagged "everywhere" show in both regions.
+  const work = filterByRegion(content.work, region);
+  const reels = filterByRegion(content.reels, region);
+  const travelReels = filterByRegion(content.travelReels, region);
+  // Only blame the region when the section has items elsewhere.
+  const emptyFor = (all: readonly unknown[] | undefined, fallback: string) =>
+    region !== 'all' && (all?.length ?? 0) > 0 ? <RegionEmpty /> : fallback;
 
   return (
     <main id="main">
@@ -79,7 +91,7 @@ export const HomePage = ({ content }: HomePageProps) => {
         </SectionBoundary>
 
         <SectionBoundary labelKey="work.title">
-          <WorkSection work={content.work ?? []} />
+          <WorkSection work={work} emptyMessage={emptyFor(content.work, t('work.empty'))} />
         </SectionBoundary>
 
         {/* Two usages of one component — see ReelsSection. */}
@@ -88,9 +100,9 @@ export const HomePage = ({ content }: HomePageProps) => {
             id="reels"
             title={t('reels.title')}
             description={t('reels.description')}
-            reels={content.reels ?? []}
+            reels={reels}
             badge={t('reels.badge')}
-            emptyMessage={t('reels.empty')}
+            emptyMessage={emptyFor(content.reels, t('reels.empty'))}
           />
         </SectionBoundary>
 
@@ -99,9 +111,9 @@ export const HomePage = ({ content }: HomePageProps) => {
             id="travel"
             title={t('travel.title')}
             description={t('travel.description')}
-            reels={content.travelReels ?? []}
+            reels={travelReels}
             badge={t('travel.badge')}
-            emptyMessage={t('travel.empty')}
+            emptyMessage={emptyFor(content.travelReels, t('travel.empty'))}
           />
         </SectionBoundary>
 

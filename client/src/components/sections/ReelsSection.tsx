@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Card, Carousel, MediaCover, Section } from '../ui';
 import type { ReelItem } from '../../models/site-content.model';
 import { useI18n } from '../../i18n';
@@ -18,7 +19,7 @@ interface ReelsSectionProps {
   reels: ReelItem[];
   /** Short label shown on cover tiles, e.g. "Food & ads". */
   badge?: string;
-  emptyMessage?: string;
+  emptyMessage?: ReactNode;
 }
 
 export const ReelsSection = ({

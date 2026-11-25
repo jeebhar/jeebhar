@@ -32,6 +32,19 @@ interface AdminPageProps {
   onExit: () => void;
 }
 
+/** Region tag on work and reels: which domain shows the item. */
+const REGION_FIELD = {
+  key: 'region',
+  label: 'Shown for',
+  kind: 'select',
+  options: [
+    { value: 'all', label: 'Everywhere (Europe and India)' },
+    { value: 'eu', label: 'Europe (jeebhar.de)' },
+    { value: 'in', label: 'India (jeebhar.in)' },
+  ],
+  hint: 'jeebhar.com shows everything. Visitors can also switch region themselves.',
+} as const;
+
 const IMAGE_HINT = 'Upload a photo (JPG, PNG, WebP), or paste an https:// link.';
 
 const SERVICE_FIELDS: ReadonlyArray<FieldDescriptor<ServiceDoc>> = [
@@ -55,6 +68,7 @@ const WORK_FIELDS: ReadonlyArray<FieldDescriptor<WorkDoc>> = [
     hint: IMAGE_HINT,
   },
   { key: 'description', label: 'Description', kind: 'localized', rows: 2 },
+  REGION_FIELD,
 ];
 
 const REEL_FIELDS: ReadonlyArray<FieldDescriptor<ReelDoc>> = [
@@ -72,6 +86,7 @@ const REEL_FIELDS: ReadonlyArray<FieldDescriptor<ReelDoc>> = [
     placeholder: '/uploads/reel-cover.jpg',
     hint: 'Leave blank to show a branded tile.',
   },
+  REGION_FIELD,
 ];
 
 const CONTACT_FIELDS: ReadonlyArray<{ key: keyof ContactDetails; label: string }> = [

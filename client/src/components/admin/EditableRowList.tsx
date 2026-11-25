@@ -1,4 +1,4 @@
-import { Button, TextField } from '../ui';
+import { Button, SelectField, TextField } from '../ui';
 import { LocalizedTextField } from './LocalizedTextField';
 import { UploadField } from './UploadField';
 import type { Uploader } from './UploadField';
@@ -16,12 +16,15 @@ import type { LocalizedText } from '../../models/site-content.model';
  *   text        one plain input (same in both languages: a URL, a number…)
  *   localized   an English + Deutsch pair
  *   image       a URL with an "Upload…" button and a thumbnail
+ *   select      a dropdown of `options`
  */
 
 export interface FieldDescriptor<T> {
   key: keyof T & string;
   label: string;
-  kind?: 'text' | 'localized' | 'image';
+  kind?: 'text' | 'localized' | 'image' | 'select';
+  /** For `select`. */
+  options?: ReadonlyArray<{ value: string; label: string }>;
   placeholder?: string;
   /** Renders a textarea with this many rows. */
   rows?: number;
@@ -90,6 +93,13 @@ export const EditableRowList = <T extends object>({
                         rows={field.rows}
                         placeholder={field.placeholder}
                         value={row.value[field.key] as LocalizedText}
+                        onChange={set}
+                      />
+                    ) : field.kind === 'select' ? (
+                      <SelectField
+                        label={field.label}
+                        options={field.options ?? []}
+                        value={String(row.value[field.key] ?? field.options?.[0]?.value ?? '')}
                         onChange={set}
                       />
                     ) : field.kind === 'image' ? (
