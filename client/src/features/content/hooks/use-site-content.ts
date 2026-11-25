@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { fetchSiteContent } from '../api/content.api';
 import type { SiteContentDocument } from '../../../models/site-content.model';
 import { toErrorMessage } from '../../../utils/error';
+import { readEmbeddedContent } from '../embedded-content';
 
 /**
  * CONTROLLER (hook) — loads site content and exposes its state.
@@ -20,15 +21,25 @@ interface UseSiteContentResult {
   reload: () => void;
 }
 
+/** Read once per page load: the server embeds the content in the HTML. */
+let embedded: SiteContentDocument | null | undefined;
+const initialContent = (): SiteContentDocument | null => {
+  if (embedded === undefined) embedded = readEmbeddedContent();
+  return embedded;
+};
+
 export const useSiteContent = (): UseSiteContentResult => {
-  const [content, setContent] = useState<SiteContentDocument | null>(null);
-  const [status, setStatus] = useState<LoadStatus>('loading');
+  const [content, setContent] = useState<SiteContentDocument | null>(initialContent);
+  const [status, setStatus] = useState<LoadStatus>(() => (initialContent() ? 'ready' : 'loading'));
   const [error, setError] = useState('');
   const [reloadToken, setReloadToken] = useState(0);
 
   const reload = useCallback(() => setReloadToken((token) => token + 1), []);
 
   useEffect(() => {
+    // Content came with the page: nothing to fetch until someone asks to reload.
+    if (reloadToken === 0 && initialContent()) return undefined;
+
     const controller = new AbortController();
     let active = true;
 
