@@ -80,6 +80,11 @@ Every text field has an **English** and a **Deutsch** box. Leave German empty an
 page shows the English text, so you can translate gradually. Interface text (menu, buttons,
 form labels) is in [`client/src/i18n/messages.ts`](client/src/i18n/messages.ts).
 
+**Regions:** every work card and reel has a **Shown for** setting in the editor: Everywhere,
+Europe or India. jeebhar.de shows Europe first, jeebhar.in India, jeebhar.com everything;
+visitors switch with **All | Europe | India** in the header. Each domain is also served to
+search engines with its own region's work.
+
 **Which language a visitor sees first:** their earlier choice from the EN | DE toggle, then the
 domain (`jeebhar.de` → Deutsch), then their browser language, then English.
 
