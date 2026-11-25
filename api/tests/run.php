@@ -163,6 +163,22 @@ $test('unknown paths are 404 and noindex', function () use ($page, $assert) {
     $assert($page('jeebhar.com', '/?utm_source=x')['status'] === 200, 'query string on home');
 });
 
+$test('each domain renders its region: .de European work, .in Indian + everywhere, .com all', function () use ($page, $assert) {
+    // Seed: cuisine cards and reels are Europe, brand cards (Accor, ...) everywhere.
+    // Only the crawlable copy: the embedded JSON holds everything on purpose
+    // (visitors can switch region in the app).
+    $snapshot = static fn (string $html): string =>
+        explode('<script id="jeebhar-content"', explode('<div id="root">', $html, 2)[1])[0];
+    $de = $snapshot($page('jeebhar.de')['html']);
+    $in = $snapshot($page('jeebhar.in')['html']);
+    $com = $snapshot($page('jeebhar.com')['html']);
+    $assert(str_contains($de, 'Südindisch') && str_contains($de, 'Accor'), '.de misses European or everywhere work');
+    $assert(str_contains($in, 'Accor hotels'), '.in misses work tagged everywhere');
+    $assert(!str_contains($in, 'Nepali Momo House'), '.in shows European work');
+    $assert(!str_contains($in, 'instagram.com/reel/DQWG611DCCr'), '.in shows a European reel');
+    $assert(str_contains($com, 'Nepali Momo House') && str_contains($com, 'instagram.com/reel/DQWG611DCCr'), '.com not complete');
+});
+
 $test('robots.txt and sitemap.xml point at the requesting domain and list all versions', function () use ($domains, $assert) {
     $renderer = new Jeebhar\PageRenderer($domains);
     $assert(str_contains($renderer->robots('www.jeebhar.in'), 'Sitemap: https://jeebhar.in/sitemap.xml'), 'robots sitemap');

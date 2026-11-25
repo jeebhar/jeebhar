@@ -54,7 +54,7 @@ final class PageRenderer
         ['@type' => 'Country', 'name' => 'India'],
     ];
 
-    /** @var array<int, array{host: string, lang: string, hreflang: string}> */
+    /** @var array<int, array{host: string, lang: string, hreflang: string, region: string}> */
     private array $sites;
 
     private string $primary;
@@ -74,10 +74,13 @@ final class PageRenderer
                 'host' => $host,
                 'lang' => $lang,
                 'hreflang' => (string) ($site['hreflang'] ?? self::defaultHreflang($host, $lang)),
+                'region' => in_array($site['region'] ?? null, ['all', 'eu', 'in'], true)
+                    ? (string) $site['region']
+                    : self::defaultRegion($host),
             ];
         }
         if ($this->sites === []) {
-            $this->sites[] = ['host' => $this->primary, 'lang' => 'en', 'hreflang' => 'en'];
+            $this->sites[] = ['host' => $this->primary, 'lang' => 'en', 'hreflang' => 'en', 'region' => 'all'];
         }
     }
 
@@ -94,7 +97,7 @@ final class PageRenderer
         $base = 'https://' . $site['host'];
 
         $head = $this->head($content, $site, $base, $isHome);
-        $body = $this->snapshot($content, $lang)
+        $body = $this->snapshot($content, $lang, $site['region'])
             . '<script id="jeebhar-content" type="application/json">'
             . self::json($content)
             . '</script>';
@@ -147,7 +150,7 @@ final class PageRenderer
             . "</urlset>\n";
     }
 
-    /** @return array{host: string, lang: string, hreflang: string} */
+    /** @return array{host: string, lang: string, hreflang: string, region: string} */
     public function siteFor(string $requestHost): array
     {
         $host = strtolower((string) preg_replace('/:\d+$/', '', $requestHost));
@@ -168,7 +171,7 @@ final class PageRenderer
 
     /**
      * @param array<string, mixed> $content
-     * @param array{host: string, lang: string, hreflang: string} $site
+     * @param array{host: string, lang: string, hreflang: string, region: string} $site
      */
     private function head(array $content, array $site, string $base, bool $isHome): string
     {
@@ -227,7 +230,7 @@ final class PageRenderer
      * rich results.
      *
      * @param array<string, mixed> $content
-     * @param array{host: string, lang: string, hreflang: string} $site
+     * @param array{host: string, lang: string, hreflang: string, region: string} $site
      * @return array<string, mixed>
      */
     private function structuredData(
@@ -307,9 +310,13 @@ final class PageRenderer
      * The page as plain semantic HTML. React swaps it for the full interface
      * on load, so it only needs to be correct and readable, not styled.
      *
+     * Work and reels are limited to the domain's region (plus items tagged for
+     * everywhere), matching what the app shows first on that domain, so
+     * jeebhar.in is indexed with Indian work and jeebhar.de with European work.
+     *
      * @param array<string, mixed> $content
      */
-    private function snapshot(array $content, string $lang): string
+    private function snapshot(array $content, string $lang, string $region): string
     {
         $l = self::LABELS[$lang];
         $out = [];
@@ -346,14 +353,14 @@ final class PageRenderer
                     . ($image !== '' ? '<img src="' . self::e($image) . '" alt="' . self::e($title) . '" loading="lazy" width="400" height="300" />' : '')
                     . '<p>' . self::e(self::pick($w['description'] ?? null, $lang)) . '</p>';
             },
-            (array) ($content['work'] ?? [])
+            self::inRegion((array) ($content['work'] ?? []), $region)
         ));
 
         foreach (['reels' => 'reels', 'travel' => 'travelReels'] as $id => $key) {
             $out[] = self::section($id, $l[$id], array_map(
                 static fn (array $r): string => '<a href="' . self::e((string) ($r['instagramUrl'] ?? ''))
                     . '" rel="noopener">' . self::e(self::pick($r['title'] ?? null, $lang)) . '</a>',
-                (array) ($content[$key] ?? [])
+                self::inRegion((array) ($content[$key] ?? []), $region)
             ));
         }
 
@@ -399,6 +406,31 @@ final class PageRenderer
         }
         $value = trim((string) ($text[$lang] ?? ''));
         return $value !== '' ? $value : trim((string) ($text['en'] ?? ''));
+    }
+
+    /**
+     * Same rule as client/src/region/regions.ts filterByRegion().
+     *
+     * @param array<int, array<string, mixed>> $items
+     * @return array<int, array<string, mixed>>
+     */
+    private static function inRegion(array $items, string $region): array
+    {
+        if ($region === 'all') {
+            return $items;
+        }
+        return array_values(array_filter(
+            $items,
+            static fn (array $item): bool => in_array($item['region'] ?? 'all', ['all', $region], true)
+        ));
+    }
+
+    private static function defaultRegion(string $host): string
+    {
+        if (str_ends_with($host, '.de')) {
+            return 'eu';
+        }
+        return str_ends_with($host, '.in') ? 'in' : 'all';
     }
 
     private static function defaultHreflang(string $host, string $lang): string
