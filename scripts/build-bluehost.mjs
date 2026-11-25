@@ -6,7 +6,8 @@
  *
  *   dist-bluehost/
  *   ├── index.html, assets/, brand/ …   the React build (client/dist)
- *   ├── .htaccess                       HTTPS, www → apex, SPA routing, caching
+ *   ├── index.php                       serves every page with SEO tags + content
+ *   ├── .htaccess                       HTTPS, www → apex, routing, caching
  *   ├── api/                            PHP API + generated config.php
  *   └── uploads/.htaccess               blocks code execution in uploads
  *
@@ -57,6 +58,9 @@ writeFileSync(
 );
 mkdirSync(resolve(OUT, 'uploads'), { recursive: true });
 cpSync(resolve(ROOT, 'deploy/uploads.htaccess'), resolve(OUT, 'uploads/.htaccess'));
+
+// Server-rendered entry page: SEO tags + crawlable content around index.html.
+cpSync(resolve(ROOT, 'deploy/index.php'), resolve(OUT, 'index.php'));
 
 if (!existsSync(resolve(OUT, 'index.html'))) {
   throw new Error('Build output is missing index.html');
