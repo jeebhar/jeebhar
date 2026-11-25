@@ -99,6 +99,9 @@ export interface SiteContentDocument {
   heroHeading: LocalizedText;
   heroSubheading: LocalizedText;
   heroImageUrl: string;
+  /** Search engines: page title and meta description. Not shown on the page. */
+  seoTitle: LocalizedText;
+  seoDescription: LocalizedText;
   mediaKitUrl: string;
   services: ServiceDoc[];
   work: WorkDoc[];

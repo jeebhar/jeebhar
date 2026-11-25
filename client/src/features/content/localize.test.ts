@@ -9,6 +9,8 @@ const doc = {
   heroHeading: { en: 'Reimagine', de: 'Neu denken' },
   heroSubheading: { en: 'Sub', de: 'Unter' },
   heroImageUrl: '/brand/hero-banner.jpg',
+  seoTitle: { en: 'Title', de: 'Titel' },
+  seoDescription: { en: 'Description', de: 'Beschreibung' },
   mediaKitUrl: '/brand/media-kit.pdf',
   services: [
     {

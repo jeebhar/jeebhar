@@ -69,6 +69,8 @@ export const phpConfig = (config, target) => {
     uploads: config.uploads ?? {},
     rateLimit: config.rateLimit ?? {},
     site: config.site ?? {},
+    // The page renderer needs the domains for hreflang, canonical and language.
+    domains: { primary: config.domains.primary, sites: config.domains.sites ?? [] },
     cors: { allowedOrigins: origins },
     paths:
       target === 'bluehost'

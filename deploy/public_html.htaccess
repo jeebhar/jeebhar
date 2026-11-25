@@ -3,7 +3,7 @@
 # Serves the same site on jeebhar.com, jeebhar.de and jeebhar.in.
 
 Options -Indexes
-DirectoryIndex index.html
+DirectoryIndex index.php index.html
 
 RewriteEngine On
 
@@ -17,10 +17,15 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # API → api/index.php (api/.htaccess takes over from here).
 RewriteRule ^api(/.*)?$ - [L]
 
-# Single-page app: anything that is not a real file is the React app.
+# The raw template must not be indexed on its own: always use the rendered page.
+RewriteCond %{THE_REQUEST} \s/index\.html[\s?] [NC]
+RewriteRule ^index\.html$ / [R=301,L]
+
+# Every page that is not a real file is rendered by index.php
+# (language, SEO tags and a crawlable copy of the content; see api/src/PageRenderer.php).
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.html [L]
+RewriteRule ^ index.php [L]
 
 # Caching: hashed build assets forever, the HTML never (so deploys show at once).
 <IfModule mod_headers.c>

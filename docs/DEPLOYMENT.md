@@ -126,6 +126,18 @@ File Manager → `jeebhar-data/enquiries.jsonl`.
 
 ---
 
+## Search engines (once, after the first deploy)
+
+1. Check what Google will see: open `https://jeebhar.de/` with **View page source** — the
+   German `<title>`, `hreflang` links and the page text should be in the HTML.
+2. [Google Search Console](https://search.google.com/search-console): add each domain as a
+   **Domain property** (verified with a DNS TXT record in Bluehost's DNS zone editor), then
+   **Sitemaps** → submit `sitemap.xml`. Repeat for jeebhar.de, jeebhar.in and jeebhar.com.
+3. [Bing Webmaster Tools](https://www.bing.com/webmasters): **Import from Google Search
+   Console** once the domains are verified there.
+4. Test structured data with Google's [Rich Results Test](https://search.google.com/test/rich-results)
+   on `https://jeebhar.com/`.
+
 ## Troubleshooting
 
 | Symptom                                           | Likely cause and fix                                                                                                                                                                   |

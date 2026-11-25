@@ -85,7 +85,21 @@ domain (`jeebhar.de` → Deutsch), then their browser language, then English.
 
 ---
 
-## Project layout
+## SEO
+
+Every page is served by `index.php`, which fills the built `index.html` with what search
+engines and link previews need (`api/src/PageRenderer.php`):
+
+| Added on the server                    | Why                                                               |
+| -------------------------------------- | ----------------------------------------------------------------- |
+| `<html lang>`, `<title>`, description  | In the domain's language: jeebhar.de German, .com and .in English |
+| canonical + `hreflang` (de, en-IN, en) | The three domains are one site in three versions, not duplicates  |
+| Open Graph / Twitter tags              | Proper previews on WhatsApp, LinkedIn, Facebook, X                |
+| JSON-LD (`ProfessionalService`)        | Business, areas served, services and social profiles for Google   |
+| Plain-HTML copy of the page in `#root` | Crawlers that don't run JavaScript still read every heading       |
+| `/robots.txt`, `/sitemap.xml`          | Generated per domain                                              |
+
+The title and description are edited under **Search engines (Google)** in `/#/admin`.
 
 ```
 jeebhar/

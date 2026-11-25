@@ -83,5 +83,85 @@ $test('complete() fills a fully empty document without throwing', function () us
     $assert($clean['reels'] === [], 'reels not empty');
 });
 
+// ---------------------------------------------------------------- PageRenderer
+
+$domains = [
+    'primary' => 'jeebhar.com',
+    'sites' => [
+        ['host' => 'jeebhar.com', 'defaultLanguage' => 'en'],
+        ['host' => 'jeebhar.in', 'defaultLanguage' => 'en'],
+        ['host' => 'jeebhar.de', 'defaultLanguage' => 'de'],
+    ],
+];
+$template = '<!doctype html><html lang="en"><head><title>Old</title>'
+    . "<meta\n name=\"description\"\n content=\"old\" />"
+    . '<meta property="og:title" content="old" /></head><body><div id="root"></div></body></html>';
+$page = static fn (string $host, string $path = '/') =>
+    (new Jeebhar\PageRenderer($domains))->render($template, (new ContentValidator())->complete($seed), $host, $path);
+
+$test('jeebhar.de is served in German with the German title', function () use ($page, $assert) {
+    $html = $page('www.jeebhar.de')['html'];
+    $assert(str_contains($html, '<html lang="de">'), 'lang not de');
+    $assert(str_contains($html, '<title>Jeebhar | Social-Media-Agentur'), 'German title missing');
+    $assert(str_contains($html, '<h2>Unsere Leistungen</h2>'), 'German snapshot missing');
+});
+
+$test('the static English tags of index.html are replaced, not duplicated', function () use ($page, $assert) {
+    $html = $page('jeebhar.de')['html'];
+    $assert(substr_count($html, '<title>') === 1, 'title count');
+    $assert(!str_contains($html, 'content="old"'), 'old meta left in');
+    $assert(substr_count($html, 'name="description"') === 1, 'description count');
+});
+
+$test('every domain links to all three versions and to x-default', function () use ($page, $assert) {
+    $html = $page('jeebhar.in')['html'];
+    foreach (['hreflang="en" href="https://jeebhar.com/"', 'hreflang="en-IN" href="https://jeebhar.in/"', 'hreflang="de" href="https://jeebhar.de/"', 'hreflang="x-default" href="https://jeebhar.com/"'] as $link) {
+        $assert(str_contains($html, $link), "missing $link");
+    }
+    $assert(str_contains($html, '<link rel="canonical" href="https://jeebhar.in/" />'), 'canonical');
+});
+
+$test('an unknown host (Bluehost temp domain) behaves as the primary', function () use ($page, $assert) {
+    $html = $page('xwl.oee.mybluehost.me')['html'];
+    $assert(str_contains($html, '<link rel="canonical" href="https://jeebhar.com/" />'), 'canonical not primary');
+});
+
+$test('the business is described as JSON-LD with socials and services', function () use ($page, $assert) {
+    $html = $page('jeebhar.com')['html'];
+    $assert(preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $html, $m) === 1, 'no JSON-LD');
+    $data = json_decode($m[1], true);
+    $org = $data['@graph'][0];
+    $assert($org['@type'] === 'ProfessionalService', 'type');
+    $assert(in_array('https://www.instagram.com/jeebhar/', $org['sameAs'], true), 'instagram sameAs');
+    $assert(count($org['hasOfferCatalog']['itemListElement']) === 4, 'services');
+    $assert($org['address']['addressLocality'] === 'Offenbach', 'address');
+});
+
+$test('the content is embedded for the app, and cannot break out of its script', function () use ($seed, $domains, $template, $assert) {
+    $evil = $seed;
+    $evil['heroHeading'] = ['en' => '</script><script>alert(1)</script>', 'de' => ''];
+    $html = (new Jeebhar\PageRenderer($domains))->render($template, (new ContentValidator())->complete($evil), 'jeebhar.com', '/')['html'];
+    $assert(!str_contains($html, '<script>alert(1)'), 'script injection');
+    $assert(str_contains($html, '<script id="jeebhar-content" type="application/json">'), 'embedded content');
+    $assert(str_contains($html, '&lt;/script&gt;&lt;script&gt;alert(1)'), 'snapshot not escaped');
+});
+
+$test('unknown paths are 404 and noindex', function () use ($page, $assert) {
+    $result = $page('jeebhar.com', '/does-not-exist');
+    $assert($result['status'] === 404, 'status');
+    $assert(str_contains($result['html'], 'name="robots" content="noindex"'), 'noindex');
+    $assert($page('jeebhar.com', '/?utm_source=x')['status'] === 200, 'query string on home');
+});
+
+$test('robots.txt and sitemap.xml point at the requesting domain and list all versions', function () use ($domains, $assert) {
+    $renderer = new Jeebhar\PageRenderer($domains);
+    $assert(str_contains($renderer->robots('www.jeebhar.in'), 'Sitemap: https://jeebhar.in/sitemap.xml'), 'robots sitemap');
+    $assert(str_contains($renderer->robots('jeebhar.in'), 'Disallow: /api/'), 'robots api');
+    $xml = $renderer->sitemap('jeebhar.de', '2026-11-25');
+    $assert(simplexml_load_string($xml) !== false, 'sitemap is not valid XML');
+    $assert(str_contains($xml, '<loc>https://jeebhar.de/</loc>'), 'loc');
+    $assert(substr_count($xml, 'xhtml:link') === 4, 'alternates');
+});
+
 echo $failures === 0 ? "All API tests passed.\n" : "$failures test(s) failed.\n";
 exit($failures === 0 ? 0 : 1);
